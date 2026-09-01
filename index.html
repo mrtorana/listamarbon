@@ -669,7 +669,7 @@
 
       <div class="checkbox-wrapper" id="offerWrapper">
         <input type="checkbox" id="offerCheckbox">
-        <label for="offerCheckbox">🏷️ In offerta</label>
+        <label for="offerCheckbox">️ In offerta</label>
       </div>
 
       <button class="add-btn" onclick="window.addItem()">Aggiungi alla lista</button>
@@ -687,13 +687,20 @@
     </div>
   </div>
 
-<!-- Supabase JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
 <script>
   // ========== CONFIGURAZIONE SUPABASE ==========
   const SUPABASE_URL = 'https://uztfgvsxsznqhmsnwjyk.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_PHA1Fj2T3CC_gcAln4uiCg_EUJEw6ts';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  let supabase;
+  try {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase inizializzato');
+  } catch (err) {
+    console.error(' Errore inizializzazione Supabase:', err);
+    alert('Errore di connessione al database');
+  }
   // =============================================
 
   const STORES = [
@@ -762,15 +769,21 @@
     }
   });
 
-  // ========== CARICAMENTO INIZIALE + REALTIME SUPABASE ==========
+  // ========== CARICAMENTO DATI ==========
   async function loadItems() {
     try {
+      console.log(' Caricamento dati...');
       const { data, error } = await supabase
         .from('lista')
         .select('*')
         .order('created_at', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Errore caricamento:', error);
+        throw error;
+      }
+      
+      console.log('✅ Dati caricati:', data);
       
       items = (data || []).map(row => ({
         id: row.id,
@@ -787,25 +800,31 @@
       statusEl.innerHTML = '<span class="dot"></span>Live';
       render();
     } catch (err) {
-      console.error('Errore caricamento:', err);
-      statusEl.className = 'status error';
-      statusEl.innerHTML = '<span class="dot"></span>Errore';
+      console.error('Errore:', err);
+      statusEl.className = 'status';
+      statusEl.innerHTML = '<span class="dot" style="background:#ef4444"></span>Errore';
     }
   }
 
-  // Realtime: ascolta INSERT, UPDATE, DELETE
-  supabase
-    .channel('lista-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'lista' }, (payload) => {
-      console.log('Cambio rilevato:', payload);
-      loadItems(); // ricarica tutto per semplicità
-    })
-    .subscribe((status) => {
-      console.log('Realtime status:', status);
-    });
+  // Realtime subscription
+  if (supabase) {
+    supabase
+      .channel('lista-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'lista' }, 
+        (payload) => {
+          console.log('🔄 Cambio rilevato:', payload);
+          loadItems();
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Realtime status:', status);
+      });
+  }
 
+  // Carica i dati all'avvio
   loadItems();
-  // =================================================================
+  // =============================================
 
   function render() {
     if (items.length === 0) {
@@ -922,7 +941,7 @@
     document.body.style.overflow = '';
   };
 
-  window.startEditName = function(el, id) {
+  window.startEditName = async function(el, id) {
     el.contentEditable = true;
     el.focus();
     const range = document.createRange();
@@ -934,18 +953,19 @@
     const save = async () => {
       el.contentEditable = false;
       const newName = el.textContent.trim();
-      if (newName && newName !== items.find(i => i.id === id)?.name) {
+      const item = items.find(i => i.id === id);
+      if (newName && newName !== item?.name) {
+        console.log('️ Aggiornamento nome:', newName);
         await supabase.from('lista').update({ name: newName }).eq('id', id);
-      } else {
-        render();
       }
+      render();
     };
     
     el.onblur = save;
     el.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } };
   };
 
-  window.startEditQty = function(el, id) {
+  window.startEditQty = async function(el, id) {
     el.contentEditable = true;
     el.focus();
     
@@ -954,10 +974,10 @@
       const newQty = el.textContent.trim();
       const item = items.find(i => i.id === id);
       if (newQty !== item?.qty) {
+        console.log('✏️ Aggiornamento qty:', newQty);
         await supabase.from('lista').update({ qty: newQty || '' }).eq('id', id);
-      } else {
-        render();
       }
+      render();
     };
     
     el.onblur = save;
@@ -1007,17 +1027,34 @@
     }
     
     try {
-      const { error } = await supabase.from('lista').insert({
+      console.log('➕ Aggiunta:', {
         name,
         qty: qtyInput.value.trim(),
         store: storeSelect.value,
         operator: currentOperator,
         onoffer: offerCheckbox.checked,
-        price: offerCheckbox.checked ? pendingPrice : null,
-        done: false
+        price: offerCheckbox.checked ? pendingPrice : null
       });
       
-      if (error) throw error;
+      const { data, error } = await supabase
+        .from('lista')
+        .insert({
+          name,
+          qty: qtyInput.value.trim(),
+          store: storeSelect.value,
+          operator: currentOperator,
+          onoffer: offerCheckbox.checked,
+          price: offerCheckbox.checked ? pendingPrice : null,
+          done: false
+        })
+        .select();
+      
+      if (error) {
+        console.error(' Errore inserimento:', error);
+        throw error;
+      }
+      
+      console.log('✅ Aggiunto:', data);
       
       itemInput.value = '';
       qtyInput.value = '';
@@ -1028,7 +1065,7 @@
       
       window.closeSheet();
     } catch (err) {
-      console.error('Errore aggiunta:', err);
+      console.error('Errore:', err);
       alert('Errore: ' + err.message);
     }
   };
@@ -1037,6 +1074,7 @@
     try {
       const item = items.find(i => i.id === id);
       if (item) {
+        console.log(' Toggle:', id, !item.done);
         await supabase.from('lista').update({ done: !item.done }).eq('id', id);
       }
     } catch (err) {
@@ -1047,6 +1085,7 @@
   window.deleteItem = async function(id) {
     if (confirm('Eliminare questo prodotto?')) {
       try {
+        console.log('🗑️ Eliminazione:', id);
         await supabase.from('lista').delete().eq('id', id);
       } catch (err) {
         console.error('Errore eliminazione:', err);
