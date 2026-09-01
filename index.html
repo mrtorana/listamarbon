@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Lista Spesa - Marbon</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒💖</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -46,7 +46,6 @@
     flex-direction: column;
   }
 
-  /* Header */
   .header {
     position: sticky;
     top: 0;
@@ -83,7 +82,6 @@
     box-shadow: 0 0 8px #10b981;
   }
 
-  /* Lista */
   .list-container {
     flex: 1;
     padding: 24px;
@@ -117,9 +115,7 @@
     flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
-  .store-info {
-    flex: 1;
-  }
+  .store-info { flex: 1; }
   .store-name {
     font-size: 18px;
     font-weight: 700;
@@ -195,10 +191,7 @@
     font-weight: 700;
   }
   
-  .item-content {
-    flex: 1;
-    min-width: 0;
-  }
+  .item-content { flex: 1; min-width: 0; }
   .item-name {
     font-size: 16px;
     font-weight: 600;
@@ -210,9 +203,7 @@
     color: var(--text);
     transition: all 0.2s;
   }
-  .item-name:hover { 
-    background: #f1f5f9;
-  }
+  .item-name:hover { background: #f1f5f9; }
   .item-name[contenteditable="true"] {
     background: #f1f5f9;
     outline: 2px solid var(--primary);
@@ -232,9 +223,7 @@
     background: #f1f5f9;
     font-weight: 600;
   }
-  .item-qty:hover { 
-    background: #e2e8f0;
-  }
+  .item-qty:hover { background: #e2e8f0; }
   .item-qty[contenteditable="true"] {
     outline: 2px solid var(--primary);
     background: white;
@@ -271,12 +260,8 @@
     color: white;
     flex-shrink: 0;
   }
-  .operator-badge.martina {
-    background: var(--martina);
-  }
-  .operator-badge.salvo {
-    background: var(--salvo);
-  }
+  .operator-badge.martina { background: var(--martina); }
+  .operator-badge.salvo { background: var(--salvo); }
   
   .delete-btn {
     background: none;
@@ -294,10 +279,7 @@
     background: rgba(244,63,94,0.1);
   }
 
-  .empty {
-    text-align: center;
-    padding: 80px 20px;
-  }
+  .empty { text-align: center; padding: 80px 20px; }
   .empty-icon {
     width: 80px;
     height: 80px;
@@ -321,7 +303,6 @@
     color: var(--text-muted);
   }
 
-  /* FAB in alto */
   .fab {
     position: fixed;
     top: 24px;
@@ -348,11 +329,8 @@
     transform: scale(1.08) rotate(90deg);
     box-shadow: 0 12px 32px rgba(244,63,94,0.5);
   }
-  .fab:active {
-    transform: scale(0.95);
-  }
+  .fab:active { transform: scale(0.95); }
 
-  /* Modal Overlay */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -371,7 +349,6 @@
     backdrop-filter: blur(8px);
   }
 
-  /* Bottom Sheet */
   .bottom-sheet {
     background: var(--card);
     border-radius: 32px 32px 0 0;
@@ -383,9 +360,7 @@
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
   }
-  .modal-overlay.show .bottom-sheet {
-    transform: translateY(0);
-  }
+  .modal-overlay.show .bottom-sheet { transform: translateY(0); }
   
   .sheet-handle {
     width: 40px;
@@ -394,7 +369,6 @@
     border-radius: 2px;
     margin: 8px auto 24px;
   }
-  
   .sheet-title {
     font-size: 24px;
     font-weight: 800;
@@ -443,10 +417,7 @@
     gap: 12px;
     margin-bottom: 16px;
   }
-  .input-wrapper {
-    flex: 1;
-    min-width: 0;
-  }
+  .input-wrapper { flex: 1; min-width: 0; }
   .input-wrapper input {
     width: 100%;
     padding: 16px;
@@ -465,13 +436,9 @@
     background: white;
     box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
   }
-  .input-wrapper input::placeholder {
-    color: var(--text-muted);
-  }
+  .input-wrapper input::placeholder { color: var(--text-muted); }
 
-  .select-wrapper {
-    margin-bottom: 16px;
-  }
+  .select-wrapper { margin-bottom: 16px; }
   .select-wrapper label {
     display: block;
     font-size: 12px;
@@ -554,11 +521,8 @@
     transform: translateY(-2px);
     box-shadow: 0 12px 28px rgba(99,102,241,0.4);
   }
-  .add-btn:active {
-    transform: translateY(0);
-  }
+  .add-btn:active { transform: translateY(0); }
 
-  /* Modal Prezzo */
   .price-modal-overlay {
     position: fixed;
     inset: 0;
@@ -639,9 +603,7 @@
     background: #f1f5f9;
     color: var(--text-secondary);
   }
-  .modal-btn.cancel:hover {
-    background: #e2e8f0;
-  }
+  .modal-btn.cancel:hover { background: #e2e8f0; }
   .modal-btn.confirm {
     background: linear-gradient(135deg, var(--mint) 0%, var(--mint-light) 100%);
     color: white;
@@ -653,13 +615,8 @@
   }
 
   @media (max-width: 480px) {
-    .header {
-      padding: 20px 16px 24px;
-      border-radius: 0 0 24px 24px;
-    }
-    .header h1 {
-      font-size: 22px;
-    }
+    .header { padding: 20px 16px 24px; border-radius: 0 0 24px 24px; }
+    .header h1 { font-size: 22px; }
     .fab {
       top: 16px;
       right: 16px;
@@ -668,15 +625,9 @@
       border-radius: 16px;
       font-size: 24px;
     }
-    .list-container {
-      padding: 20px 16px 40px;
-    }
-    .item-card {
-      padding: 16px;
-    }
-    .bottom-sheet {
-      padding: 12px 20px 32px;
-    }
+    .list-container { padding: 20px 16px 40px; }
+    .item-card { padding: 16px; }
+    .bottom-sheet { padding: 12px 20px 32px; }
   }
 </style>
 </head>
@@ -684,16 +635,14 @@
   <div class="container">
     <div class="header">
       <h1>Lista Spesa</h1>
-      <div class="status" id="status"><span class="dot"></span>Live</div>
+      <div class="status" id="status"><span class="dot"></span>Connessione...</div>
     </div>
 
     <div class="list-container" id="list"></div>
   </div>
 
-  <!-- FAB in alto a destra -->
   <button class="fab" id="fabBtn" onclick="window.toggleSheet()">+</button>
 
-  <!-- Bottom Sheet Form -->
   <div class="modal-overlay" id="sheetOverlay" onclick="window.closeSheet(event)">
     <div class="bottom-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
@@ -727,7 +676,6 @@
     </div>
   </div>
 
-  <!-- Modal Prezzo -->
   <div class="price-modal-overlay" id="priceModal">
     <div class="price-modal">
       <h3>💰 Prezzo in offerta</h3>
@@ -739,25 +687,14 @@
     </div>
   </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getFirestore, collection, onSnapshot,
-    addDoc, deleteDoc, updateDoc, doc, query, orderBy
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDl3iq4nxYKolGEFNQN1NhMLc2s0Q7iHGc",
-    authDomain: "lista-spesa-bc08e.firebaseapp.com",
-    projectId: "lista-spesa-bc08e",
-    storageBucket: "lista-spesa-bc08e.firebasestorage.app",
-    messagingSenderId: "708547389999",
-    appId: "1:708547389999:web:2e586ed438c6a647dd74da"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const itemsRef = collection(db, "lista");
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ========== CONFIGURAZIONE SUPABASE ==========
+  const SUPABASE_URL = 'https://uztfgvsxsznqhmsnwjyk.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_PHA1Fj2T3CC_gcAln4uiCg_EUJEw6ts';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // =============================================
 
   const STORES = [
     { id: 'generico', name: 'Generico', short: 'GEN', color: '#64748b' },
@@ -825,16 +762,50 @@
     }
   });
 
-  onSnapshot(query(itemsRef, orderBy("createdAt", "asc")), (snapshot) => {
-    items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    statusEl.className = 'status connected';
-    statusEl.innerHTML = '<span class="dot"></span>Live';
-    render();
-  }, (error) => {
-    console.error("Firebase error:", error);
-    statusEl.className = 'status error';
-    statusEl.innerHTML = '<span class="dot"></span>Errore';
-  });
+  // ========== CARICAMENTO INIZIALE + REALTIME SUPABASE ==========
+  async function loadItems() {
+    try {
+      const { data, error } = await supabase
+        .from('lista')
+        .select('*')
+        .order('created_at', { ascending: true });
+      
+      if (error) throw error;
+      
+      items = (data || []).map(row => ({
+        id: row.id,
+        name: row.name,
+        qty: row.qty || '',
+        store: row.store || 'generico',
+        operator: row.operator || 'Martina',
+        onOffer: row.onoffer === true,
+        price: row.price,
+        done: row.done === true
+      }));
+      
+      statusEl.className = 'status connected';
+      statusEl.innerHTML = '<span class="dot"></span>Live';
+      render();
+    } catch (err) {
+      console.error('Errore caricamento:', err);
+      statusEl.className = 'status error';
+      statusEl.innerHTML = '<span class="dot"></span>Errore';
+    }
+  }
+
+  // Realtime: ascolta INSERT, UPDATE, DELETE
+  supabase
+    .channel('lista-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'lista' }, (payload) => {
+      console.log('Cambio rilevato:', payload);
+      loadItems(); // ricarica tutto per semplicità
+    })
+    .subscribe((status) => {
+      console.log('Realtime status:', status);
+    });
+
+  loadItems();
+  // =================================================================
 
   function render() {
     if (items.length === 0) {
@@ -934,20 +905,14 @@
   }
 
   window.toggleSheet = function() {
-    if (sheetOpen) {
-      closeSheet();
-    } else {
-      openSheet();
-    }
+    if (sheetOpen) { closeSheet(); } else { openSheet(); }
   };
 
   function openSheet() {
     sheetOpen = true;
     sheetOverlay.classList.add('show');
     document.body.style.overflow = 'hidden';
-    setTimeout(() => {
-      itemInput.focus();
-    }, 300);
+    setTimeout(() => { itemInput.focus(); }, 300);
   }
 
   window.closeSheet = function(e) {
@@ -966,11 +931,11 @@
     sel.removeAllRanges();
     sel.addRange(range);
     
-    const save = () => {
+    const save = async () => {
       el.contentEditable = false;
       const newName = el.textContent.trim();
       if (newName && newName !== items.find(i => i.id === id)?.name) {
-        updateDoc(doc(db, "lista", id), { name: newName });
+        await supabase.from('lista').update({ name: newName }).eq('id', id);
       } else {
         render();
       }
@@ -984,12 +949,12 @@
     el.contentEditable = true;
     el.focus();
     
-    const save = () => {
+    const save = async () => {
       el.contentEditable = false;
       const newQty = el.textContent.trim();
       const item = items.find(i => i.id === id);
       if (newQty !== item?.qty) {
-        updateDoc(doc(db, "lista", id), { qty: newQty || '' });
+        await supabase.from('lista').update({ qty: newQty || '' }).eq('id', id);
       } else {
         render();
       }
@@ -1002,9 +967,7 @@
   function openPriceModal() {
     priceInput.value = '';
     priceModal.classList.add('show');
-    setTimeout(() => {
-      priceInput.focus();
-    }, 100);
+    setTimeout(() => { priceInput.focus(); }, 100);
   }
 
   window.cancelOffer = function() {
@@ -1025,9 +988,7 @@
       priceModal.classList.remove('show');
     } else {
       priceInput.style.borderColor = '#f43f5e';
-      setTimeout(() => {
-        priceInput.style.borderColor = '';
-      }, 1000);
+      setTimeout(() => { priceInput.style.borderColor = ''; }, 1000);
     }
   };
 
@@ -1046,16 +1007,17 @@
     }
     
     try {
-      await addDoc(itemsRef, {
+      const { error } = await supabase.from('lista').insert({
         name,
         qty: qtyInput.value.trim(),
         store: storeSelect.value,
         operator: currentOperator,
-        onOffer: offerCheckbox.checked,
+        onoffer: offerCheckbox.checked,
         price: offerCheckbox.checked ? pendingPrice : null,
-        done: false,
-        createdAt: Date.now()
+        done: false
       });
+      
+      if (error) throw error;
       
       itemInput.value = '';
       qtyInput.value = '';
@@ -1065,8 +1027,9 @@
       offerConfirmed = false;
       
       window.closeSheet();
-    } catch (error) {
-      console.error("Error adding item:", error);
+    } catch (err) {
+      console.error('Errore aggiunta:', err);
+      alert('Errore: ' + err.message);
     }
   };
 
@@ -1074,33 +1037,29 @@
     try {
       const item = items.find(i => i.id === id);
       if (item) {
-        await updateDoc(doc(db, "lista", id), { done: !item.done });
+        await supabase.from('lista').update({ done: !item.done }).eq('id', id);
       }
-    } catch (error) {
-      console.error("Error toggling item:", error);
+    } catch (err) {
+      console.error('Errore toggle:', err);
     }
   };
 
   window.deleteItem = async function(id) {
     if (confirm('Eliminare questo prodotto?')) {
       try {
-        await deleteDoc(doc(db, "lista", id));
-      } catch (error) {
-        console.error("Error deleting item:", error);
+        await supabase.from('lista').delete().eq('id', id);
+      } catch (err) {
+        console.error('Errore eliminazione:', err);
       }
     }
   };
 
   priceModal.addEventListener('click', (e) => {
-    if (e.target === priceModal) {
-      window.cancelOffer();
-    }
+    if (e.target === priceModal) { window.cancelOffer(); }
   });
 
   priceInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      window.confirmPrice();
-    }
+    if (e.key === 'Enter') { window.confirmPrice(); }
   });
 
   priceInput.addEventListener('input', (e) => {
