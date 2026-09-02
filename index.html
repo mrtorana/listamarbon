@@ -967,8 +967,8 @@
       <div class="header-top">
         <h1>Lista Spesa</h1>
         <div class="header-actions">
-          <button class="icon-btn magic" onclick="window.magicWand()" title="Cancella completati">✨</button>
-          <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">️</button>
+          <button class="icon-btn magic" onclick="window.magicWand()" title="Pulisci">✨</button>
+          <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">⚙️</button>
           <div class="status" id="status"><span class="dot"></span>Live</div>
         </div>
       </div>
@@ -1009,7 +1009,7 @@
       </div>
 
       <div class="date-input-wrapper" id="expiryWrapper">
-        <label>📅 Scadenza offerta</label>
+        <label> Scadenza offerta</label>
         <input type="date" id="expiryInput">
       </div>
 
@@ -1031,7 +1031,7 @@
   <div class="settings-overlay" id="settingsOverlay" onclick="window.closeSettings(event)">
     <div class="settings-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
-      <div class="sheet-title">️ Impostazioni</div>
+      <div class="sheet-title">⚙️ Impostazioni</div>
 
       <div class="settings-section">
         <div class="settings-title">👤 Nomi Operatori (condivisi)</div>
@@ -1058,14 +1058,14 @@
       <div class="settings-section">
         <div class="settings-title">🎨 Aspetto (personale)</div>
         <div class="toggle-row">
-          <label> Modalità Dark</label>
+          <label>🌙 Modalità Dark</label>
           <div class="toggle-switch" id="darkToggle" onclick="window.toggleDark()"></div>
         </div>
       </div>
 
       <div class="settings-section">
-        <div class="settings-title"> Esporta</div>
-        <button class="btn-export" onclick="window.exportPDF()"> Scarica PDF della lista</button>
+        <div class="settings-title">📥 Esporta</div>
+        <button class="btn-export" onclick="window.exportPDF()">📥 Scarica PDF della lista</button>
       </div>
 
       <div class="settings-actions">
@@ -1293,7 +1293,6 @@
     }
   }
 
-  // Realtime con debounce - NO POLLING
   supabase
     .channel('lista-changes')
     .on('postgres_changes', 
@@ -1380,7 +1379,7 @@
       const d = new Date(item.expiryDate);
       const formatted = d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
       const cls = isExpired ? 'expiry-badge' : 'expiry-badge valid';
-      const label = isExpired ? '⚠️ Scaduta' : `📅 ${formatted}`;
+      const label = isExpired ? '️ Scaduta' : `📅 ${formatted}`;
       expiryHtml = `<span class="${cls}">${label}</span>`;
     }
     
