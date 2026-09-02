@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Lista Spesa - Marbon</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -33,6 +33,7 @@
     --header-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     --header-text: white;
     --header-shadow: rgba(99,102,241,0.3);
+    --gold: #fbbf24;
   }
   
   body.dark {
@@ -81,7 +82,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
   }
   .header h1 {
     font-size: 24px;
@@ -135,6 +136,57 @@
     width: 6px; height: 6px; border-radius: 50%;
     background: #10b981;
     box-shadow: 0 0 8px #10b981;
+  }
+
+  /* Search Bar */
+  .search-container {
+    position: relative;
+    margin-top: 12px;
+  }
+  .search-input {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    color: var(--header-text);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .search-input::placeholder {
+    color: rgba(255,255,255,0.7);
+  }
+  .search-input:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.2);
+  }
+  .search-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.7);
+    font-size: 16px;
+    pointer-events: none;
+  }
+  .search-clear {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.7);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    display: none;
+  }
+  .search-clear.show {
+    display: block;
+  }
+  .search-clear:hover {
+    color: white;
   }
 
   .list-container {
@@ -520,7 +572,7 @@
     gap: 10px;
     margin-bottom: 12px;
   }
-  .input-wrapper { flex: 1; min-width: 0; }
+  .input-wrapper { flex: 1; min-width: 0; position: relative; }
   .input-wrapper input {
     width: 100%;
     padding: 14px;
@@ -540,6 +592,65 @@
     box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
   }
   .input-wrapper input::placeholder { color: var(--text-muted); }
+
+  /* Autocomplete dropdown */
+  .autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    margin-top: 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: var(--shadow-lg);
+    display: none;
+  }
+  .autocomplete-dropdown.show {
+    display: block;
+  }
+  .autocomplete-item {
+    padding: 12px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border);
+  }
+  .autocomplete-item:last-child {
+    border-bottom: none;
+  }
+  .autocomplete-item:hover {
+    background: var(--card-alt);
+  }
+  .autocomplete-item .star-icon {
+    color: var(--gold);
+    font-size: 16px;
+  }
+  .autocomplete-item .item-name-text {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .autocomplete-item .item-store {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 2px 6px;
+    background: var(--card-alt);
+    border-radius: 6px;
+  }
+  .autocomplete-hint {
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--card-alt);
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
 
   .select-wrapper { margin-bottom: 12px; }
   .select-wrapper label {
@@ -601,6 +712,43 @@
     color: var(--text);
     cursor: pointer;
     flex: 1;
+  }
+  
+  .favorite-star {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(251,191,36,0.08);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .favorite-star:hover {
+    background: rgba(251,191,36,0.15);
+  }
+  .favorite-star.active {
+    border-color: var(--gold);
+    background: rgba(251,191,36,0.15);
+  }
+  .favorite-star .star {
+    font-size: 18px;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .favorite-star.active .star {
+    color: var(--gold);
+    filter: drop-shadow(0 2px 4px rgba(251,191,36,0.4));
+  }
+  .favorite-star .text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .favorite-star.active .text {
+    color: var(--gold);
   }
 
   .date-input-wrapper {
@@ -1073,6 +1221,7 @@
     .fab { bottom: 20px; right: 20px; width: 52px; height: 52px; }
     .list-container { padding: 16px 12px 40px; }
     .item-card { padding: 12px; }
+    .search-input { padding: 10px 36px 10px 14px; font-size: 13px; }
   }
 </style>
 </head>
@@ -1083,9 +1232,16 @@
         <h1>Lista Spesa</h1>
         <div class="header-actions">
           <button class="icon-btn magic" onclick="window.magicWand()" title="Pulisci">✨</button>
-          <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">⚙️</button>
+          <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">️</button>
           <div class="status" id="status"><span class="dot"></span>Live</div>
         </div>
+      </div>
+      
+      <!-- Search Bar -->
+      <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Cerca prodotti...">
+        <span class="search-clear" id="searchClear" onclick="window.clearSearch()">×</span>
+        <span class="search-icon">🔍</span>
       </div>
     </div>
 
@@ -1107,6 +1263,7 @@
       <div class="input-row">
         <div class="input-wrapper">
           <input type="text" id="itemInput" placeholder="Nome prodotto..." maxlength="60" autocomplete="off">
+          <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
         </div>
         <div class="input-wrapper">
           <input type="text" id="qtyInput" placeholder="Q.tà / Note" autocomplete="off">
@@ -1126,6 +1283,11 @@
       <div class="date-input-wrapper" id="expiryWrapper">
         <label>📅 Scadenza offerta</label>
         <input type="date" id="expiryInput">
+      </div>
+
+      <div class="favorite-star" id="favoriteStar" onclick="window.toggleFavorite()">
+        <span class="star">☆</span>
+        <span class="text">Salva come preferito</span>
       </div>
 
       <button class="add-btn" onclick="window.addItem()">Aggiungi alla lista</button>
@@ -1235,6 +1397,10 @@
   let settingsLoaded = false;
   let realtimeTimeout = null;
   let lastItemsCount = -1;
+  let searchQuery = '';
+  let favorites = [];
+  let isFavorite = false;
+  let autocompleteTimeout = null;
 
   // Long press state
   let longPressTimer = null;
@@ -1249,6 +1415,7 @@
         const parsed = JSON.parse(s);
         isDark = parsed.dark || false;
         collapsedStores = new Set(parsed.collapsed || []);
+        favorites = parsed.favorites || [];
       }
     } catch(e) { console.error(e); }
     if (isDark) document.body.classList.add('dark');
@@ -1258,7 +1425,8 @@
   function saveLocalSettings() {
     localStorage.setItem('marbon_local', JSON.stringify({
       dark: isDark,
-      collapsed: Array.from(collapsedStores)
+      collapsed: Array.from(collapsedStores),
+      favorites: favorites
     }));
   }
 
@@ -1364,6 +1532,10 @@
   const fabBtn = document.getElementById('fabBtn');
   const priceModal = document.getElementById('priceModal');
   const priceInput = document.getElementById('priceInput');
+  const searchInput = document.getElementById('searchInput');
+  const searchClear = document.getElementById('searchClear');
+  const autocompleteDropdown = document.getElementById('autocompleteDropdown');
+  const favoriteStar = document.getElementById('favoriteStar');
 
   function initStoreSelect() {
     storeSelect.innerHTML = '';
@@ -1396,6 +1568,98 @@
       expiryInput.value = '';
     }
   });
+
+  // Search functionality
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value.trim().toLowerCase();
+    if (searchQuery.length > 0) {
+      searchClear.classList.add('show');
+    } else {
+      searchClear.classList.remove('show');
+    }
+    render();
+  });
+
+  window.clearSearch = function() {
+    searchInput.value = '';
+    searchQuery = '';
+    searchClear.classList.remove('show');
+    render();
+    searchInput.focus();
+  };
+
+  // Autocomplete functionality
+  itemInput.addEventListener('input', (e) => {
+    const value = e.target.value.trim();
+    
+    clearTimeout(autocompleteTimeout);
+    
+    if (value.length < 2) {
+      autocompleteDropdown.classList.remove('show');
+      return;
+    }
+    
+    autocompleteTimeout = setTimeout(() => {
+      showAutocomplete(value);
+    }, 200);
+  });
+
+  itemInput.addEventListener('focus', () => {
+    if (itemInput.value.trim().length >= 2) {
+      showAutocomplete(itemInput.value.trim());
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.input-wrapper')) {
+      autocompleteDropdown.classList.remove('show');
+    }
+  });
+
+  function showAutocomplete(query) {
+    const lowerQuery = query.toLowerCase();
+    const matches = favorites.filter(fav => 
+      fav.name.toLowerCase().includes(lowerQuery)
+    ).slice(0, 5);
+    
+    if (matches.length === 0) {
+      autocompleteDropdown.classList.remove('show');
+      return;
+    }
+    
+    autocompleteDropdown.innerHTML = `
+      <div class="autocomplete-hint">⭐ Preferiti</div>
+      ${matches.map(fav => `
+        <div class="autocomplete-item" onclick="window.selectAutocomplete('${escapeHtml(fav.name)}', '${escapeHtml(fav.store || 'generico')}')">
+          <span class="star-icon">⭐</span>
+          <span class="item-name-text">${escapeHtml(fav.name)}</span>
+          <span class="item-store">${escapeHtml(getStore(fav.store).name)}</span>
+        </div>
+      `).join('')}
+    `;
+    
+    autocompleteDropdown.classList.add('show');
+  }
+
+  window.selectAutocomplete = function(name, store) {
+    itemInput.value = name;
+    storeSelect.value = store;
+    autocompleteDropdown.classList.remove('show');
+    qtyInput.focus();
+  };
+
+  window.toggleFavorite = function() {
+    isFavorite = !isFavorite;
+    if (isFavorite) {
+      favoriteStar.classList.add('active');
+      favoriteStar.querySelector('.star').textContent = '★';
+      favoriteStar.querySelector('.text').textContent = 'Rimosso dai preferiti';
+    } else {
+      favoriteStar.classList.remove('active');
+      favoriteStar.querySelector('.star').textContent = '☆';
+      favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
+    }
+  };
 
   async function loadItems() {
     try {
@@ -1467,10 +1731,18 @@
       return;
     }
 
+    let filteredItems = items;
+    if (searchQuery.length > 0) {
+      filteredItems = items.filter(item => 
+        item.name.toLowerCase().includes(searchQuery) ||
+        (item.qty && item.qty.toLowerCase().includes(searchQuery))
+      );
+    }
+
     const byStore = {};
     const storeOrder = [];
     
-    items.forEach(i => {
+    filteredItems.forEach(i => {
       const storeId = i.store || 'generico';
       if (!byStore[storeId]) { 
         byStore[storeId] = []; 
@@ -1508,9 +1780,19 @@
       html += '</div></div>';
     });
 
+    if (html === '' && searchQuery.length > 0) {
+      listEl.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🔍</div>
+          <h3>Nessun risultato</h3>
+          <p>Nessun prodotto trovato per "${escapeHtml(searchQuery)}"</p>
+        </div>
+      `;
+      return;
+    }
+
     listEl.innerHTML = html;
     
-    // Attacca gli handler long press dopo il render
     attachLongPressHandlers();
   }
 
@@ -1528,7 +1810,7 @@
       const d = new Date(item.expiryDate);
       const formatted = d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
       const cls = isExpired ? 'expiry-badge' : 'expiry-badge valid';
-      const label = isExpired ? '⚠️ Scaduta' : ` ${formatted}`;
+      const label = isExpired ? '️ Scaduta' : `📅 ${formatted}`;
       expiryHtml = `<span class="${cls}">${label}</span>`;
     }
     
@@ -1577,7 +1859,6 @@
       if (!itemId) return;
       
       const startPress = (e) => {
-        // Non attivare long press se si clicca su checkbox, delete, o elementi editabili
         const target = e.target;
         if (target.closest('.delete-btn') || 
             target.closest('.item-checkbox') || 
@@ -1593,7 +1874,6 @@
           longPressTriggered = true;
           card.classList.add('pressing');
           
-          // Feedback tattile se disponibile
           if (navigator.vibrate) {
             navigator.vibrate(50);
           }
@@ -1612,18 +1892,15 @@
         card.classList.remove('pressing');
       };
       
-      // Touch events (mobile)
       card.addEventListener('touchstart', startPress, { passive: true });
       card.addEventListener('touchend', cancelPress);
       card.addEventListener('touchmove', cancelPress);
       card.addEventListener('touchcancel', cancelPress);
       
-      // Mouse events (desktop)
       card.addEventListener('mousedown', startPress);
       card.addEventListener('mouseup', cancelPress);
       card.addEventListener('mouseleave', cancelPress);
       
-      // Previeni menu contestuale durante long press
       card.addEventListener('contextmenu', (e) => {
         if (longPressTriggered) {
           e.preventDefault();
@@ -1665,7 +1942,6 @@
       if (item && item.store !== newStoreId) {
         await supabase.from('lista').update({ store: newStoreId }).eq('id', itemId);
         
-        // Aggiornamento ottimistico
         item.store = newStoreId;
         lastItemsCount = items.length;
         render();
@@ -1698,6 +1974,10 @@
     sheetOpen = true;
     sheetOverlay.classList.add('show');
     document.body.style.overflow = 'hidden';
+    isFavorite = false;
+    favoriteStar.classList.remove('active');
+    favoriteStar.querySelector('.star').textContent = '☆';
+    favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
     setTimeout(() => { itemInput.focus(); }, 300);
   }
 
@@ -1706,6 +1986,7 @@
     sheetOpen = false;
     sheetOverlay.classList.remove('show');
     document.body.style.overflow = '';
+    autocompleteDropdown.classList.remove('show');
   };
 
   window.startEditName = async function(el, id) {
@@ -1808,6 +2089,17 @@
       const { error } = await supabase.from('lista').insert(payload);
       if (error) throw error;
       
+      // Save as favorite if starred
+      if (isFavorite) {
+        const existingFavIndex = favorites.findIndex(f => f.name.toLowerCase() === name.toLowerCase());
+        if (existingFavIndex >= 0) {
+          favorites[existingFavIndex] = { name, store: storeSelect.value };
+        } else {
+          favorites.push({ name, store: storeSelect.value });
+        }
+        saveLocalSettings();
+      }
+      
       const newItem = {
         id: 'temp_' + Date.now(),
         ...payload,
@@ -1826,6 +2118,10 @@
       expiryInput.value = '';
       pendingPrice = null;
       offerConfirmed = false;
+      isFavorite = false;
+      favoriteStar.classList.remove('active');
+      favoriteStar.querySelector('.star').textContent = '☆';
+      favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
       
       closeSheet();
       
