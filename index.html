@@ -1005,7 +1005,7 @@
 
       <div class="checkbox-wrapper" id="offerWrapper">
         <input type="checkbox" id="offerCheckbox">
-        <label for="offerCheckbox">🏷️ In offerta</label>
+        <label for="offerCheckbox">️ In offerta</label>
       </div>
 
       <div class="date-input-wrapper" id="expiryWrapper">
@@ -1056,7 +1056,7 @@
       </div>
 
       <div class="settings-section">
-        <div class="settings-title">🎨 Aspetto (personale)</div>
+        <div class="settings-title"> Aspetto (personale)</div>
         <div class="toggle-row">
           <label>🌙 Modalità Dark</label>
           <div class="toggle-switch" id="darkToggle" onclick="window.toggleDark()"></div>
@@ -1065,7 +1065,7 @@
 
       <div class="settings-section">
         <div class="settings-title">📥 Esporta</div>
-        <button class="btn-export" onclick="window.exportPDF()">📥 Scarica PDF della lista</button>
+        <button class="btn-export" onclick="window.exportPDF()"> Scarica PDF della lista</button>
       </div>
 
       <div class="settings-actions">
@@ -1108,7 +1108,7 @@
   let isDark = false;
   let settingsLoaded = false;
   let realtimeTimeout = null;
-  let lastItemsHash = '';
+  let lastItemsCount = -1;
 
   function loadLocalSettings() {
     try {
@@ -1265,10 +1265,6 @@
     }
   });
 
-  function computeHash(items) {
-    return JSON.stringify(items.map(i => ({ id: i.id, done: i.done, name: i.name, qty: i.qty })));
-  }
-
   async function loadItems() {
     try {
       const { data, error } = await supabase
@@ -1290,12 +1286,14 @@
         done: row.done === true
       }));
       
-      const newHash = computeHash(newItems);
+      // Aggiorna solo se il numero di elementi o i dati sono cambiati
+      const newCount = newItems.length;
+      const hasChanges = newCount !== lastItemsCount || 
+        JSON.stringify(newItems) !== JSON.stringify(items);
       
-      // Aggiorna solo se i dati sono cambiati (evita refresh inutili)
-      if (newHash !== lastItemsHash) {
+      if (hasChanges) {
         items = newItems;
-        lastItemsHash = newHash;
+        lastItemsCount = newCount;
         statusEl.innerHTML = '<span class="dot"></span>Live';
         render();
       }
@@ -1305,21 +1303,28 @@
     }
   }
 
+  // Realtime con debounce
   supabase
     .channel('lista-changes')
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'lista' }, 
       (payload) => {
-        console.log('🔄 Cambio:', payload.eventType);
+        console.log('🔄 Cambio realtime:', payload.eventType, payload.new?.name || '');
         clearTimeout(realtimeTimeout);
         realtimeTimeout = setTimeout(() => {
           loadItems();
-        }, 800);
+        }, 500);
       }
     )
     .subscribe((status) => {
-      console.log('📡 Realtime:', status);
+      console.log(' Realtime lista:', status);
     });
+
+  // Polling di fallback ogni 30 secondi
+  setInterval(() => {
+    console.log('🔄 Polling di controllo');
+    loadItems();
+  }, 30000);
 
   function render() {
     if (items.length === 0) {
@@ -1558,6 +1563,17 @@
       const { error } = await supabase.from('lista').insert(payload);
       if (error) throw error;
       
+      // Aggiornamento immediato locale (optimistic)
+      const newItem = {
+        id: 'temp_' + Date.now(),
+        ...payload,
+        onOffer: payload.onoffer,
+        expiryDate: payload.expiry_date
+      };
+      items.push(newItem);
+      lastItemsCount = items.length;
+      render();
+      
       itemInput.value = '';
       qtyInput.value = '';
       offerCheckbox.checked = false;
@@ -1568,6 +1584,9 @@
       offerConfirmed = false;
       
       closeSheet();
+      
+      // Ricarica dal server dopo 1 secondo per ottenere l'ID reale
+      setTimeout(() => loadItems(), 1000);
     } catch (err) {
       console.error('Errore:', err);
       alert('Errore: ' + err.message);
@@ -1578,7 +1597,11 @@
     try {
       const item = items.find(i => i.id === id);
       if (item) {
-        await supabase.from('lista').update({ done: !item.done }).eq('id', id);
+        // Aggiornamento immediato locale
+        item.done = !item.done;
+        render();
+        
+        await supabase.from('lista').update({ done: item.done }).eq('id', id);
       }
     } catch (err) { console.error(err); }
   };
@@ -1586,6 +1609,11 @@
   window.deleteItem = async function(id) {
     if (confirm('Eliminare questo prodotto?')) {
       try {
+        // Rimozione immediata locale
+        items = items.filter(i => i.id !== id);
+        lastItemsCount = items.length;
+        render();
+        
         await supabase.from('lista').delete().eq('id', id);
       } catch (err) { console.error(err); }
     }
@@ -1601,6 +1629,12 @@
     
     try {
       const ids = doneItems.map(i => i.id);
+      
+      // Rimozione immediata locale
+      items = items.filter(i => !i.done);
+      lastItemsCount = items.length;
+      render();
+      
       const { error } = await supabase.from('lista').delete().in('id', ids);
       if (error) throw error;
     } catch (err) {
