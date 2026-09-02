@@ -1009,7 +1009,7 @@
       </div>
 
       <div class="date-input-wrapper" id="expiryWrapper">
-        <label> Scadenza offerta</label>
+        <label>📅 Scadenza offerta</label>
         <input type="date" id="expiryInput">
       </div>
 
@@ -1108,6 +1108,7 @@
   let isDark = false;
   let settingsLoaded = false;
   let realtimeTimeout = null;
+  let lastItemsHash = '';
 
   function loadLocalSettings() {
     try {
@@ -1264,6 +1265,10 @@
     }
   });
 
+  function computeHash(items) {
+    return JSON.stringify(items.map(i => ({ id: i.id, done: i.done, name: i.name, qty: i.qty })));
+  }
+
   async function loadItems() {
     try {
       const { data, error } = await supabase
@@ -1273,7 +1278,7 @@
       
       if (error) throw error;
       
-      items = (data || []).map(row => ({
+      const newItems = (data || []).map(row => ({
         id: row.id,
         name: row.name,
         qty: row.qty || '',
@@ -1285,8 +1290,15 @@
         done: row.done === true
       }));
       
-      statusEl.innerHTML = '<span class="dot"></span>Live';
-      render();
+      const newHash = computeHash(newItems);
+      
+      // Aggiorna solo se i dati sono cambiati (evita refresh inutili)
+      if (newHash !== lastItemsHash) {
+        items = newItems;
+        lastItemsHash = newHash;
+        statusEl.innerHTML = '<span class="dot"></span>Live';
+        render();
+      }
     } catch (err) {
       console.error('Errore:', err);
       statusEl.innerHTML = '<span class="dot" style="background:#ef4444"></span>Errore';
@@ -1302,7 +1314,7 @@
         clearTimeout(realtimeTimeout);
         realtimeTimeout = setTimeout(() => {
           loadItems();
-        }, 300);
+        }, 800);
       }
     )
     .subscribe((status) => {
@@ -1379,7 +1391,7 @@
       const d = new Date(item.expiryDate);
       const formatted = d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
       const cls = isExpired ? 'expiry-badge' : 'expiry-badge valid';
-      const label = isExpired ? '️ Scaduta' : `📅 ${formatted}`;
+      const label = isExpired ? '⚠️ Scaduta' : `📅 ${formatted}`;
       expiryHtml = `<span class="${cls}">${label}</span>`;
     }
     
