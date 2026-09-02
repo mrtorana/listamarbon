@@ -719,7 +719,6 @@
   }
   .modal-btn.confirm:hover { transform: translateY(-2px); }
 
-  /* Settings Modal */
   .settings-overlay {
     position: fixed;
     inset: 0;
@@ -969,7 +968,7 @@
         <h1>Lista Spesa</h1>
         <div class="header-actions">
           <button class="icon-btn magic" onclick="window.magicWand()" title="Cancella completati">✨</button>
-          <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">⚙️</button>
+          <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">️</button>
           <div class="status" id="status"><span class="dot"></span>Live</div>
         </div>
       </div>
@@ -980,7 +979,6 @@
 
   <button class="fab" id="fabBtn" onclick="window.toggleSheet()">+</button>
 
-  <!-- Bottom Sheet Aggiungi -->
   <div class="modal-overlay" id="sheetOverlay" onclick="window.closeSheet(event)">
     <div class="bottom-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
@@ -1019,7 +1017,6 @@
     </div>
   </div>
 
-  <!-- Modal Prezzo -->
   <div class="price-modal-overlay" id="priceModal">
     <div class="price-modal">
       <h3>💰 Prezzo in offerta</h3>
@@ -1031,11 +1028,10 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
   <div class="settings-overlay" id="settingsOverlay" onclick="window.closeSettings(event)">
     <div class="settings-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
-      <div class="sheet-title">⚙️ Impostazioni</div>
+      <div class="sheet-title">️ Impostazioni</div>
 
       <div class="settings-section">
         <div class="settings-title">👤 Nomi Operatori (condivisi)</div>
@@ -1060,15 +1056,15 @@
       </div>
 
       <div class="settings-section">
-        <div class="settings-title"> Aspetto (personale)</div>
+        <div class="settings-title">🎨 Aspetto (personale)</div>
         <div class="toggle-row">
-          <label>🌙 Modalità Dark</label>
+          <label> Modalità Dark</label>
           <div class="toggle-switch" id="darkToggle" onclick="window.toggleDark()"></div>
         </div>
       </div>
 
       <div class="settings-section">
-        <div class="settings-title">📥 Esporta</div>
+        <div class="settings-title"> Esporta</div>
         <button class="btn-export" onclick="window.exportPDF()"> Scarica PDF della lista</button>
       </div>
 
@@ -1082,13 +1078,10 @@
   <div class="save-indicator" id="saveIndicator">✅ Salvato</div>
 
 <script>
-  // ========== CONFIGURAZIONE SUPABASE ==========
   const SUPABASE_URL = 'https://uztfgvsxsznqhmsnwjyk.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_PHA1Fj2T3CC_gcAln4uiCg_EUJEw6ts';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  // =============================================
 
-  // ========== DEFAULTS ==========
   const DEFAULT_STORES = [
     { id: 'generico', name: 'Generico', color: '#64748b' },
     { id: 'eurospin', name: 'Eurospin', color: '#f7c600' },
@@ -1104,19 +1097,18 @@
   ];
   const DEFAULT_OPERATORS = { A: 'Martina', B: 'Salvo' };
 
-  // ========== STATE ==========
   let items = [];
   let currentOperator = 'A';
   let pendingPrice = null;
   let offerConfirmed = false;
   let sheetOpen = false;
   let collapsedStores = new Set();
-  let customStores = null; // da Supabase
-  let customOperators = null; // da Supabase
-  let isDark = false; // locale
+  let customStores = null;
+  let customOperators = null;
+  let isDark = false;
   let settingsLoaded = false;
+  let realtimeTimeout = null;
 
-  // ========== LOCALSTORAGE (solo preferenze personali) ==========
   function loadLocalSettings() {
     try {
       const s = localStorage.getItem('marbon_local');
@@ -1126,7 +1118,6 @@
         collapsedStores = new Set(parsed.collapsed || []);
       }
     } catch(e) { console.error(e); }
-    
     if (isDark) document.body.classList.add('dark');
     updateDarkToggle();
   }
@@ -1138,7 +1129,6 @@
     }));
   }
 
-  // ========== SUPABASE SETTINGS (condivise) ==========
   async function loadSharedSettings() {
     try {
       const { data, error } = await supabase
@@ -1148,8 +1138,7 @@
         .single();
       
       if (error) {
-        console.error('Errore caricamento settings:', error);
-        // Fallback ai default
+        console.error('Errore settings:', error);
         customStores = DEFAULT_STORES;
         customOperators = DEFAULT_OPERATORS;
       } else {
@@ -1182,9 +1171,7 @@
           stores: customStores,
           updated_at: new Date().toISOString()
         });
-      
       if (error) throw error;
-      
       showSaveIndicator();
     } catch (err) {
       console.error('Errore salvataggio:', err);
@@ -1198,13 +1185,12 @@
     setTimeout(() => el.classList.remove('show'), 2000);
   }
 
-  // Realtime settings
   supabase
     .channel('settings-changes')
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'settings' }, 
       (payload) => {
-        console.log('🔄 Settings aggiornate:', payload);
+        console.log('🔄 Settings aggiornate');
         if (payload.new) {
           customStores = payload.new.stores || DEFAULT_STORES;
           customOperators = payload.new.operators || DEFAULT_OPERATORS;
@@ -1216,7 +1202,6 @@
     )
     .subscribe();
 
-  // ========== HELPERS ==========
   function getStores() { return customStores || DEFAULT_STORES; }
   function getOperators() { return customOperators || DEFAULT_OPERATORS; }
   function getStore(id) { return getStores().find(s => s.id === id) || getStores()[0]; }
@@ -1233,7 +1218,6 @@
     if (isDark) t.classList.add('active'); else t.classList.remove('active');
   }
 
-  // ========== DOM ==========
   const listEl = document.getElementById('list');
   const statusEl = document.getElementById('status');
   const itemInput = document.getElementById('itemInput');
@@ -1280,7 +1264,6 @@
     }
   });
 
-  // ========== LOAD + REALTIME ITEMS ==========
   async function loadItems() {
     try {
       const { data, error } = await supabase
@@ -1305,22 +1288,28 @@
       statusEl.innerHTML = '<span class="dot"></span>Live';
       render();
     } catch (err) {
-      console.error('Errore caricamento:', err);
+      console.error('Errore:', err);
       statusEl.innerHTML = '<span class="dot" style="background:#ef4444"></span>Errore';
     }
   }
 
+  // Realtime con debounce - NO POLLING
   supabase
     .channel('lista-changes')
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'lista' }, 
-      () => { loadItems(); }
+      (payload) => {
+        console.log('🔄 Cambio:', payload.eventType);
+        clearTimeout(realtimeTimeout);
+        realtimeTimeout = setTimeout(() => {
+          loadItems();
+        }, 300);
+      }
     )
-    .subscribe();
+    .subscribe((status) => {
+      console.log('📡 Realtime:', status);
+    });
 
-  setInterval(() => { loadItems(); }, 8000);
-
-  // ========== RENDER ==========
   function render() {
     if (items.length === 0) {
       listEl.innerHTML = `
@@ -1433,7 +1422,6 @@
     return isNaN(num) ? null : num;
   }
 
-  // ========== ACTIONS ==========
   window.toggleStore = function(id) {
     if (collapsedStores.has(id)) collapsedStores.delete(id);
     else collapsedStores.add(id);
@@ -1569,7 +1557,6 @@
       offerConfirmed = false;
       
       closeSheet();
-      setTimeout(() => loadItems(), 300);
     } catch (err) {
       console.error('Errore:', err);
       alert('Errore: ' + err.message);
@@ -1581,7 +1568,6 @@
       const item = items.find(i => i.id === id);
       if (item) {
         await supabase.from('lista').update({ done: !item.done }).eq('id', id);
-        setTimeout(() => loadItems(), 300);
       }
     } catch (err) { console.error(err); }
   };
@@ -1590,12 +1576,10 @@
     if (confirm('Eliminare questo prodotto?')) {
       try {
         await supabase.from('lista').delete().eq('id', id);
-        setTimeout(() => loadItems(), 300);
       } catch (err) { console.error(err); }
     }
   };
 
-  // ========== MAGIC WAND ==========
   window.magicWand = async function() {
     const doneItems = items.filter(i => i.done);
     if (doneItems.length === 0) {
@@ -1608,14 +1592,12 @@
       const ids = doneItems.map(i => i.id);
       const { error } = await supabase.from('lista').delete().in('id', ids);
       if (error) throw error;
-      setTimeout(() => loadItems(), 300);
     } catch (err) {
       console.error(err);
       alert('Errore: ' + err.message);
     }
   };
 
-  // ========== SETTINGS ==========
   window.openSettings = function() {
     const ops = getOperators();
     document.getElementById('settingsOpA').value = ops.A;
@@ -1694,7 +1676,6 @@
     render();
   };
 
-  // ========== PDF EXPORT ==========
   window.exportPDF = function() {
     if (items.length === 0) {
       alert('La lista è vuota!');
@@ -1703,7 +1684,6 @@
     
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    const ops = getOperators();
     const today = new Date().toLocaleDateString('it-IT');
     
     doc.setFillColor(99, 102, 241);
@@ -1775,7 +1755,6 @@
     doc.save(`lista-spesa-${today.replace(/\//g, '-')}.pdf`);
   };
 
-  // ========== EVENT LISTENERS ==========
   priceModal.addEventListener('click', (e) => {
     if (e.target === priceModal) window.cancelOffer();
   });
@@ -1791,9 +1770,8 @@
   itemInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.addItem(); });
   qtyInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.addItem(); });
 
-  // ========== INIT ==========
   loadLocalSettings();
-  loadSharedSettings(); // carica da Supabase
+  loadSharedSettings();
   loadItems();
 </script>
 </body>
