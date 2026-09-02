@@ -861,7 +861,7 @@
     gap: 8px;
     margin-top: 10px;
   }
-  .add-store-row input {
+  .add-store-row input[type="text"] {
     flex: 1;
     padding: 10px 12px;
     border: 2px solid var(--border);
@@ -871,7 +871,7 @@
     background: var(--card-alt);
     color: var(--text);
   }
-  .add-store-row input:focus {
+  .add-store-row input[type="text"]:focus {
     outline: none;
     border-color: var(--primary);
   }
@@ -930,6 +930,27 @@
     box-shadow: 0 4px 12px rgba(16,185,129,0.3);
   }
   .btn-export:hover { transform: translateY(-2px); }
+
+  .save-indicator {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--mint);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 300;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+  }
+  .save-indicator.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 
   @media (max-width: 480px) {
     .header { padding: 16px 12px 20px; border-radius: 0 0 24px 24px; }
@@ -1017,7 +1038,7 @@
       <div class="sheet-title">⚙️ Impostazioni</div>
 
       <div class="settings-section">
-        <div class="settings-title">👤 Nomi Operatori</div>
+        <div class="settings-title">👤 Nomi Operatori (condivisi)</div>
         <div class="settings-row">
           <label>Operatore A (rosa)</label>
           <input type="text" id="settingsOpA" maxlength="20">
@@ -1029,26 +1050,26 @@
       </div>
 
       <div class="settings-section">
-        <div class="settings-title">🏪 Supermercati</div>
+        <div class="settings-title">🏪 Supermercati (condivisi)</div>
         <div id="storesList"></div>
         <div class="add-store-row">
           <input type="text" id="newStoreName" placeholder="Nome supermercato" maxlength="30">
-          <input type="color" id="newStoreColor" value="#6366f1" class="color-input" style="width:40px;height:36px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--card);">
+          <input type="color" id="newStoreColor" value="#6366f1" style="width:40px;height:36px;border:2px solid var(--border);border-radius:10px;cursor:pointer;padding:2px;background:var(--card);">
           <button onclick="window.addStore()">+</button>
         </div>
       </div>
 
       <div class="settings-section">
-        <div class="settings-title">🎨 Aspetto</div>
+        <div class="settings-title"> Aspetto (personale)</div>
         <div class="toggle-row">
-          <label> Modalità Dark</label>
+          <label>🌙 Modalità Dark</label>
           <div class="toggle-switch" id="darkToggle" onclick="window.toggleDark()"></div>
         </div>
       </div>
 
       <div class="settings-section">
-        <div class="settings-title"> Esporta</div>
-        <button class="btn-export" onclick="window.exportPDF()">📥 Scarica PDF della lista</button>
+        <div class="settings-title">📥 Esporta</div>
+        <button class="btn-export" onclick="window.exportPDF()"> Scarica PDF della lista</button>
       </div>
 
       <div class="settings-actions">
@@ -1057,6 +1078,8 @@
       </div>
     </div>
   </div>
+
+  <div class="save-indicator" id="saveIndicator">✅ Salvato</div>
 
 <script>
   // ========== CONFIGURAZIONE SUPABASE ==========
@@ -1088,37 +1111,112 @@
   let offerConfirmed = false;
   let sheetOpen = false;
   let collapsedStores = new Set();
-  let customStores = null;
-  let customOperators = null;
-  let isDark = false;
+  let customStores = null; // da Supabase
+  let customOperators = null; // da Supabase
+  let isDark = false; // locale
+  let settingsLoaded = false;
 
-  // ========== LOCALSTORAGE HELPERS ==========
-  function loadSettings() {
+  // ========== LOCALSTORAGE (solo preferenze personali) ==========
+  function loadLocalSettings() {
     try {
-      const s = localStorage.getItem('marbon_settings');
+      const s = localStorage.getItem('marbon_local');
       if (s) {
         const parsed = JSON.parse(s);
-        customStores = parsed.stores || null;
-        customOperators = parsed.operators || null;
         isDark = parsed.dark || false;
         collapsedStores = new Set(parsed.collapsed || []);
       }
     } catch(e) { console.error(e); }
     
     if (isDark) document.body.classList.add('dark');
-    updateOperatorButtons();
     updateDarkToggle();
   }
 
-  function saveSettingsToStorage() {
-    localStorage.setItem('marbon_settings', JSON.stringify({
-      stores: customStores,
-      operators: customOperators,
+  function saveLocalSettings() {
+    localStorage.setItem('marbon_local', JSON.stringify({
       dark: isDark,
       collapsed: Array.from(collapsedStores)
     }));
   }
 
+  // ========== SUPABASE SETTINGS (condivise) ==========
+  async function loadSharedSettings() {
+    try {
+      const { data, error } = await supabase
+        .from('settings')
+        .select('*')
+        .eq('id', 'global')
+        .single();
+      
+      if (error) {
+        console.error('Errore caricamento settings:', error);
+        // Fallback ai default
+        customStores = DEFAULT_STORES;
+        customOperators = DEFAULT_OPERATORS;
+      } else {
+        customStores = data.stores || DEFAULT_STORES;
+        customOperators = data.operators || DEFAULT_OPERATORS;
+      }
+      
+      settingsLoaded = true;
+      updateOperatorButtons();
+      initStoreSelect();
+      render();
+    } catch (err) {
+      console.error('Errore:', err);
+      customStores = DEFAULT_STORES;
+      customOperators = DEFAULT_OPERATORS;
+      settingsLoaded = true;
+      updateOperatorButtons();
+      initStoreSelect();
+      render();
+    }
+  }
+
+  async function saveSharedSettings() {
+    try {
+      const { error } = await supabase
+        .from('settings')
+        .upsert({
+          id: 'global',
+          operators: customOperators,
+          stores: customStores,
+          updated_at: new Date().toISOString()
+        });
+      
+      if (error) throw error;
+      
+      showSaveIndicator();
+    } catch (err) {
+      console.error('Errore salvataggio:', err);
+      alert('Errore nel salvataggio: ' + err.message);
+    }
+  }
+
+  function showSaveIndicator() {
+    const el = document.getElementById('saveIndicator');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  // Realtime settings
+  supabase
+    .channel('settings-changes')
+    .on('postgres_changes', 
+      { event: '*', schema: 'public', table: 'settings' }, 
+      (payload) => {
+        console.log('🔄 Settings aggiornate:', payload);
+        if (payload.new) {
+          customStores = payload.new.stores || DEFAULT_STORES;
+          customOperators = payload.new.operators || DEFAULT_OPERATORS;
+          updateOperatorButtons();
+          initStoreSelect();
+          render();
+        }
+      }
+    )
+    .subscribe();
+
+  // ========== HELPERS ==========
   function getStores() { return customStores || DEFAULT_STORES; }
   function getOperators() { return customOperators || DEFAULT_OPERATORS; }
   function getStore(id) { return getStores().find(s => s.id === id) || getStores()[0]; }
@@ -1182,7 +1280,7 @@
     }
   });
 
-  // ========== LOAD + REALTIME ==========
+  // ========== LOAD + REALTIME ITEMS ==========
   async function loadItems() {
     try {
       const { data, error } = await supabase
@@ -1212,7 +1310,6 @@
     }
   }
 
-  // Realtime
   supabase
     .channel('lista-changes')
     .on('postgres_changes', 
@@ -1221,17 +1318,14 @@
     )
     .subscribe();
 
-  // Polling di backup ogni 8 secondi (per essere sicuri)
   setInterval(() => { loadItems(); }, 8000);
-
-  loadItems();
 
   // ========== RENDER ==========
   function render() {
     if (items.length === 0) {
       listEl.innerHTML = `
         <div class="empty">
-          <div class="empty-icon"></div>
+          <div class="empty-icon">🛒</div>
           <h3>Lista vuota</h3>
           <p>Tocca il + per aggiungere il primo prodotto</p>
         </div>
@@ -1343,7 +1437,7 @@
   window.toggleStore = function(id) {
     if (collapsedStores.has(id)) collapsedStores.delete(id);
     else collapsedStores.add(id);
-    saveSettingsToStorage();
+    saveLocalSettings();
     render();
   };
 
@@ -1475,7 +1569,6 @@
       offerConfirmed = false;
       
       closeSheet();
-      // Refresh immediato
       setTimeout(() => loadItems(), 300);
     } catch (err) {
       console.error('Errore:', err);
@@ -1542,8 +1635,8 @@
     const stores = getStores();
     container.innerHTML = stores.map(s => `
       <div class="settings-row">
-        <input type="color" class="color-input" value="${s.color}" data-id="${s.id}" onchange="window.updateStoreColor('${s.id}', this.value)">
-        <input type="text" value="${s.name}" data-id="${s.id}" onchange="window.updateStoreName('${s.id}', this.value)" maxlength="30">
+        <input type="color" class="color-input" value="${s.color}" onchange="window.updateStoreColor('${s.id}', this.value)">
+        <input type="text" value="${s.name}" onchange="window.updateStoreName('${s.id}', this.value)" maxlength="30">
         ${stores.length > 1 ? `<button class="delete-small" onclick="window.deleteStore('${s.id}')">×</button>` : ''}
       </div>
     `).join('');
@@ -1585,18 +1678,20 @@
     if (isDark) document.body.classList.add('dark');
     else document.body.classList.remove('dark');
     updateDarkToggle();
+    saveLocalSettings();
   };
 
-  window.saveSettings = function() {
+  window.saveSettings = async function() {
     const opA = document.getElementById('settingsOpA').value.trim() || 'Operatore A';
     const opB = document.getElementById('settingsOpB').value.trim() || 'Operatore B';
     customOperators = { A: opA, B: opB };
-    saveSettingsToStorage();
+    
+    await saveSharedSettings();
+    
     updateOperatorButtons();
     initStoreSelect();
     document.getElementById('settingsOverlay').classList.remove('show');
     render();
-    alert('✅ Impostazioni salvate!');
   };
 
   // ========== PDF EXPORT ==========
@@ -1611,7 +1706,6 @@
     const ops = getOperators();
     const today = new Date().toLocaleDateString('it-IT');
     
-    // Header
     doc.setFillColor(99, 102, 241);
     doc.rect(0, 0, 210, 30, 'F');
     doc.setTextColor(255, 255, 255);
@@ -1622,7 +1716,6 @@
     doc.setFont(undefined, 'normal');
     doc.text(`Generata il ${today}`, 14, 22);
     
-    // Raggruppa per negozio
     const byStore = {};
     const storeOrder = [];
     items.forEach(i => {
@@ -1637,10 +1730,8 @@
       const store = getStore(storeId);
       const storeItems = byStore[storeId];
       
-      // Check page
       if (yPos > 270) { doc.addPage(); yPos = 20; }
       
-      // Store header
       doc.setFillColor(99, 102, 241);
       doc.roundedRect(14, yPos - 6, 182, 10, 2, 2, 'F');
       doc.setTextColor(255, 255, 255);
@@ -1649,7 +1740,6 @@
       doc.text(`${store.name} (${storeItems.length})`, 18, yPos);
       yPos += 12;
       
-      // Table
       const tableData = storeItems.map(item => {
         const opName = getOpName(item.operator === 'B' ? 'B' : 'A');
         const price = item.onOffer && item.price ? `${formatPrice(item.price)} €` : '-';
@@ -1674,7 +1764,6 @@
       yPos = doc.lastAutoTable.finalY + 10;
     });
     
-    // Footer
     const totalPages = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
@@ -1703,8 +1792,9 @@
   qtyInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.addItem(); });
 
   // ========== INIT ==========
-  loadSettings();
-  initStoreSelect();
+  loadLocalSettings();
+  loadSharedSettings(); // carica da Supabase
+  loadItems();
 </script>
 </body>
 </html>
