@@ -138,7 +138,6 @@
     box-shadow: 0 0 8px #10b981;
   }
 
-  /* Search Bar */
   .search-container {
     position: relative;
     margin-top: 12px;
@@ -593,7 +592,6 @@
   }
   .input-wrapper input::placeholder { color: var(--text-muted); }
 
-  /* Autocomplete dropdown */
   .autocomplete-dropdown {
     position: absolute;
     top: 100%;
@@ -719,6 +717,7 @@
     align-items: center;
     gap: 8px;
     margin-top: 8px;
+    margin-bottom: 16px;
     padding: 8px;
     background: rgba(251,191,36,0.08);
     border: 2px solid transparent;
@@ -796,9 +795,28 @@
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 6px 16px rgba(99,102,241,0.3);
+    margin-bottom: 10px;
   }
   .add-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(99,102,241,0.4); }
   .add-btn:active { transform: translateY(0); }
+
+  .delete-edit-btn {
+    width: 100%;
+    padding: 14px;
+    background: rgba(244,63,94,0.1);
+    color: var(--coral);
+    border: 2px solid var(--coral);
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .delete-edit-btn:hover {
+    background: var(--coral);
+    color: white;
+  }
 
   .price-modal-overlay {
     position: fixed;
@@ -1114,96 +1132,6 @@
     transform: translateX(-50%) translateY(0);
   }
 
-  /* Store change modal */
-  .store-change-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0);
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 150;
-    pointer-events: none;
-    transition: background 0.3s ease;
-  }
-  .store-change-overlay.show {
-    display: flex;
-    background: rgba(0,0,0,0.5);
-    pointer-events: auto;
-    backdrop-filter: blur(8px);
-  }
-  .store-change-sheet {
-    background: var(--card);
-    border-radius: 28px 28px 0 0;
-    width: 100%;
-    max-width: 520px;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 12px 20px 32px;
-    transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
-  }
-  .store-change-overlay.show .store-change-sheet { transform: translateY(0); }
-  
-  .store-change-subtitle {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-    font-weight: 500;
-  }
-  .store-change-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .store-change-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px;
-    background: var(--card-alt);
-    border: 2px solid transparent;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .store-change-item:hover {
-    background: var(--border);
-    transform: translateX(4px);
-  }
-  .store-change-item.current {
-    border-color: var(--primary);
-    background: rgba(99,102,241,0.08);
-  }
-  .store-change-item .store-logo {
-    width: 40px; height: 40px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 800;
-    color: white;
-    flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  }
-  .store-change-item .store-name {
-    flex: 1;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .store-change-item .check-icon {
-    font-size: 18px;
-    color: var(--primary);
-    font-weight: 700;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .store-change-item.current .check-icon {
-    opacity: 1;
-  }
-
   .hint-text {
     text-align: center;
     font-size: 11px;
@@ -1232,12 +1160,11 @@
         <h1>Lista Spesa</h1>
         <div class="header-actions">
           <button class="icon-btn magic" onclick="window.magicWand()" title="Pulisci">✨</button>
-          <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">️</button>
+          <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">⚙️</button>
           <div class="status" id="status"><span class="dot"></span>Live</div>
         </div>
       </div>
       
-      <!-- Search Bar -->
       <div class="search-container">
         <input type="text" class="search-input" id="searchInput" placeholder="Cerca prodotti...">
         <span class="search-clear" id="searchClear" onclick="window.clearSearch()">×</span>
@@ -1253,7 +1180,7 @@
   <div class="modal-overlay" id="sheetOverlay" onclick="window.closeSheet(event)">
     <div class="bottom-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
-      <div class="sheet-title">Nuovo prodotto</div>
+      <div class="sheet-title" id="sheetTitle">Nuovo prodotto</div>
 
       <div class="operator-selector">
         <button class="operator-btn active" data-op="A" id="opBtnA">Operatore A</button>
@@ -1290,7 +1217,8 @@
         <span class="text">Salva come preferito</span>
       </div>
 
-      <button class="add-btn" onclick="window.addItem()">Aggiungi alla lista</button>
+      <button class="add-btn" id="actionBtn" onclick="window.handleSheetAction()">Aggiungi alla lista</button>
+      <button class="delete-edit-btn" id="deleteEditBtn" onclick="window.deleteFromEdit()" style="display:none;">🗑️ Elimina prodotto</button>
     </div>
   </div>
 
@@ -1352,17 +1280,6 @@
     </div>
   </div>
 
-  <!-- Modal Cambio Negozio (Long Press) -->
-  <div class="store-change-overlay" id="storeChangeOverlay" onclick="window.closeStoreChange(event)">
-    <div class="store-change-sheet" onclick="event.stopPropagation()">
-      <div class="sheet-handle"></div>
-      <div class="sheet-title">🏪 Cambia negozio</div>
-      <div class="store-change-subtitle" id="storeChangeSubtitle">Seleziona un nuovo negozio per il prodotto</div>
-      <div class="store-change-list" id="storeChangeList"></div>
-      <div class="hint-text">💡 Tieni premuto su un prodotto per cambiare negozio</div>
-    </div>
-  </div>
-
   <div class="save-indicator" id="saveIndicator">✅ Salvato</div>
 
 <script>
@@ -1401,6 +1318,9 @@
   let favorites = [];
   let isFavorite = false;
   let autocompleteTimeout = null;
+  
+  // Modalità modifica
+  let editingItemId = null;
 
   // Long press state
   let longPressTimer = null;
@@ -1491,7 +1411,7 @@
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'settings' }, 
       (payload) => {
-        console.log('🔄 Settings aggiornate');
+        console.log(' Settings aggiornate');
         if (payload.new) {
           customStores = payload.new.stores || DEFAULT_STORES;
           customOperators = payload.new.operators || DEFAULT_OPERATORS;
@@ -1536,6 +1456,9 @@
   const searchClear = document.getElementById('searchClear');
   const autocompleteDropdown = document.getElementById('autocompleteDropdown');
   const favoriteStar = document.getElementById('favoriteStar');
+  const sheetTitle = document.getElementById('sheetTitle');
+  const actionBtn = document.getElementById('actionBtn');
+  const deleteEditBtn = document.getElementById('deleteEditBtn');
 
   function initStoreSelect() {
     storeSelect.innerHTML = '';
@@ -1569,7 +1492,6 @@
     }
   });
 
-  // Search functionality
   searchInput.addEventListener('input', (e) => {
     searchQuery = e.target.value.trim().toLowerCase();
     if (searchQuery.length > 0) {
@@ -1588,17 +1510,13 @@
     searchInput.focus();
   };
 
-  // Autocomplete functionality
   itemInput.addEventListener('input', (e) => {
     const value = e.target.value.trim();
-    
     clearTimeout(autocompleteTimeout);
-    
     if (value.length < 2) {
       autocompleteDropdown.classList.remove('show');
       return;
     }
-    
     autocompleteTimeout = setTimeout(() => {
       showAutocomplete(value);
     }, 200);
@@ -1703,7 +1621,7 @@
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'lista' }, 
       (payload) => {
-        console.log('🔄 Cambio realtime:', payload.eventType, payload.new?.name || '');
+        console.log(' Cambio realtime:', payload.eventType, payload.new?.name || '');
         clearTimeout(realtimeTimeout);
         realtimeTimeout = setTimeout(() => {
           loadItems();
@@ -1711,7 +1629,7 @@
       }
     )
     .subscribe((status) => {
-      console.log(' Realtime lista:', status);
+      console.log('📡 Realtime lista:', status);
     });
 
   setInterval(() => {
@@ -1810,7 +1728,7 @@
       const d = new Date(item.expiryDate);
       const formatted = d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
       const cls = isExpired ? 'expiry-badge' : 'expiry-badge valid';
-      const label = isExpired ? '️ Scaduta' : `📅 ${formatted}`;
+      const label = isExpired ? '⚠️ Scaduta' : `📅 ${formatted}`;
       expiryHtml = `<span class="${cls}">${label}</span>`;
     }
     
@@ -1852,7 +1770,6 @@
     return isNaN(num) ? null : num;
   }
 
-  // ========== LONG PRESS HANDLER ==========
   function attachLongPressHandlers() {
     document.querySelectorAll('.item-card').forEach(card => {
       const itemId = card.dataset.itemId;
@@ -1879,7 +1796,7 @@
           }
           
           setTimeout(() => {
-            openStoreChangeModal(itemId);
+            openEditSheet(itemId);
             card.classList.remove('pressing');
           }, 100);
         }, LONG_PRESS_DURATION);
@@ -1909,55 +1826,190 @@
     });
   }
 
-  window.openStoreChangeModal = function(itemId) {
+  // Apre il bottom sheet in modalità modifica con i dati del prodotto
+  function openEditSheet(itemId) {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
     
-    longPressTargetId = itemId;
+    editingItemId = itemId;
     
-    const subtitle = document.getElementById('storeChangeSubtitle');
-    subtitle.textContent = `Cambia negozio per: ${item.name}`;
+    // Popola i campi con i dati del prodotto
+    itemInput.value = item.name;
+    qtyInput.value = item.qty || '';
+    storeSelect.value = item.store || 'generico';
     
-    const list = document.getElementById('storeChangeList');
-    const currentStoreId = item.store || 'generico';
+    // Operatore
+    currentOperator = item.operator || 'A';
+    document.querySelectorAll('.operator-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.querySelector(`.operator-btn[data-op="${currentOperator}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
     
-    list.innerHTML = getStores().map(store => {
-      const isCurrent = store.id === currentStoreId;
-      return `
-        <div class="store-change-item ${isCurrent ? 'current' : ''}" 
-             onclick="window.selectNewStore('${itemId}', '${store.id}')">
-          <div class="store-logo" style="background:${store.color}">${store.name.substring(0,2).toUpperCase()}</div>
-          <div class="store-name">${store.name}</div>
-          <div class="check-icon">✓</div>
-        </div>
-      `;
-    }).join('');
+    // Offerta
+    offerCheckbox.checked = item.onOffer === true;
+    if (item.onOffer) {
+      offerWrapper.classList.add('checked');
+      expiryWrapper.classList.add('show');
+      pendingPrice = item.price;
+      offerConfirmed = true;
+    } else {
+      offerWrapper.classList.remove('checked');
+      expiryWrapper.classList.remove('show');
+      pendingPrice = null;
+      offerConfirmed = false;
+    }
     
-    document.getElementById('storeChangeOverlay').classList.add('show');
+    // Scadenza
+    expiryInput.value = item.expiryDate || '';
+    
+    // Preferito (controlla se è già nei preferiti)
+    isFavorite = favorites.some(f => f.name.toLowerCase() === item.name.toLowerCase());
+    if (isFavorite) {
+      favoriteStar.classList.add('active');
+      favoriteStar.querySelector('.star').textContent = '★';
+      favoriteStar.querySelector('.text').textContent = 'Rimosso dai preferiti';
+    } else {
+      favoriteStar.classList.remove('active');
+      favoriteStar.querySelector('.star').textContent = '☆';
+      favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
+    }
+    
+    // Cambia UI in modalità modifica
+    sheetTitle.textContent = '✏️ Modifica prodotto';
+    actionBtn.textContent = '💾 Salva modifiche';
+    deleteEditBtn.style.display = 'block';
+    
+    // Apre il bottom sheet
+    sheetOpen = true;
+    sheetOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Handler del bottone principale (Aggiungi o Salva modifiche)
+  window.handleSheetAction = async function() {
+    if (editingItemId) {
+      // Modalità modifica
+      await saveEditedItem();
+    } else {
+      // Modalità aggiunta
+      await addItem();
+    }
   };
 
-  window.selectNewStore = async function(itemId, newStoreId) {
+  // Salva le modifiche di un prodotto esistente
+  async function saveEditedItem() {
+    const name = itemInput.value.trim();
+    if (!name) {
+      itemInput.style.borderColor = '#f43f5e';
+      itemInput.focus();
+      setTimeout(() => { itemInput.style.borderColor = ''; }, 1000);
+      return;
+    }
+    
+    if (offerCheckbox.checked && !offerConfirmed) {
+      openPriceModal();
+      return;
+    }
+    
     try {
-      const item = items.find(i => i.id === itemId);
-      if (item && item.store !== newStoreId) {
-        await supabase.from('lista').update({ store: newStoreId }).eq('id', itemId);
-        
-        item.store = newStoreId;
-        lastItemsCount = items.length;
-        render();
+      const payload = {
+        name,
+        qty: qtyInput.value.trim(),
+        store: storeSelect.value,
+        operator: currentOperator,
+        onoffer: offerCheckbox.checked,
+        price: offerCheckbox.checked ? pendingPrice : null,
+        expiry_date: (offerCheckbox.checked && expiryInput.value) ? expiryInput.value : null
+      };
+      
+      const { error } = await supabase.from('lista').update(payload).eq('id', editingItemId);
+      if (error) throw error;
+      
+      // Aggiorna preferiti
+      if (isFavorite) {
+        const existingFavIndex = favorites.findIndex(f => f.name.toLowerCase() === name.toLowerCase());
+        if (existingFavIndex >= 0) {
+          favorites[existingFavIndex] = { name, store: storeSelect.value };
+        } else {
+          favorites.push({ name, store: storeSelect.value });
+        }
+        saveLocalSettings();
+      } else {
+        // Rimuovi dai preferiti se c'era
+        favorites = favorites.filter(f => f.name.toLowerCase() !== name.toLowerCase());
+        saveLocalSettings();
       }
-      window.closeStoreChange();
+      
+      // Aggiornamento ottimistico locale
+      const item = items.find(i => i.id === editingItemId);
+      if (item) {
+        Object.assign(item, {
+          name,
+          qty: payload.qty,
+          store: payload.store,
+          operator: payload.operator,
+          onOffer: payload.onoffer,
+          price: payload.price,
+          expiryDate: payload.expiry_date
+        });
+      }
+      lastItemsCount = items.length;
+      render();
+      
+      resetSheetForm();
+      closeSheet();
+      
+      showSaveIndicator();
+      setTimeout(() => loadItems(), 1000);
     } catch (err) {
-      console.error('Errore cambio negozio:', err);
+      console.error('Errore:', err);
+      alert('Errore: ' + err.message);
+    }
+  }
+
+  // Elimina il prodotto dalla modalità modifica
+  window.deleteFromEdit = async function() {
+    if (!editingItemId) return;
+    if (!confirm('Eliminare questo prodotto?')) return;
+    
+    try {
+      await supabase.from('lista').delete().eq('id', editingItemId);
+      
+      items = items.filter(i => i.id !== editingItemId);
+      lastItemsCount = items.length;
+      render();
+      
+      resetSheetForm();
+      closeSheet();
+      
+      setTimeout(() => loadItems(), 1000);
+    } catch (err) {
+      console.error('Errore:', err);
       alert('Errore: ' + err.message);
     }
   };
 
-  window.closeStoreChange = function(e) {
-    if (e && e.target !== document.getElementById('storeChangeOverlay')) return;
-    document.getElementById('storeChangeOverlay').classList.remove('show');
-    longPressTargetId = null;
-  };
+  function resetSheetForm() {
+    editingItemId = null;
+    sheetTitle.textContent = 'Nuovo prodotto';
+    actionBtn.textContent = 'Aggiungi alla lista';
+    deleteEditBtn.style.display = 'none';
+    itemInput.value = '';
+    qtyInput.value = '';
+    offerCheckbox.checked = false;
+    offerWrapper.classList.remove('checked');
+    expiryWrapper.classList.remove('show');
+    expiryInput.value = '';
+    pendingPrice = null;
+    offerConfirmed = false;
+    isFavorite = false;
+    favoriteStar.classList.remove('active');
+    favoriteStar.querySelector('.star').textContent = '☆';
+    favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
+    currentOperator = 'A';
+    document.querySelectorAll('.operator-btn').forEach(b => b.classList.remove('active'));
+    const firstBtn = document.querySelector('.operator-btn[data-op="A"]');
+    if (firstBtn) firstBtn.classList.add('active');
+  }
 
   window.toggleStore = function(id) {
     if (collapsedStores.has(id)) collapsedStores.delete(id);
@@ -1971,13 +2023,10 @@
   };
 
   function openSheet() {
+    resetSheetForm();
     sheetOpen = true;
     sheetOverlay.classList.add('show');
     document.body.style.overflow = 'hidden';
-    isFavorite = false;
-    favoriteStar.classList.remove('active');
-    favoriteStar.querySelector('.star').textContent = '☆';
-    favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
     setTimeout(() => { itemInput.focus(); }, 300);
   }
 
@@ -1987,6 +2036,7 @@
     sheetOverlay.classList.remove('show');
     document.body.style.overflow = '';
     autocompleteDropdown.classList.remove('show');
+    resetSheetForm();
   };
 
   window.startEditName = async function(el, id) {
@@ -2060,7 +2110,7 @@
     }
   };
 
-  window.addItem = async function() {
+  async function addItem() {
     const name = itemInput.value.trim();
     if (!name) {
       itemInput.style.borderColor = '#f43f5e';
@@ -2089,7 +2139,6 @@
       const { error } = await supabase.from('lista').insert(payload);
       if (error) throw error;
       
-      // Save as favorite if starred
       if (isFavorite) {
         const existingFavIndex = favorites.findIndex(f => f.name.toLowerCase() === name.toLowerCase());
         if (existingFavIndex >= 0) {
@@ -2110,19 +2159,7 @@
       lastItemsCount = items.length;
       render();
       
-      itemInput.value = '';
-      qtyInput.value = '';
-      offerCheckbox.checked = false;
-      offerWrapper.classList.remove('checked');
-      expiryWrapper.classList.remove('show');
-      expiryInput.value = '';
-      pendingPrice = null;
-      offerConfirmed = false;
-      isFavorite = false;
-      favoriteStar.classList.remove('active');
-      favoriteStar.querySelector('.star').textContent = '☆';
-      favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
-      
+      resetSheetForm();
       closeSheet();
       
       setTimeout(() => loadItems(), 1000);
@@ -2130,7 +2167,7 @@
       console.error('Errore:', err);
       alert('Errore: ' + err.message);
     }
-  };
+  }
 
   window.toggleItem = async function(id) {
     try {
@@ -2138,7 +2175,6 @@
       if (item) {
         item.done = !item.done;
         render();
-        
         await supabase.from('lista').update({ done: item.done }).eq('id', id);
       }
     } catch (err) { console.error(err); }
@@ -2150,7 +2186,6 @@
         items = items.filter(i => i.id !== id);
         lastItemsCount = items.length;
         render();
-        
         await supabase.from('lista').delete().eq('id', id);
       } catch (err) { console.error(err); }
     }
@@ -2166,11 +2201,9 @@
     
     try {
       const ids = doneItems.map(i => i.id);
-      
       items = items.filter(i => !i.done);
       lastItemsCount = items.length;
       render();
-      
       const { error } = await supabase.from('lista').delete().in('id', ids);
       if (error) throw error;
     } catch (err) {
@@ -2248,9 +2281,7 @@
     const opA = document.getElementById('settingsOpA').value.trim() || 'Operatore A';
     const opB = document.getElementById('settingsOpB').value.trim() || 'Operatore B';
     customOperators = { A: opA, B: opB };
-    
     await saveSharedSettings();
-    
     updateOperatorButtons();
     initStoreSelect();
     document.getElementById('settingsOverlay').classList.remove('show');
@@ -2348,8 +2379,8 @@
     e.target.value = e.target.value.replace(/[^0-9.,]/g, '');
   });
 
-  itemInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.addItem(); });
-  qtyInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.addItem(); });
+  itemInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.handleSheetAction(); });
+  qtyInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.handleSheetAction(); });
 
   loadLocalSettings();
   loadSharedSettings();
