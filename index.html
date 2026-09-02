@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Lista Spesa - Marbon</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -235,6 +235,19 @@
     transition: all 0.2s;
     box-shadow: var(--shadow);
     border: 2px solid transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .item-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+  .item-card.pressing {
+    transform: scale(0.97);
+    opacity: 0.85;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
   }
   .item-card.offer {
     border-color: var(--mint);
@@ -288,6 +301,7 @@
     border-radius: 6px;
     margin-bottom: 6px;
     color: var(--text);
+    user-select: text;
   }
   .item-name:hover { background: var(--card-alt); }
   .item-name[contenteditable="true"] {
@@ -308,6 +322,7 @@
     border-radius: 6px;
     background: var(--card-alt);
     font-weight: 600;
+    user-select: text;
   }
   .item-qty:hover { background: var(--border); }
   .item-qty[contenteditable="true"] {
@@ -951,6 +966,106 @@
     transform: translateX(-50%) translateY(0);
   }
 
+  /* Store change modal */
+  .store-change-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 150;
+    pointer-events: none;
+    transition: background 0.3s ease;
+  }
+  .store-change-overlay.show {
+    display: flex;
+    background: rgba(0,0,0,0.5);
+    pointer-events: auto;
+    backdrop-filter: blur(8px);
+  }
+  .store-change-sheet {
+    background: var(--card);
+    border-radius: 28px 28px 0 0;
+    width: 100%;
+    max-width: 520px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 12px 20px 32px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .store-change-overlay.show .store-change-sheet { transform: translateY(0); }
+  
+  .store-change-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .store-change-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .store-change-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--card-alt);
+    border: 2px solid transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .store-change-item:hover {
+    background: var(--border);
+    transform: translateX(4px);
+  }
+  .store-change-item.current {
+    border-color: var(--primary);
+    background: rgba(99,102,241,0.08);
+  }
+  .store-change-item .store-logo {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .store-change-item .store-name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .store-change-item .check-icon {
+    font-size: 18px;
+    color: var(--primary);
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .store-change-item.current .check-icon {
+    opacity: 1;
+  }
+
+  .hint-text {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    padding: 8px;
+    background: var(--card-alt);
+    border-radius: 10px;
+  }
+
   @media (max-width: 480px) {
     .header { padding: 16px 12px 20px; border-radius: 0 0 24px 24px; }
     .header h1 { font-size: 20px; }
@@ -1005,7 +1120,7 @@
 
       <div class="checkbox-wrapper" id="offerWrapper">
         <input type="checkbox" id="offerCheckbox">
-        <label for="offerCheckbox">️ In offerta</label>
+        <label for="offerCheckbox">🏷️ In offerta</label>
       </div>
 
       <div class="date-input-wrapper" id="expiryWrapper">
@@ -1056,7 +1171,7 @@
       </div>
 
       <div class="settings-section">
-        <div class="settings-title"> Aspetto (personale)</div>
+        <div class="settings-title">🎨 Aspetto (personale)</div>
         <div class="toggle-row">
           <label>🌙 Modalità Dark</label>
           <div class="toggle-switch" id="darkToggle" onclick="window.toggleDark()"></div>
@@ -1065,13 +1180,24 @@
 
       <div class="settings-section">
         <div class="settings-title">📥 Esporta</div>
-        <button class="btn-export" onclick="window.exportPDF()"> Scarica PDF della lista</button>
+        <button class="btn-export" onclick="window.exportPDF()">📥 Scarica PDF della lista</button>
       </div>
 
       <div class="settings-actions">
         <button class="btn-close-settings" onclick="window.closeSettings()">Chiudi</button>
         <button class="btn-save-settings" onclick="window.saveSettings()">💾 Salva</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Cambio Negozio (Long Press) -->
+  <div class="store-change-overlay" id="storeChangeOverlay" onclick="window.closeStoreChange(event)">
+    <div class="store-change-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">🏪 Cambia negozio</div>
+      <div class="store-change-subtitle" id="storeChangeSubtitle">Seleziona un nuovo negozio per il prodotto</div>
+      <div class="store-change-list" id="storeChangeList"></div>
+      <div class="hint-text">💡 Tieni premuto su un prodotto per cambiare negozio</div>
     </div>
   </div>
 
@@ -1109,6 +1235,12 @@
   let settingsLoaded = false;
   let realtimeTimeout = null;
   let lastItemsCount = -1;
+
+  // Long press state
+  let longPressTimer = null;
+  let longPressTargetId = null;
+  let longPressTriggered = false;
+  const LONG_PRESS_DURATION = 600;
 
   function loadLocalSettings() {
     try {
@@ -1286,7 +1418,6 @@
         done: row.done === true
       }));
       
-      // Aggiorna solo se il numero di elementi o i dati sono cambiati
       const newCount = newItems.length;
       const hasChanges = newCount !== lastItemsCount || 
         JSON.stringify(newItems) !== JSON.stringify(items);
@@ -1303,7 +1434,6 @@
     }
   }
 
-  // Realtime con debounce
   supabase
     .channel('lista-changes')
     .on('postgres_changes', 
@@ -1320,7 +1450,6 @@
       console.log(' Realtime lista:', status);
     });
 
-  // Polling di fallback ogni 30 secondi
   setInterval(() => {
     console.log('🔄 Polling di controllo');
     loadItems();
@@ -1380,6 +1509,9 @@
     });
 
     listEl.innerHTML = html;
+    
+    // Attacca gli handler long press dopo il render
+    attachLongPressHandlers();
   }
 
   function renderItem(item) {
@@ -1396,12 +1528,12 @@
       const d = new Date(item.expiryDate);
       const formatted = d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
       const cls = isExpired ? 'expiry-badge' : 'expiry-badge valid';
-      const label = isExpired ? '⚠️ Scaduta' : `📅 ${formatted}`;
+      const label = isExpired ? '⚠️ Scaduta' : ` ${formatted}`;
       expiryHtml = `<span class="${cls}">${label}</span>`;
     }
     
     return `
-      <div class="${cardClass}">
+      <div class="${cardClass}" data-item-id="${item.id}">
         <div class="${checkboxClass}" onclick="window.toggleItem('${item.id}')"></div>
         <div class="item-content">
           <div class="item-name" onclick="window.startEditName(this, '${item.id}')">${escapeHtml(item.name)}</div>
@@ -1437,6 +1569,119 @@
     const num = parseFloat(cleaned);
     return isNaN(num) ? null : num;
   }
+
+  // ========== LONG PRESS HANDLER ==========
+  function attachLongPressHandlers() {
+    document.querySelectorAll('.item-card').forEach(card => {
+      const itemId = card.dataset.itemId;
+      if (!itemId) return;
+      
+      const startPress = (e) => {
+        // Non attivare long press se si clicca su checkbox, delete, o elementi editabili
+        const target = e.target;
+        if (target.closest('.delete-btn') || 
+            target.closest('.item-checkbox') || 
+            target.classList.contains('item-name') || 
+            target.classList.contains('item-qty')) {
+          return;
+        }
+        
+        longPressTargetId = itemId;
+        longPressTriggered = false;
+        
+        longPressTimer = setTimeout(() => {
+          longPressTriggered = true;
+          card.classList.add('pressing');
+          
+          // Feedback tattile se disponibile
+          if (navigator.vibrate) {
+            navigator.vibrate(50);
+          }
+          
+          setTimeout(() => {
+            openStoreChangeModal(itemId);
+            card.classList.remove('pressing');
+          }, 100);
+        }, LONG_PRESS_DURATION);
+      };
+      
+      const cancelPress = () => {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+        longPressTargetId = null;
+        card.classList.remove('pressing');
+      };
+      
+      // Touch events (mobile)
+      card.addEventListener('touchstart', startPress, { passive: true });
+      card.addEventListener('touchend', cancelPress);
+      card.addEventListener('touchmove', cancelPress);
+      card.addEventListener('touchcancel', cancelPress);
+      
+      // Mouse events (desktop)
+      card.addEventListener('mousedown', startPress);
+      card.addEventListener('mouseup', cancelPress);
+      card.addEventListener('mouseleave', cancelPress);
+      
+      // Previeni menu contestuale durante long press
+      card.addEventListener('contextmenu', (e) => {
+        if (longPressTriggered) {
+          e.preventDefault();
+        }
+      });
+    });
+  }
+
+  window.openStoreChangeModal = function(itemId) {
+    const item = items.find(i => i.id === itemId);
+    if (!item) return;
+    
+    longPressTargetId = itemId;
+    
+    const subtitle = document.getElementById('storeChangeSubtitle');
+    subtitle.textContent = `Cambia negozio per: ${item.name}`;
+    
+    const list = document.getElementById('storeChangeList');
+    const currentStoreId = item.store || 'generico';
+    
+    list.innerHTML = getStores().map(store => {
+      const isCurrent = store.id === currentStoreId;
+      return `
+        <div class="store-change-item ${isCurrent ? 'current' : ''}" 
+             onclick="window.selectNewStore('${itemId}', '${store.id}')">
+          <div class="store-logo" style="background:${store.color}">${store.name.substring(0,2).toUpperCase()}</div>
+          <div class="store-name">${store.name}</div>
+          <div class="check-icon">✓</div>
+        </div>
+      `;
+    }).join('');
+    
+    document.getElementById('storeChangeOverlay').classList.add('show');
+  };
+
+  window.selectNewStore = async function(itemId, newStoreId) {
+    try {
+      const item = items.find(i => i.id === itemId);
+      if (item && item.store !== newStoreId) {
+        await supabase.from('lista').update({ store: newStoreId }).eq('id', itemId);
+        
+        // Aggiornamento ottimistico
+        item.store = newStoreId;
+        lastItemsCount = items.length;
+        render();
+      }
+      window.closeStoreChange();
+    } catch (err) {
+      console.error('Errore cambio negozio:', err);
+      alert('Errore: ' + err.message);
+    }
+  };
+
+  window.closeStoreChange = function(e) {
+    if (e && e.target !== document.getElementById('storeChangeOverlay')) return;
+    document.getElementById('storeChangeOverlay').classList.remove('show');
+    longPressTargetId = null;
+  };
 
   window.toggleStore = function(id) {
     if (collapsedStores.has(id)) collapsedStores.delete(id);
@@ -1563,7 +1808,6 @@
       const { error } = await supabase.from('lista').insert(payload);
       if (error) throw error;
       
-      // Aggiornamento immediato locale (optimistic)
       const newItem = {
         id: 'temp_' + Date.now(),
         ...payload,
@@ -1585,7 +1829,6 @@
       
       closeSheet();
       
-      // Ricarica dal server dopo 1 secondo per ottenere l'ID reale
       setTimeout(() => loadItems(), 1000);
     } catch (err) {
       console.error('Errore:', err);
@@ -1597,7 +1840,6 @@
     try {
       const item = items.find(i => i.id === id);
       if (item) {
-        // Aggiornamento immediato locale
         item.done = !item.done;
         render();
         
@@ -1609,7 +1851,6 @@
   window.deleteItem = async function(id) {
     if (confirm('Eliminare questo prodotto?')) {
       try {
-        // Rimozione immediata locale
         items = items.filter(i => i.id !== id);
         lastItemsCount = items.length;
         render();
@@ -1630,7 +1871,6 @@
     try {
       const ids = doneItems.map(i => i.id);
       
-      // Rimozione immediata locale
       items = items.filter(i => !i.done);
       lastItemsCount = items.length;
       render();
