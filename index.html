@@ -1132,6 +1132,127 @@
     transform: translateX(-50%) translateY(0);
   }
 
+  /* Reorder sheet */
+  .reorder-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 150;
+    pointer-events: none;
+    transition: background 0.3s ease;
+  }
+  .reorder-overlay.show {
+    display: flex;
+    background: rgba(0,0,0,0.5);
+    pointer-events: auto;
+    backdrop-filter: blur(8px);
+  }
+  .reorder-sheet {
+    background: var(--card);
+    border-radius: 28px 28px 0 0;
+    width: 100%;
+    max-width: 520px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 12px 20px 32px;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .reorder-overlay.show .reorder-sheet { transform: translateY(0); }
+  
+  .reorder-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .reorder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .reorder-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--card-alt);
+    border: 2px solid transparent;
+    border-radius: 14px;
+    transition: all 0.2s;
+  }
+  .reorder-item .position-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .reorder-item .store-logo {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .reorder-item .store-name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .reorder-item .item-count-badge {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--card);
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  .reorder-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .reorder-arrow {
+    width: 32px;
+    height: 26px;
+    border: none;
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
+  }
+  .reorder-arrow:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .reorder-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
   .hint-text {
     text-align: center;
     font-size: 11px;
@@ -1159,6 +1280,7 @@
       <div class="header-top">
         <h1>Lista Spesa</h1>
         <div class="header-actions">
+          <button class="icon-btn" onclick="window.openReorder()" title="Riordina liste">⇅</button>
           <button class="icon-btn magic" onclick="window.magicWand()" title="Pulisci">✨</button>
           <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni">⚙️</button>
           <div class="status" id="status"><span class="dot"></span>Live</div>
@@ -1280,6 +1402,17 @@
     </div>
   </div>
 
+  <!-- Modal Riordina Liste -->
+  <div class="reorder-overlay" id="reorderOverlay" onclick="window.closeReorder(event)">
+    <div class="reorder-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">⇅ Ordine liste</div>
+      <div class="reorder-subtitle">Usa le frecce per spostare i supermercati. L'ordine è condiviso con tutti.</div>
+      <div class="reorder-list" id="reorderList"></div>
+      <div class="hint-text">💡 Le liste vuote seguono comunque l'ordine impostato</div>
+    </div>
+  </div>
+
   <div class="save-indicator" id="saveIndicator">✅ Salvato</div>
 
 <script>
@@ -1318,11 +1451,8 @@
   let favorites = [];
   let isFavorite = false;
   let autocompleteTimeout = null;
-  
-  // Modalità modifica
   let editingItemId = null;
 
-  // Long press state
   let longPressTimer = null;
   let longPressTargetId = null;
   let longPressTriggered = false;
@@ -1411,7 +1541,7 @@
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'settings' }, 
       (payload) => {
-        console.log(' Settings aggiornate');
+        console.log('🔄 Settings aggiornate');
         if (payload.new) {
           customStores = payload.new.stores || DEFAULT_STORES;
           customOperators = payload.new.operators || DEFAULT_OPERATORS;
@@ -1621,7 +1751,7 @@
     .on('postgres_changes', 
       { event: '*', schema: 'public', table: 'lista' }, 
       (payload) => {
-        console.log(' Cambio realtime:', payload.eventType, payload.new?.name || '');
+        console.log('🔄 Cambio realtime:', payload.eventType, payload.new?.name || '');
         clearTimeout(realtimeTimeout);
         realtimeTimeout = setTimeout(() => {
           loadItems();
@@ -1658,15 +1788,19 @@
     }
 
     const byStore = {};
-    const storeOrder = [];
-    
     filteredItems.forEach(i => {
       const storeId = i.store || 'generico';
-      if (!byStore[storeId]) { 
-        byStore[storeId] = []; 
-        storeOrder.push(storeId); 
-      }
+      if (!byStore[storeId]) byStore[storeId] = [];
       byStore[storeId].push(i);
+    });
+
+    // Ordina le sezioni secondo l'ordine definito nelle settings
+    const storeOrder = getStores()
+      .map(s => s.id)
+      .filter(id => byStore[id]);
+    // Aggiunge eventuali negozi non presenti nelle settings (es. eliminati) in fondo
+    Object.keys(byStore).forEach(id => {
+      if (!storeOrder.includes(id)) storeOrder.push(id);
     });
 
     let html = '';
@@ -1826,25 +1960,73 @@
     });
   }
 
-  // Apre il bottom sheet in modalità modifica con i dati del prodotto
+  // ========== RIORDINA LISTE ==========
+  window.openReorder = function() {
+    renderReorderList();
+    document.getElementById('reorderOverlay').classList.add('show');
+  };
+
+  window.closeReorder = function(e) {
+    if (e && e.target !== document.getElementById('reorderOverlay')) return;
+    document.getElementById('reorderOverlay').classList.remove('show');
+  };
+
+  function renderReorderList() {
+    const container = document.getElementById('reorderList');
+    const stores = getStores();
+    
+    // Conta i prodotti per negozio
+    const counts = {};
+    items.forEach(i => {
+      const sid = i.store || 'generico';
+      counts[sid] = (counts[sid] || 0) + 1;
+    });
+    
+    container.innerHTML = stores.map((store, index) => `
+      <div class="reorder-item">
+        <div class="position-num">${index + 1}</div>
+        <div class="store-logo" style="background:${store.color}">${store.name.substring(0,2).toUpperCase()}</div>
+        <div class="store-name">${escapeHtml(store.name)}</div>
+        <div class="item-count-badge">${counts[store.id] || 0} prod.</div>
+        <div class="reorder-arrows">
+          <button class="reorder-arrow" onclick="window.moveStore(${index}, -1)" ${index === 0 ? 'disabled' : ''}>▲</button>
+          <button class="reorder-arrow" onclick="window.moveStore(${index}, 1)" ${index === stores.length - 1 ? 'disabled' : ''}>▼</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  window.moveStore = async function(index, direction) {
+    const stores = getStores().slice(); // copia
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= stores.length) return;
+    
+    // Swap
+    const temp = stores[index];
+    stores[index] = stores[newIndex];
+    stores[newIndex] = temp;
+    
+    customStores = stores;
+    renderReorderList();
+    render();
+    await saveSharedSettings();
+  };
+
   function openEditSheet(itemId) {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
     
     editingItemId = itemId;
     
-    // Popola i campi con i dati del prodotto
     itemInput.value = item.name;
     qtyInput.value = item.qty || '';
     storeSelect.value = item.store || 'generico';
     
-    // Operatore
     currentOperator = item.operator || 'A';
     document.querySelectorAll('.operator-btn').forEach(b => b.classList.remove('active'));
     const activeBtn = document.querySelector(`.operator-btn[data-op="${currentOperator}"]`);
     if (activeBtn) activeBtn.classList.add('active');
     
-    // Offerta
     offerCheckbox.checked = item.onOffer === true;
     if (item.onOffer) {
       offerWrapper.classList.add('checked');
@@ -1858,10 +2040,8 @@
       offerConfirmed = false;
     }
     
-    // Scadenza
     expiryInput.value = item.expiryDate || '';
     
-    // Preferito (controlla se è già nei preferiti)
     isFavorite = favorites.some(f => f.name.toLowerCase() === item.name.toLowerCase());
     if (isFavorite) {
       favoriteStar.classList.add('active');
@@ -1873,29 +2053,23 @@
       favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
     }
     
-    // Cambia UI in modalità modifica
     sheetTitle.textContent = '✏️ Modifica prodotto';
     actionBtn.textContent = '💾 Salva modifiche';
     deleteEditBtn.style.display = 'block';
     
-    // Apre il bottom sheet
     sheetOpen = true;
     sheetOverlay.classList.add('show');
     document.body.style.overflow = 'hidden';
   }
 
-  // Handler del bottone principale (Aggiungi o Salva modifiche)
   window.handleSheetAction = async function() {
     if (editingItemId) {
-      // Modalità modifica
       await saveEditedItem();
     } else {
-      // Modalità aggiunta
       await addItem();
     }
   };
 
-  // Salva le modifiche di un prodotto esistente
   async function saveEditedItem() {
     const name = itemInput.value.trim();
     if (!name) {
@@ -1924,7 +2098,6 @@
       const { error } = await supabase.from('lista').update(payload).eq('id', editingItemId);
       if (error) throw error;
       
-      // Aggiorna preferiti
       if (isFavorite) {
         const existingFavIndex = favorites.findIndex(f => f.name.toLowerCase() === name.toLowerCase());
         if (existingFavIndex >= 0) {
@@ -1934,12 +2107,10 @@
         }
         saveLocalSettings();
       } else {
-        // Rimuovi dai preferiti se c'era
         favorites = favorites.filter(f => f.name.toLowerCase() !== name.toLowerCase());
         saveLocalSettings();
       }
       
-      // Aggiornamento ottimistico locale
       const item = items.find(i => i.id === editingItemId);
       if (item) {
         Object.assign(item, {
@@ -1966,7 +2137,6 @@
     }
   }
 
-  // Elimina il prodotto dalla modalità modifica
   window.deleteFromEdit = async function() {
     if (!editingItemId) return;
     if (!confirm('Eliminare questo prodotto?')) return;
@@ -2308,12 +2478,16 @@
     doc.setFont(undefined, 'normal');
     doc.text(`Generata il ${today}`, 14, 22);
     
+    // Usa lo stesso ordine delle settings anche nel PDF
     const byStore = {};
-    const storeOrder = [];
     items.forEach(i => {
       const storeId = i.store || 'generico';
-      if (!byStore[storeId]) { byStore[storeId] = []; storeOrder.push(storeId); }
+      if (!byStore[storeId]) byStore[storeId] = [];
       byStore[storeId].push(i);
+    });
+    const storeOrder = getStores().map(s => s.id).filter(id => byStore[id]);
+    Object.keys(byStore).forEach(id => {
+      if (!storeOrder.includes(id)) storeOrder.push(id);
     });
     
     let yPos = 40;
