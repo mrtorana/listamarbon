@@ -36,7 +36,6 @@
     --header-shadow: rgba(99,102,241,0.25);
     --gold: #fbbf24;
     --done-color: #10b981;
-    --missed-color: #ef4444;
   }
   
   body.dark {
@@ -399,70 +398,28 @@
     color: var(--text);
   }
 
-  /* ===== SWIPE WRAPPER ===== */
-  .swipe-wrapper {
-    position: relative;
-    margin-bottom: 8px;
-    border-radius: 14px;
-    overflow: hidden;
-  }
-  .swipe-bg {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 50%;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    font-size: 28px;
-    color: white;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .swipe-bg-right {
-    right: 0;
-    background: var(--done-color);
-    justify-content: flex-end;
-    border-radius: 0 14px 14px 0;
-  }
-  .swipe-bg-left {
-    left: 0;
-    background: var(--missed-color);
-    justify-content: flex-start;
-    border-radius: 14px 0 0 14px;
-  }
-  .swipe-wrapper[data-direction="right"] .swipe-bg-right { opacity: 1; }
-  .swipe-wrapper[data-direction="left"] .swipe-bg-left { opacity: 1; }
-
-  /* ===== CARD PRODOTTO COMPATTA ===== */
+  /* ===== CARD PRODOTTO ===== */
   .item-card {
     position: relative;
-    border-radius: 14px;
+    background: var(--card);
+    border-radius: 12px;
     padding: 11px 12px;
+    margin-bottom: 8px;
     display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: transform 0.15s ease-out, box-shadow 0.2s, opacity 0.3s;
+    align-items: center;
+    gap: 11px;
+    transition: transform 0.15s, box-shadow 0.2s, opacity 0.3s;
     box-shadow: var(--shadow);
-    border: 1.5px solid transparent;
+    border: 1px solid var(--border);
     user-select: none;
     -webkit-user-select: none;
-    touch-action: pan-y;
-    cursor: grab;
+    touch-action: manipulation;
   }
-  .item-card.dragging { cursor: grabbing; }
-  .item-card.pressing {
-    transform: scale(0.98);
-  }
-  .item-card.done { opacity: 0.5; }
+  .item-card:hover { box-shadow: var(--shadow-lg); }
+  .item-card.pressing { transform: scale(0.98); }
+  .item-card.done { opacity: 0.55; }
   .item-card.done .item-name { 
     text-decoration: line-through; 
-    color: var(--text-muted);
-  }
-  .item-card.missed { opacity: 0.65; }
-  .item-card.missed .item-name { 
-    text-decoration: line-through;
-    text-decoration-color: var(--missed-color);
     color: var(--text-muted);
   }
   .item-card.selectable { cursor: pointer; }
@@ -470,23 +427,61 @@
     box-shadow: 0 0 0 3px rgba(99,102,241,0.3);
   }
   
-  .select-circle {
+  /* Accento colore negozio - striscia laterale */
+  .item-card::before {
+    content: '';
     position: absolute;
+    left: 0;
     top: 8px;
-    left: 8px;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border);
+    bottom: 8px;
+    width: 4px;
+    border-radius: 0 3px 3px 0;
+    background: var(--store-accent, #94a3b8);
+    opacity: 0.7;
+  }
+  body.dark .item-card::before { opacity: 0.85; }
+  
+  /* Checkbox to-do */
+  .todo-checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    color: transparent;
+    font-size: 14px;
+  }
+  .todo-checkbox:hover {
+    border-color: var(--done-color);
+    transform: scale(1.05);
+  }
+  .todo-checkbox.checked {
+    background: var(--done-color);
+    border-color: var(--done-color);
+    color: white;
+  }
+  
+  /* Cerchio di selezione (modalità bulk) */
+  .select-circle {
+    width: 24px;
+    height: 24px;
+    border: 2.5px solid var(--border);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: transparent;
     transition: all 0.2s;
     background: var(--card);
-    z-index: 2;
+    flex-shrink: 0;
   }
   .select-circle.on {
     background: var(--primary);
@@ -494,75 +489,32 @@
     color: white;
   }
   
-  /* Hint visivi swipe (piccoli indicatori ai lati) */
-  .swipe-hint {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 18px;
-    border-radius: 2px;
-    opacity: 0.5;
-    pointer-events: none;
-    z-index: 1;
-  }
-  .swipe-hint.right {
-    right: 2px;
-    background: var(--done-color);
-  }
-  .swipe-hint.left {
-    left: 2px;
-    background: var(--missed-color);
-  }
-  .item-card.done .swipe-hint,
-  .item-card.missed .swipe-hint { display: none; }
-  
+  .item-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
   .item-row {
     display: flex;
     align-items: center;
     gap: 8px;
   }
   .item-name {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     word-break: break-word;
     color: var(--text);
-    user-select: text;
     flex: 1;
     min-width: 0;
     letter-spacing: -0.2px;
-    line-height: 1.25;
+    line-height: 1.3;
   }
   .event-badge {
     font-size: 14px;
     font-weight: 700;
-    padding: 3px 7px;
+    padding: 2px 7px;
     border-radius: 7px;
     color: white;
     flex-shrink: 0;
     line-height: 1;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
-  .delete-btn {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 16px;
-    cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 6px;
-    line-height: 1;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .delete-btn:hover { 
-    color: var(--coral);
-    background: rgba(244,63,94,0.12);
-  }
-  
   .item-meta {
     display: flex;
     align-items: center;
@@ -887,6 +839,9 @@
     margin-bottom: 16px;
     color: var(--text);
     letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .operator-selector {
@@ -1049,6 +1004,9 @@
     color: var(--text);
     cursor: pointer;
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
   
   .favorite-star {
@@ -1592,43 +1550,6 @@
   }
   .reorder-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  .hint-text {
-    text-align: center;
-    font-size: 10px;
-    color: var(--text-muted);
-    margin-top: 14px;
-    padding: 7px;
-    background: var(--card-alt);
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-  }
-
-  .swipe-legend {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 14px;
-    padding: 8px;
-    background: var(--card-alt);
-    border-radius: 9px;
-  }
-  .swipe-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-  .swipe-legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-
   @media (max-width: 480px) {
     .header { padding: 14px 12px 18px; border-radius: 0 0 22px 22px; }
     .header h1 { font-size: 20px; }
@@ -1835,7 +1756,6 @@
   ];
   const DEFAULT_OPERATORS = { A: 'Martina', B: 'Salvo' };
   const HISTORY_MAX = 10;
-  // Solo emoji universalmente compatibili con iOS
   const EMOJI_QUICK = ['🎃','🎄','🎉','🥳','🎂','🍕','🍿','⚽','🎁','❤️','🌸','☀️','⭐','🔥','🍾','🎈','🎭','🐰','🌞','🍬','🏖️','🎬','🎅','🌺','💐','🍷','🍫','🎵','🎪','🍻'];
 
   let items = [];
@@ -1869,20 +1789,6 @@
   let longPressTriggered = false;
   const LONG_PRESS_DURATION = 550;
 
-  // ========== UTILS COLORI ==========
-  function hexToRgba(hex, a) {
-    try {
-      let h = (hex || '#64748b').replace('#', '');
-      if (h.length === 3) h = h.split('').map(c => c + c).join('');
-      const n = parseInt(h, 16);
-      const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
-      return `rgba(${r},${g},${b},${a})`;
-    } catch (e) {
-      return `rgba(100,116,139,${a})`;
-    }
-  }
-
-  // ========== STORAGE LOCALE ==========
   function loadLocalSettings() {
     try {
       const s = localStorage.getItem('marbon_local');
@@ -1919,7 +1825,6 @@
     localStorage.setItem('marbon_history', JSON.stringify(history.slice(0, HISTORY_MAX)));
   }
 
-  // ========== STORAGE CONDIVISO ==========
   async function loadSharedSettings() {
     try {
       const { data, error } = await supabase
@@ -2159,7 +2064,6 @@
     }
   };
 
-  // ========== EVENTI SPECIALI ==========
   async function saveEvents(newEvents) {
     const ops = getOperators();
     customOperators = { A: ops.A, B: ops.B, events: newEvents };
@@ -2244,7 +2148,6 @@
     return `<div class="filter-row">${chips}</div>`;
   }
 
-  // ========== SELEZIONE MULTIPLA ==========
   window.toggleSelectMode = function() {
     if (selectMode) window.exitSelectMode();
     else {
@@ -2357,7 +2260,6 @@
     }
   };
 
-  // ========== STORICO ==========
   function addToHistory(item) {
     const entry = {
       name: item.name,
@@ -2394,22 +2296,16 @@
         price: e.onOffer ? (e.price !== undefined && e.price !== null ? e.price : null) : null,
         expiry_date: e.onOffer ? (e.expiryDate || null) : null,
         event_id: e.eventId || null,
-        done: false,
-        not_available: false
+        done: false
       };
       await safeInsert(payload);
       items.push({
         id: 'temp_' + Date.now(),
-        name: payload.name,
-        qty: payload.qty,
-        store: payload.store,
-        operator: payload.operator,
+        ...payload,
         onOffer: payload.onoffer,
-        price: payload.price,
         expiryDate: payload.expiry_date,
         eventId: payload.event_id,
-        done: false,
-        notAvailable: false
+        done: false
       });
       lastItemsCount = items.length;
       render();
@@ -2460,7 +2356,7 @@
     let body = '';
     if (historyOpen) {
       if (count === 0) {
-        body = `<div class="history-body"><div class="history-empty">Nessun prodotto nello storico.<br>Swipa a destra per completare un prodotto.</div></div>`;
+        body = `<div class="history-body"><div class="history-empty">Nessun prodotto nello storico.<br>Spunta un prodotto come comprato per aggiungerlo qui.</div></div>`;
       } else {
         body = `<div class="history-body">` + history.map((e, idx) => {
           const st = getStore(e.store || 'generico');
@@ -2497,7 +2393,6 @@
     `;
   }
 
-  // ========== QUICK ADD ==========
   window.showQuickAdd = function(storeId) {
     quickAddOpenStore = (quickAddOpenStore === storeId) ? null : storeId;
     quickAddValue = '';
@@ -2541,22 +2436,16 @@
         price: null,
         expiry_date: null,
         event_id: activeEventFilter || null,
-        done: false,
-        not_available: false
+        done: false
       };
       await safeInsert(payload);
       items.push({
         id: 'temp_' + Date.now(),
-        name: payload.name,
-        qty: '',
-        store: storeId,
-        operator: currentOperator,
+        ...payload,
         onOffer: false,
-        price: null,
         expiryDate: null,
         eventId: payload.event_id,
-        done: false,
-        notAvailable: false
+        done: false
       });
       lastItemsCount = items.length;
       quickAddValue = '';
@@ -2568,9 +2457,8 @@
     }
   };
 
-  // ========== HELPER DB SICURI ==========
   async function safeInsert(payload) {
-    const optionalKeys = ['not_available', 'event_id'];
+    const optionalKeys = ['event_id'];
     let p = payload;
     for (;;) {
       const { error } = await supabase.from('lista').insert(p);
@@ -2584,7 +2472,7 @@
 
   async function safeUpdate(payload, ids) {
     if (!ids.length) return;
-    const optionalKeys = ['not_available', 'event_id'];
+    const optionalKeys = ['event_id'];
     let p = payload;
     for (;;) {
       const { error } = await supabase.from('lista').update(p).in('id', ids);
@@ -2596,7 +2484,6 @@
     }
   }
 
-  // ========== CARICAMENTO DATI ==========
   async function loadItems() {
     try {
       const { data, error } = await supabase
@@ -2616,8 +2503,7 @@
         price: row.price,
         expiryDate: row.expiry_date || null,
         eventId: row.event_id || null,
-        done: row.done === true,
-        notAvailable: row.not_available === true
+        done: row.done === true
       }));
       
       const newCount = newItems.length;
@@ -2648,7 +2534,6 @@
 
   setInterval(() => { loadItems(); }, 30000);
 
-  // ========== RENDER ==========
   function render() {
     let html = renderFilterRow();
 
@@ -2683,19 +2568,18 @@
       storeOrder.forEach(storeId => {
         const store = getStore(storeId);
         const storeItems = byStore[storeId];
-        const pendingCount = storeItems.filter(i => !i.done && !i.notAvailable).length;
+        const pendingCount = storeItems.filter(i => !i.done).length;
         const isCollapsed = collapsedStores.has(storeId);
-        const headTint = hexToRgba(store.color, isDark ? 0.10 : 0.06);
         
         html += `
           <div class="store-section">
-            <div class="store-header ${isCollapsed ? 'collapsed' : ''}" style="background:${headTint}" onclick="window.toggleStore('${storeId}')">
+            <div class="store-header ${isCollapsed ? 'collapsed' : ''}" onclick="window.toggleStore('${storeId}')">
               <div class="store-logo" style="background:${store.color}">${store.name.substring(0,2).toUpperCase()}</div>
               <div class="store-info">
                 <div class="store-name">${escapeHtml(store.name)}</div>
                 <div class="store-count">${pendingCount} da prendere · ${storeItems.length} totali</div>
               </div>
-              <button class="store-add-btn" style="border-color:${hexToRgba(store.color, 0.5)};color:${store.color}" onclick="event.stopPropagation(); window.showQuickAdd('${storeId}')" title="Aggiungi"><i class="bi bi-plus-lg"></i></button>
+              <button class="store-add-btn" style="border-color:${store.color};color:${store.color}" onclick="event.stopPropagation(); window.showQuickAdd('${storeId}')" title="Aggiungi"><i class="bi bi-plus-lg"></i></button>
               <span class="collapse-icon ${isCollapsed ? 'rotated' : ''}"><i class="bi bi-chevron-down"></i></span>
             </div>
         `;
@@ -2714,38 +2598,17 @@
           `;
         }
         
-        html += `<div class="store-items ${isCollapsed ? 'collapsed' : ''}" style="max-height: ${isCollapsed ? '0' : storeItems.length * 140 + 'px'}">`;
+        html += `<div class="store-items ${isCollapsed ? 'collapsed' : ''}" style="max-height: ${isCollapsed ? '0' : storeItems.length * 100 + 'px'}">`;
         storeItems.forEach(item => { html += renderItem(item, store); });
         html += `</div></div>`;
       });
-      
-      // Legenda swipe (solo se ci sono prodotti)
-      if (filteredItems.length > 0) {
-        html += `
-          <div class="swipe-legend">
-            <div class="swipe-legend-item">
-              <span class="swipe-legend-dot" style="background:var(--done-color)"></span>
-              <i class="bi bi-arrow-right"></i>
-              <i class="bi bi-check-lg"></i>
-            </div>
-            <div class="swipe-legend-item">
-              <i class="bi bi-x-lg"></i>
-              <i class="bi bi-arrow-left"></i>
-              <span class="swipe-legend-dot" style="background:var(--missed-color)"></span>
-            </div>
-          </div>
-        `;
-      }
     }
 
     html += renderHistory();
     listEl.innerHTML = html;
     
     if (!selectMode) {
-      attachSwipeHandlers();
       attachLongPressHandlers();
-    } else {
-      attachSelectHandlers();
     }
     renderBulkBar();
     
@@ -2765,9 +2628,7 @@
     const isOffer = item.onOffer === true;
     const isExpired = isOffer && item.expiryDate && new Date(item.expiryDate) < new Date(new Date().toDateString());
     const ev = item.eventId ? getEvent(item.eventId) : null;
-    const color = store.color;
-    const tint = hexToRgba(color, isDark ? 0.20 : 0.14);
-    const bord = hexToRgba(color, 0.35);
+    const storeColor = store.color;
     
     let expiryHtml = '';
     if (isOffer && item.expiryDate) {
@@ -2776,46 +2637,40 @@
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       expiryHtml = `<span class="expiry-text ${isExpired ? 'exp' : ''}"><i class="bi bi-calendar-event-fill"></i> ${dd}.${mm}</span>`;
     }
-    const eventHtml = ev ? `<span class="event-badge" style="background:${color}" title="${escapeHtml(ev.name)}">${ev.emoji ? ev.emoji : escapeHtml(ev.name)}</span>` : '';
-    const priceHtml = (isOffer && item.price !== null && item.price !== undefined) ? `<span class="price-badge" style="background:${color}">€${formatPrice(item.price)}</span>` : '';
+    const eventHtml = ev ? `<span class="event-badge" style="background:${storeColor}" title="${escapeHtml(ev.name)}">${ev.emoji ? ev.emoji : escapeHtml(ev.name)}</span>` : '';
+    const priceHtml = (isOffer && item.price !== null && item.price !== undefined) ? `<span class="price-badge" style="background:${storeColor}">€${formatPrice(item.price)}</span>` : '';
     
     if (selectMode) {
       const sel = selectedIds.has(item.id);
       return `
-        <div class="swipe-wrapper" data-direction="none">
-          <div class="item-card selectable${sel ? ' selected' : ''}" style="background:${tint};border-color:${sel ? 'var(--primary)' : bord}" onclick="window.toggleSelect('${item.id}')" data-item-id="${item.id}">
-            <div class="select-circle ${sel ? 'on' : ''}">${sel ? '<i class="bi bi-check-lg"></i>' : ''}</div>
-            <div style="padding-left:24px">
-              <div class="item-row">
-                <div class="item-name">${escapeHtml(item.name)}</div>
-                ${eventHtml}
-              </div>
-              <div class="item-meta">
-                ${item.qty ? `<span class="item-qty">${escapeHtml(item.qty)}</span>` : ''}
-                <div class="operator-badge op-${opKey.toLowerCase()}">${opInitial}</div>
-                ${priceHtml}
-              </div>
+        <div class="item-card selectable${sel ? ' selected' : ''}" style="--store-accent:${storeColor}" onclick="window.toggleSelect('${item.id}')" data-item-id="${item.id}">
+          <div class="select-circle ${sel ? 'on' : ''}">${sel ? '<i class="bi bi-check-lg"></i>' : ''}</div>
+          <div class="item-main">
+            <div class="item-row">
+              <div class="item-name">${escapeHtml(item.name)}</div>
+              ${eventHtml}
+            </div>
+            <div class="item-meta">
+              ${item.qty ? `<span class="item-qty">${escapeHtml(item.qty)}</span>` : ''}
+              <div class="operator-badge op-${opKey.toLowerCase()}">${opInitial}</div>
+              ${priceHtml}
             </div>
           </div>
         </div>
       `;
     }
     
-    let stateCls = '';
-    if (item.done) stateCls = ' done';
-    else if (item.notAvailable) stateCls = ' missed';
+    const stateCls = item.done ? ' done' : '';
     
     return `
-      <div class="swipe-wrapper" data-direction="none">
-        <div class="swipe-bg swipe-bg-right"><i class="bi bi-check-lg"></i></div>
-        <div class="swipe-bg swipe-bg-left"><i class="bi bi-x-lg"></i></div>
-        <div class="item-card${stateCls}" style="background:${tint};border-color:${bord}" data-item-id="${item.id}">
-          <span class="swipe-hint right"></span>
-          <span class="swipe-hint left"></span>
+      <div class="item-card${stateCls}" style="--store-accent:${storeColor}" data-item-id="${item.id}">
+        <div class="todo-checkbox ${item.done ? 'checked' : ''}" onclick="window.toggleDone('${item.id}')" title="${item.done ? 'Segna come non comprato' : 'Segna come comprato'}">
+          ${item.done ? '<i class="bi bi-check-lg"></i>' : ''}
+        </div>
+        <div class="item-main">
           <div class="item-row">
             <div class="item-name">${escapeHtml(item.name)}</div>
             ${eventHtml}
-            <button class="delete-btn" onclick="window.deleteItem('${item.id}')"><i class="bi bi-trash3-fill"></i></button>
           </div>
           <div class="item-meta">
             ${item.qty ? `<span class="item-qty">${escapeHtml(item.qty)}</span>` : ''}
@@ -2848,148 +2703,24 @@
     return isNaN(num) ? null : num;
   }
 
-  // ========== GESTIONE STATI (done/missed/none) ==========
-  async function setItemState(id, state) {
+  // Toggle checkbox comprato (to-do style)
+  window.toggleDone = async function(id) {
     const item = items.find(i => i.id === id);
     if (!item) return;
     
-    if (state === 'done') {
-      item.done = true;
-      item.notAvailable = false;
+    item.done = !item.done;
+    if (item.done) {
       addToHistory(item);
-    } else if (state === 'missed') {
-      item.notAvailable = true;
-      item.done = false;
-    } else {
-      item.done = false;
-      item.notAvailable = false;
     }
     render();
     try {
       if (!id.startsWith('temp_')) {
-        await safeUpdate({ done: item.done, not_available: item.notAvailable }, [id]);
+        await supabase.from('lista').update({ done: item.done }).eq('id', id);
       }
     } catch (err) { console.error(err); }
-  }
+  };
 
-  // ========== SWIPE SYSTEM ==========
-  function attachSwipeHandlers() {
-    document.querySelectorAll('.swipe-wrapper').forEach(wrapper => {
-      const card = wrapper.querySelector('.item-card');
-      if (!card) return;
-      const itemId = card.dataset.itemId;
-      if (!itemId) return;
-      
-      let startX = 0, currentX = 0, isDragging = false, moved = false;
-      const threshold = 80;
-      const maxSwipe = 120;
-      
-      const onStart = (e) => {
-        if (selectMode) return;
-        // Non attivare swipe se si clicca su delete button
-        const target = e.target;
-        if (target.closest('.delete-btn')) return;
-        
-        const point = e.touches ? e.touches[0] : e;
-        startX = point.clientX;
-        currentX = 0;
-        isDragging = true;
-        moved = false;
-        card.style.transition = 'none';
-        card.classList.add('dragging');
-      };
-      
-      const onMove = (e) => {
-        if (!isDragging) return;
-        const point = e.touches ? e.touches[0] : e;
-        currentX = point.clientX - startX;
-        
-        if (Math.abs(currentX) > 5) moved = true;
-        
-        // Limita lo swipe
-        if (currentX > maxSwipe) currentX = maxSwipe;
-        if (currentX < -maxSwipe) currentX = -maxSwipe;
-        
-        card.style.transform = `translateX(${currentX}px)`;
-        
-        // Mostra background in base alla direzione
-        if (currentX > 20) wrapper.dataset.direction = 'right';
-        else if (currentX < -20) wrapper.dataset.direction = 'left';
-        else wrapper.dataset.direction = 'none';
-      };
-      
-      const onEnd = async () => {
-        if (!isDragging) return;
-        isDragging = false;
-        card.classList.remove('dragging');
-        card.style.transition = 'transform 0.25s cubic-bezier(0.32, 0.72, 0, 1)';
-        
-        const item = items.find(i => i.id === itemId);
-        if (!item) {
-          card.style.transform = '';
-          wrapper.dataset.direction = 'none';
-          return;
-        }
-        
-        if (currentX > threshold) {
-          // Swipe right = toggle done
-          card.style.transform = 'translateX(100%)';
-          wrapper.dataset.direction = 'right';
-          setTimeout(async () => {
-            const newState = item.done ? 'none' : 'done';
-            await setItemState(itemId, newState);
-            // Feedback visivo: la card riappare nello stato nuovo
-          }, 200);
-        } else if (currentX < -threshold) {
-          // Swipe left = toggle missed
-          card.style.transform = 'translateX(-100%)';
-          wrapper.dataset.direction = 'left';
-          setTimeout(async () => {
-            const newState = item.notAvailable ? 'none' : 'missed';
-            await setItemState(itemId, newState);
-          }, 200);
-        } else {
-          // Non ha superato la soglia: torna a posto
-          card.style.transform = '';
-          wrapper.dataset.direction = 'none';
-        }
-        currentX = 0;
-      };
-      
-      // Touch events
-      card.addEventListener('touchstart', onStart, { passive: true });
-      card.addEventListener('touchmove', onMove, { passive: true });
-      card.addEventListener('touchend', onEnd);
-      card.addEventListener('touchcancel', onEnd);
-      
-      // Mouse events (per desktop)
-      card.addEventListener('mousedown', onStart);
-      card.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-          e.preventDefault();
-          onMove(e);
-        }
-      });
-      card.addEventListener('mouseup', onEnd);
-      card.addEventListener('mouseleave', () => {
-        if (isDragging) onEnd();
-      });
-      
-      // Previeni click dopo swipe
-      card.addEventListener('click', (e) => {
-        if (moved) {
-          e.stopPropagation();
-          e.preventDefault();
-        }
-      }, true);
-    });
-  }
-
-  function attachSelectHandlers() {
-    // In modalità select, i click sono gestiti inline
-  }
-
-  // ========== LONG PRESS ==========
+  // ========== LONG PRESS (modifica + elimina) ==========
   function attachLongPressHandlers() {
     document.querySelectorAll('.item-card').forEach(card => {
       const itemId = card.dataset.itemId;
@@ -2997,7 +2728,8 @@
       
       const startPress = (e) => {
         const target = e.target;
-        if (target.closest('.delete-btn')) return;
+        // Non attivare long press se clicco sul checkbox to-do
+        if (target.closest('.todo-checkbox')) return;
         
         longPressTargetId = itemId;
         longPressTriggered = false;
@@ -3030,7 +2762,6 @@
     });
   }
 
-  // ========== SHEET ==========
   function openEditSheet(itemId) {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
@@ -3258,8 +2989,7 @@
         price: offerCheckbox.checked ? pendingPrice : null,
         expiry_date: (offerCheckbox.checked && expiryInput.value) ? expiryInput.value : null,
         event_id: eventSelect.value || null,
-        done: false,
-        not_available: false
+        done: false
       };
       await safeInsert(payload);
       
@@ -3276,7 +3006,7 @@
         onOffer: payload.onoffer,
         expiryDate: payload.expiry_date,
         eventId: payload.event_id,
-        notAvailable: false
+        done: false
       });
       lastItemsCount = items.length;
       render();
@@ -3288,21 +3018,6 @@
       alert('Errore: ' + err.message);
     }
   }
-
-  window.deleteItem = async function(id) {
-    if (confirm('Eliminare questo prodotto?')) {
-      try {
-        const item = items.find(i => i.id === id);
-        if (item && item.done) addToHistory(item);
-        items = items.filter(i => i.id !== id);
-        lastItemsCount = items.length;
-        render();
-        if (!id.startsWith('temp_')) {
-          await supabase.from('lista').delete().eq('id', id);
-        }
-      } catch (err) { console.error(err); }
-    }
-  };
 
   window.magicWand = async function() {
     const doneItems = items.filter(i => i.done);
@@ -3327,7 +3042,6 @@
     }
   };
 
-  // ========== SETTINGS ==========
   window.openSettings = function() {
     const ops = getOperators();
     document.getElementById('settingsOpA').value = ops.A;
@@ -3407,7 +3121,6 @@
     render();
   };
 
-  // ========== RIORDINA ==========
   window.openReorder = function() {
     renderReorderList();
     document.getElementById('reorderOverlay').classList.add('show');
@@ -3453,7 +3166,6 @@
     await saveSharedSettings();
   };
 
-  // ========== PDF ==========
   window.exportPDF = function() {
     if (items.length === 0) {
       alert('La lista è vuota!');
@@ -3502,9 +3214,7 @@
         const price = item.onOffer && item.price ? `${formatPrice(item.price)} €` : '-';
         const offer = item.onOffer ? 'Sì' : '';
         const expiry = item.expiryDate ? new Date(item.expiryDate).toLocaleDateString('it-IT') : '';
-        let status = '';
-        if (item.done) status = '✓';
-        else if (item.notAvailable) status = '✗';
+        const status = item.done ? '✓' : '';
         const ev = item.eventId ? getEvent(item.eventId) : null;
         const nameWithEvent = ev ? `${ev.emoji} ${item.name}` : item.name;
         return [nameWithEvent, item.qty || '-', opName, price, offer, expiry, status];
@@ -3533,7 +3243,6 @@
     doc.save(`lista-spesa-${today.replace(/\//g, '-')}.pdf`);
   };
 
-  // ========== EVENTI MODAL ==========
   priceModal.addEventListener('click', (e) => {
     if (e.target === priceModal) window.cancelOffer();
   });
@@ -3546,7 +3255,6 @@
   itemInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.handleSheetAction(); });
   qtyInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.handleSheetAction(); });
 
-  // ========== INIT ==========
   loadLocalSettings();
   loadSharedSettings();
   loadItems();
