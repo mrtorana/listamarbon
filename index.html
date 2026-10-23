@@ -280,7 +280,10 @@
   }
   .store-header:hover { box-shadow: var(--shadow-lg); }
   .store-header.collapsed { margin-bottom: 0; }
+  
+  /* ===== LOGO NEGOZIO (iniziali / icona / immagine) ===== */
   .store-logo {
+    position: relative;
     width: 36px; height: 36px;
     border-radius: 10px;
     display: flex;
@@ -291,7 +294,23 @@
     color: white;
     flex-shrink: 0;
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    overflow: hidden;
   }
+  .store-logo i { font-size: 17px; color: #fff; }
+  .store-logo.sz-sm { width: 32px; height: 32px; border-radius: 9px; font-size: 10px; }
+  .store-logo.sz-sm i { font-size: 15px; }
+  .store-logo.sz-xs { width: 30px; height: 30px; border-radius: 8px; font-size: 9px; }
+  .store-logo.sz-xs i { font-size: 13px; }
+  .logo-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #ffffff;
+    border-radius: inherit;
+  }
+  
   .store-info { flex: 1; min-width: 0; }
   .store-name {
     font-size: 15px;
@@ -398,7 +417,6 @@
     color: var(--text);
   }
 
-  /* ===== CARD PRODOTTO ===== */
   .item-card {
     position: relative;
     background: var(--card);
@@ -427,7 +445,6 @@
     box-shadow: 0 0 0 3px rgba(99,102,241,0.3);
   }
   
-  /* Accento colore negozio - striscia laterale */
   .item-card::before {
     content: '';
     position: absolute;
@@ -441,7 +458,6 @@
   }
   body.dark .item-card::before { opacity: 0.85; }
   
-  /* Checkbox to-do */
   .todo-checkbox {
     width: 24px;
     height: 24px;
@@ -467,7 +483,6 @@
     color: white;
   }
   
-  /* Cerchio di selezione (modalità bulk) */
   .select-circle {
     width: 24px;
     height: 24px;
@@ -756,17 +771,6 @@
     transform: translateX(3px);
   }
   .pick-item .pick-emoji { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
-  .pick-item .pick-logo {
-    width: 32px; height: 32px;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-    color: white;
-    flex-shrink: 0;
-  }
   .pick-item .pick-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); }
 
   .fab {
@@ -1242,7 +1246,7 @@
     align-items: center;
     gap: 5px;
   }
-  .settings-row { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+  .settings-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .settings-row label { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
   .settings-row input[type="text"] {
     flex: 1;
@@ -1264,6 +1268,7 @@
     cursor: pointer;
     padding: 2px;
     background: var(--card);
+    flex-shrink: 0;
   }
   .settings-row .delete-small {
     background: var(--card-alt);
@@ -1294,6 +1299,99 @@
     flex-shrink: 0;
   }
   .settings-row .emoji-mini:focus { outline: none; border-color: var(--primary); }
+  
+  /* Bottone anteprima icona negozio */
+  .store-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--card);
+    padding: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .store-icon-btn:hover {
+    border-color: var(--primary);
+    transform: scale(1.05);
+  }
+  
+  /* Pannello scelta icona */
+  .icon-picker-panel {
+    background: var(--card-alt);
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    margin: -2px 0 10px;
+  }
+  .ipp-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin: 4px 0 6px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    letter-spacing: 0.4px;
+  }
+  .ipp-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .ipp-img, .ipp-bi {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 17px;
+    color: var(--text-secondary);
+    padding: 0;
+    transition: all 0.15s;
+    overflow: hidden;
+  }
+  .ipp-bi { background: var(--card); }
+  .ipp-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .ipp-img:hover, .ipp-bi:hover {
+    transform: scale(1.06);
+    border-color: var(--primary);
+  }
+  .ipp-img.sel, .ipp-bi.sel {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+  }
+  .ipp-none {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 9px;
+    background: var(--card);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s;
+  }
+  .ipp-none:hover { color: var(--text); border: 1px solid var(--border); }
   
   .emoji-quick {
     display: flex;
@@ -1506,18 +1604,6 @@
     justify-content: center;
     flex-shrink: 0;
   }
-  .reorder-item .store-logo {
-    width: 32px; height: 32px;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-    color: white;
-    flex-shrink: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
-  }
   .reorder-item .store-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); }
   .reorder-item .item-count-badge {
     font-size: 10px;
@@ -1557,6 +1643,7 @@
     .fab { bottom: 16px; right: 16px; width: 50px; height: 50px; }
     .list-container { padding: 12px 10px 36px; }
     .search-input { padding: 10px 34px 10px 12px; font-size: 13px; }
+    .ipp-grid { grid-template-columns: repeat(5, 1fr); }
   }
 </style>
 </head>
@@ -1741,22 +1828,41 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_PHA1Fj2T3CC_gcAln4uiCg_EUJEw6ts';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const DEFAULT_STORES = [
-    { id: 'generico', name: 'Generico', color: '#64748b' },
-    { id: 'eurospin', name: 'Eurospin', color: '#f7c600' },
-    { id: 'ard', name: 'ARD', color: '#e30613' },
-    { id: 'lidl', name: 'Lidl', color: '#0050aa' },
-    { id: 'conad', name: 'Conad', color: '#f26522' },
-    { id: 'todis', name: 'Todis', color: '#e30613' },
-    { id: 'crai', name: 'Crai', color: '#00923f' },
-    { id: 'coop', name: 'Coop', color: '#005eb8' },
-    { id: 'md', name: 'MD', color: '#e30613' },
-    { id: 'sisa', name: 'Sisa', color: '#00923f' },
-    { id: 'despar', name: 'Despar', color: '#00923f' },
+  // Loghi PNG caricati su GitHub nella stessa cartella di index.html
+  const AVAILABLE_LOGOS = [
+    'eurospin.png', 'lidl.png', 'despar.png', 'md.png', 'conad.png',
+    'ard.png', 'acqua.png', 'todis.png', 'sisa.png', 'crai.png'
   ];
+
+  // Icone generiche Bootstrap Icons
+  const BI_ICONS = [
+    'bi-shop', 'bi-cart3', 'bi-basket', 'bi-bag', 'bi-droplet-fill',
+    'bi-cup-straw', 'bi-egg-fill', 'bi-flower1', 'bi-house-fill',
+    'bi-lightning-charge-fill', 'bi-snow2', 'bi-fire', 'bi-tree-fill',
+    'bi-star-fill', 'bi-heart-fill', 'bi-gift-fill', 'bi-truck', 'bi-store'
+  ];
+
+  const DEFAULT_STORES = [
+    { id: 'generico', name: 'Generico', color: '#64748b', icon: null },
+    { id: 'eurospin', name: 'Eurospin', color: '#f7c600', icon: { type: 'img', src: 'eurospin.png' } },
+    { id: 'ard', name: 'ARD', color: '#e30613', icon: { type: 'img', src: 'ard.png' } },
+    { id: 'lidl', name: 'Lidl', color: '#0050aa', icon: { type: 'img', src: 'lidl.png' } },
+    { id: 'conad', name: 'Conad', color: '#f26522', icon: { type: 'img', src: 'conad.png' } },
+    { id: 'todis', name: 'Todis', color: '#e30613', icon: { type: 'img', src: 'todis.png' } },
+    { id: 'crai', name: 'Crai', color: '#00923f', icon: { type: 'img', src: 'crai.png' } },
+    { id: 'coop', name: 'Coop', color: '#005eb8', icon: null },
+    { id: 'md', name: 'MD', color: '#e30613', icon: { type: 'img', src: 'md.png' } },
+    { id: 'sisa', name: 'Sisa', color: '#00923f', icon: { type: 'img', src: 'sisa.png' } },
+    { id: 'despar', name: 'Despar', color: '#00923f', icon: { type: 'img', src: 'despar.png' } },
+  ];
+
+  // Mappa per migrare automaticamente i negozi salvati senza icona
+  const DEFAULT_ICON_MAP = {};
+  DEFAULT_STORES.forEach(s => { if (s.icon) DEFAULT_ICON_MAP[s.id] = s.icon; });
+
   const DEFAULT_OPERATORS = { A: 'Martina', B: 'Salvo' };
   const HISTORY_MAX = 10;
-  const EMOJI_QUICK = ['🎃','🎄','🎉','🥳','🎂','🍕','🍿','⚽','🎁','❤️','🌸','☀️','⭐','🔥','🍾','🎈','🎭','🐰','🌞','🍬','🏖️','🎬','🎅','🌺','💐','🍷','🍫','🎵','🎪','🍻'];
+  const EMOJI_QUICK = ['🎃','🎄','🎉','🥳','🎂','🍕','🍿','⚽','🎁','❤️','🌸','️','⭐','🔥','🍾','🎈','🎭','🐰','🌞','🍬','🏖️','🎬','','🌺','','🍷','','🎵','','🍻'];
 
   let items = [];
   let currentOperator = 'A';
@@ -1783,11 +1889,23 @@
   let selectMode = false;
   let selectedIds = new Set();
   let bulkAction = 'store';
+  let iconPickerStoreId = null;
 
   let longPressTimer = null;
   let longPressTargetId = null;
   let longPressTriggered = false;
   const LONG_PRESS_DURATION = 550;
+
+  // Migra i negozi aggiungendo le icone di default mancanti
+  function migrateStores(stores) {
+    if (!Array.isArray(stores)) return stores;
+    return stores.map(s => {
+      if (s && !s.icon && DEFAULT_ICON_MAP[s.id]) {
+        return Object.assign({}, s, { icon: DEFAULT_ICON_MAP[s.id] });
+      }
+      return s;
+    });
+  }
 
   function loadLocalSettings() {
     try {
@@ -1837,7 +1955,7 @@
         customStores = DEFAULT_STORES;
         customOperators = DEFAULT_OPERATORS;
       } else {
-        customStores = data.stores || DEFAULT_STORES;
+        customStores = migrateStores(data.stores || DEFAULT_STORES);
         customOperators = data.operators || DEFAULT_OPERATORS;
       }
       
@@ -1891,12 +2009,12 @@
       { event: '*', schema: 'public', table: 'settings' }, 
       (payload) => {
         if (payload.new) {
-          customStores = payload.new.stores || DEFAULT_STORES;
+          customStores = migrateStores(payload.new.stores || DEFAULT_STORES);
           customOperators = payload.new.operators || DEFAULT_OPERATORS;
           syncOperatorUI();
           initStoreSelect();
           initEventSelect();
-          if (document.getElementById('settingsOverlay').classList.contains('show')) renderEventsList();
+          if (document.getElementById('settingsOverlay').classList.contains('show')) renderStoresList();
           render();
         }
       }
@@ -1909,6 +2027,19 @@
   function getStore(id) { return getStores().find(s => s.id === id) || getStores()[0]; }
   function getEvent(id) { return getEvents().find(e => e.id === id) || null; }
   function getOpName(key) { return getOperators()[key] || key; }
+
+  // Renderizza il logo del negozio: immagine PNG, icona Bootstrap o iniziali
+  function storeLogoHTML(store, sizeClass) {
+    const initials = (store.name || '?').substring(0, 2).toUpperCase();
+    const icon = store.icon;
+    let inner = `<span>${escapeHtml(initials)}</span>`;
+    if (icon && icon.type === 'bi') {
+      inner = `<i class="bi ${icon.name}"></i>`;
+    } else if (icon && icon.type === 'img') {
+      inner = `<span>${escapeHtml(initials)}</span><img class="logo-img" src="${icon.src}" onerror="this.style.display='none'" alt="">`;
+    }
+    return `<div class="store-logo ${sizeClass || ''}" style="background:${store.color}">${inner}</div>`;
+  }
 
   function syncOperatorUI() {
     const ops = getOperators();
@@ -2196,7 +2327,7 @@
       title.innerHTML = '<i class="bi bi-shop"></i> Sposta in negozio';
       list.innerHTML = getStores().map(s => `
         <div class="pick-item" onclick="window.applyBulkStore('${s.id}')">
-          <div class="pick-logo" style="background:${s.color}">${s.name.substring(0,2).toUpperCase()}</div>
+          ${storeLogoHTML(s, 'sz-sm')}
           <div class="pick-name">${escapeHtml(s.name)}</div>
         </div>
       `).join('');
@@ -2251,7 +2382,7 @@
         await safeUpdate({ event_id: eventId }, ids);
       }
       const ev = eventId ? getEvent(eventId) : null;
-      showIndicator(ev ? ('Evento assegnato') : 'Evento rimosso');
+      showIndicator(ev ? 'Evento assegnato' : 'Evento rimosso');
       window.exitSelectMode();
       setTimeout(() => loadItems(), 800);
     } catch (err) {
@@ -2574,7 +2705,7 @@
         html += `
           <div class="store-section">
             <div class="store-header ${isCollapsed ? 'collapsed' : ''}" onclick="window.toggleStore('${storeId}')">
-              <div class="store-logo" style="background:${store.color}">${store.name.substring(0,2).toUpperCase()}</div>
+              ${storeLogoHTML(store)}
               <div class="store-info">
                 <div class="store-name">${escapeHtml(store.name)}</div>
                 <div class="store-count">${pendingCount} da prendere · ${storeItems.length} totali</div>
@@ -2703,15 +2834,12 @@
     return isNaN(num) ? null : num;
   }
 
-  // Toggle checkbox comprato (to-do style)
   window.toggleDone = async function(id) {
     const item = items.find(i => i.id === id);
     if (!item) return;
     
     item.done = !item.done;
-    if (item.done) {
-      addToHistory(item);
-    }
+    if (item.done) addToHistory(item);
     render();
     try {
       if (!id.startsWith('temp_')) {
@@ -2720,7 +2848,6 @@
     } catch (err) { console.error(err); }
   };
 
-  // ========== LONG PRESS (modifica + elimina) ==========
   function attachLongPressHandlers() {
     document.querySelectorAll('.item-card').forEach(card => {
       const itemId = card.dataset.itemId;
@@ -2728,7 +2855,6 @@
       
       const startPress = (e) => {
         const target = e.target;
-        // Non attivare long press se clicco sul checkbox to-do
         if (target.closest('.todo-checkbox')) return;
         
         longPressTargetId = itemId;
@@ -3042,10 +3168,12 @@
     }
   };
 
+  // ========== SETTINGS ==========
   window.openSettings = function() {
     const ops = getOperators();
     document.getElementById('settingsOpA').value = ops.A;
     document.getElementById('settingsOpB').value = ops.B;
+    iconPickerStoreId = null;
     renderStoresList();
     renderEventsList();
     updateDarkToggle();
@@ -3060,14 +3188,77 @@
   function renderStoresList() {
     const container = document.getElementById('storesList');
     const stores = getStores();
-    container.innerHTML = stores.map(s => `
-      <div class="settings-row">
-        <input type="color" class="color-input" value="${s.color}" onchange="window.updateStoreColor('${s.id}', this.value)">
-        <input type="text" value="${escapeHtml(s.name)}" onchange="window.updateStoreName('${s.id}', this.value)" maxlength="30">
-        ${stores.length > 1 ? `<button class="delete-small" onclick="window.deleteStore('${s.id}')"><i class="bi bi-trash-fill"></i></button>` : ''}
-      </div>
-    `).join('');
+    container.innerHTML = stores.map(s => {
+      const pickerOpen = iconPickerStoreId === s.id;
+      let panel = '';
+      if (pickerOpen) {
+        const currentIcon = s.icon || null;
+        panel = `
+          <div class="icon-picker-panel">
+            <div class="ipp-title"><i class="bi bi-image"></i> Logo dalla cartella GitHub</div>
+            <div class="ipp-grid">
+              ${AVAILABLE_LOGOS.map(f => `
+                <button class="ipp-img ${currentIcon && currentIcon.type === 'img' && currentIcon.src === f ? 'sel' : ''}" 
+                        onclick="window.setStoreIconImg('${s.id}','${f}')" title="${f}">
+                  <img src="${f}" onerror="this.parentElement.style.display='none'" alt="">
+                </button>
+              `).join('')}
+            </div>
+            <div class="ipp-title"><i class="bi bi-icons"></i> Icona generica</div>
+            <div class="ipp-grid">
+              ${BI_ICONS.map(n => `
+                <button class="ipp-bi ${currentIcon && currentIcon.type === 'bi' && currentIcon.name === n ? 'sel' : ''}" 
+                        onclick="window.setStoreIconBi('${s.id}','${n}')">
+                  <i class="bi ${n}"></i>
+                </button>
+              `).join('')}
+            </div>
+            <button class="ipp-none" onclick="window.clearStoreIcon('${s.id}')"><i class="bi bi-type"></i> Solo iniziali colorate</button>
+          </div>
+        `;
+      }
+      return `
+        <div class="settings-row">
+          <button class="store-icon-btn" onclick="window.toggleIconPicker('${s.id}')" title="Cambia icona">
+            ${storeLogoHTML(s, 'sz-xs')}
+          </button>
+          <input type="color" class="color-input" value="${s.color}" onchange="window.updateStoreColor('${s.id}', this.value)">
+          <input type="text" value="${escapeHtml(s.name)}" onchange="window.updateStoreName('${s.id}', this.value)" maxlength="30">
+          ${stores.length > 1 ? `<button class="delete-small" onclick="window.deleteStore('${s.id}')"><i class="bi bi-trash-fill"></i></button>` : ''}
+        </div>
+        ${panel}
+      `;
+    }).join('');
   }
+
+  window.toggleIconPicker = function(id) {
+    iconPickerStoreId = (iconPickerStoreId === id) ? null : id;
+    renderStoresList();
+  };
+
+  window.setStoreIconImg = function(id, src) {
+    const stores = getStores();
+    const s = stores.find(x => x.id === id);
+    if (s) s.icon = { type: 'img', src: src };
+    customStores = stores;
+    renderStoresList();
+  };
+
+  window.setStoreIconBi = function(id, name) {
+    const stores = getStores();
+    const s = stores.find(x => x.id === id);
+    if (s) s.icon = { type: 'bi', name: name };
+    customStores = stores;
+    renderStoresList();
+  };
+
+  window.clearStoreIcon = function(id) {
+    const stores = getStores();
+    const s = stores.find(x => x.id === id);
+    if (s) s.icon = null;
+    customStores = stores;
+    renderStoresList();
+  };
 
   window.updateStoreName = function(id, name) {
     const stores = getStores();
@@ -3086,6 +3277,7 @@
   window.deleteStore = function(id) {
     if (!confirm('Eliminare questo supermercato?')) return;
     customStores = getStores().filter(s => s.id !== id);
+    if (iconPickerStoreId === id) iconPickerStoreId = null;
     renderStoresList();
   };
 
@@ -3095,7 +3287,7 @@
     if (!name) { alert('Inserisci un nome'); return; }
     const id = 'custom_' + Date.now();
     customStores = getStores();
-    customStores.push({ id, name, color });
+    customStores.push({ id, name, color, icon: null });
     document.getElementById('newStoreName').value = '';
     renderStoresList();
   };
@@ -3117,10 +3309,12 @@
     syncOperatorUI();
     initStoreSelect();
     initEventSelect();
+    iconPickerStoreId = null;
     document.getElementById('settingsOverlay').classList.remove('show');
     render();
   };
 
+  // ========== RIORDINA ==========
   window.openReorder = function() {
     renderReorderList();
     document.getElementById('reorderOverlay').classList.add('show');
@@ -3142,7 +3336,7 @@
     container.innerHTML = stores.map((store, index) => `
       <div class="reorder-item">
         <div class="position-num">${index + 1}</div>
-        <div class="store-logo" style="background:${store.color}">${store.name.substring(0,2).toUpperCase()}</div>
+        ${storeLogoHTML(store, 'sz-sm')}
         <div class="store-name">${escapeHtml(store.name)}</div>
         <div class="item-count-badge">${counts[store.id] || 0}</div>
         <div class="reorder-arrows">
@@ -3166,6 +3360,7 @@
     await saveSharedSettings();
   };
 
+  // ========== PDF ==========
   window.exportPDF = function() {
     if (items.length === 0) {
       alert('La lista è vuota!');
