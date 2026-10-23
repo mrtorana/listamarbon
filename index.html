@@ -217,7 +217,6 @@
     padding: 16px 16px 40px;
   }
 
-  /* Filter row eventi */
   .filter-row {
     display: flex;
     gap: 8px;
@@ -248,7 +247,7 @@
   .filter-chip.muted { cursor: default; opacity: 0.6; }
 
   .store-section {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     animation: slideUp 0.4s ease;
   }
   @keyframes slideUp {
@@ -275,7 +274,6 @@
   }
   .store-header.collapsed {
     margin-bottom: 0;
-    border-radius: 16px;
   }
   .store-logo {
     width: 40px; height: 40px;
@@ -291,30 +289,44 @@
   }
   .store-info { flex: 1; min-width: 0; }
   .store-name {
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 800;
     color: var(--text);
     margin-bottom: 2px;
+    letter-spacing: -0.3px;
   }
   .store-count {
     font-size: 11px;
     color: var(--text-muted);
     font-weight: 500;
   }
-  .store-badge {
-    background: var(--primary);
+  .store-add-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--card);
+    color: var(--text-secondary);
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    line-height: 1;
+    padding-bottom: 2px;
+  }
+  .store-add-btn:hover {
+    transform: scale(1.08);
     color: white;
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(99,102,241,0.3);
   }
   .collapse-icon {
-    font-size: 14px;
+    font-size: 12px;
     color: var(--text-muted);
     transition: transform 0.3s;
-    margin-left: 4px;
+    flex-shrink: 0;
   }
   .collapse-icon.rotated { transform: rotate(-90deg); }
   
@@ -327,25 +339,7 @@
     opacity: 0;
   }
 
-  .quick-add-row { margin-top: 8px; }
-  .quick-add-btn {
-    width: 100%;
-    padding: 11px;
-    background: transparent;
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    color: var(--text-muted);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .quick-add-btn:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-    background: rgba(99,102,241,0.05);
-  }
+  .quick-add-row { margin: 0 0 10px; }
   .quick-add-input-wrap { display: flex; gap: 6px; }
   .quick-add-input {
     flex: 1;
@@ -397,17 +391,17 @@
     color: var(--text);
   }
 
+  /* ===== CARD PRODOTTO (nuovo layout) ===== */
   .item-card {
-    background: var(--card);
     border-radius: 16px;
     padding: 14px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     display: flex;
     align-items: flex-start;
     gap: 12px;
     transition: all 0.2s;
     box-shadow: var(--shadow);
-    border: 2px solid transparent;
+    border: 1.5px solid transparent;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
@@ -419,30 +413,17 @@
   .item-card.pressing {
     transform: scale(0.97);
     opacity: 0.85;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
   }
-  .item-card.offer {
-    border-color: var(--mint);
-    background: linear-gradient(135deg, rgba(16,185,129,0.05), var(--card));
-  }
-  .item-card.expired {
-    opacity: 0.6;
-    border-color: var(--coral);
-  }
-  .item-card.done {
-    opacity: 0.5;
-    background: var(--card-alt);
-  }
+  .item-card.done { opacity: 0.55; }
   .item-card.done .item-name { 
     text-decoration: line-through; 
     color: var(--text-muted);
   }
+  .item-card.unavail { opacity: 0.8; }
+  .item-card.unavail .item-name { color: var(--text-muted); }
   .item-card.selectable { cursor: pointer; }
   .item-card.selected {
-    border-color: var(--primary);
-    background: rgba(99,102,241,0.07);
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
   }
   
   .select-circle {
@@ -451,7 +432,7 @@
     border: 2px solid var(--border);
     border-radius: 50%;
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -467,47 +448,65 @@
     color: white;
   }
   
-  .item-checkbox {
-    width: 22px; 
-    height: 22px;
-    border: 2px solid var(--border);
-    border-radius: 6px;
+  .item-main { flex: 1; min-width: 0; }
+  .item-row1 {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-top: 2px;
-    transition: all 0.2s;
-    background: var(--card);
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
   }
-  .item-checkbox.checked {
-    background: var(--primary);
-    border-color: var(--primary);
-  }
-  .item-checkbox.checked::after {
-    content: '✓';
-    color: white;
-    font-size: 13px;
-    font-weight: 700;
-  }
-  
-  .item-content { flex: 1; min-width: 0; }
   .item-name {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 700;
     word-break: break-word;
     cursor: text;
-    padding: 3px 5px;
-    border-radius: 6px;
-    margin-bottom: 6px;
+    padding: 2px 5px;
+    border-radius: 8px;
     color: var(--text);
     user-select: text;
+    flex: 1;
+    min-width: 0;
+    letter-spacing: -0.3px;
+    line-height: 1.25;
   }
-  .item-name:hover { background: var(--card-alt); }
+  .item-name:hover { background: rgba(255,255,255,0.5); }
+  body.dark .item-name:hover { background: rgba(255,255,255,0.08); }
   .item-name[contenteditable="true"] {
-    background: var(--card-alt);
     outline: 2px solid var(--primary);
+    background: var(--card);
+  }
+  .event-badge {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 9px;
+    color: white;
+    flex-shrink: 0;
+    line-height: 1.2;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 17px;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 8px;
+    line-height: 1;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .delete-btn:hover { 
+    color: var(--coral);
+    background: rgba(244,63,94,0.12);
+  }
+  
+  .item-row2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
   }
   .item-meta {
     display: flex;
@@ -519,83 +518,87 @@
     font-size: 11px;
     color: var(--text-secondary);
     cursor: text;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: var(--card-alt);
-    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: rgba(255,255,255,0.6);
+    font-weight: 700;
     user-select: text;
   }
-  .item-qty:hover { background: var(--border); }
+  body.dark .item-qty { background: rgba(255,255,255,0.06); }
+  .item-qty:hover { border-color: var(--text-secondary); }
   .item-qty[contenteditable="true"] {
     outline: 2px solid var(--primary);
     background: var(--card);
   }
-  .item-price {
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--mint);
-    padding: 4px 10px;
-    border-radius: 6px;
-    background: rgba(16,185,129,0.1);
-  }
-  .offer-badge {
-    font-size: 9px;
-    font-weight: 700;
-    padding: 3px 7px;
-    border-radius: 5px;
-    background: var(--mint);
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-  .expiry-badge {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 3px 7px;
-    border-radius: 5px;
-    background: var(--coral);
-    color: white;
-  }
-  .expiry-badge.valid { background: var(--primary); }
-  .event-chip {
-    font-size: 14px;
-    padding: 2px 7px;
-    border-radius: 8px;
-    background: var(--card-alt);
-    border: 1px solid var(--border);
-    cursor: default;
-    line-height: 1.2;
-  }
   .operator-badge {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 5px;
+    border-radius: 7px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 800;
     color: white;
     flex-shrink: 0;
   }
   .operator-badge.op-a { background: var(--martina); }
   .operator-badge.op-b { background: var(--salvo); }
-  
-  .delete-btn {
-    background: none;
-    border: none;
+  .price-badge {
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 9px;
+    border-radius: 8px;
+    color: white;
+    letter-spacing: -0.2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  .expiry-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 600;
     color: var(--text-muted);
-    font-size: 18px;
+  }
+  .expiry-text .exp-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 2px solid var(--text-muted);
+    flex-shrink: 0;
+  }
+  .expiry-text.exp { color: var(--coral); }
+  .expiry-text.exp .exp-dot { border-color: var(--coral); background: rgba(244,63,94,0.2); }
+  
+  .item-checks {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+  .check-pill {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px 6px;
-    border-radius: 6px;
-    line-height: 1;
-    transition: all 0.2s;
+    user-select: none;
   }
-  .delete-btn:hover { 
-    color: var(--coral);
-    background: rgba(244,63,94,0.1);
+  .check-pill input {
+    width: 19px;
+    height: 19px;
+    cursor: pointer;
   }
+  .check-pill.c-done input { accent-color: var(--mint); }
+  .check-pill.c-unavail input { accent-color: var(--coral); }
+  .check-pill.c-done.checked { color: var(--mint); }
+  .check-pill.c-unavail.checked { color: var(--coral); }
 
   .empty { text-align: center; padding: 60px 20px; }
   .empty-icon {
@@ -618,7 +621,6 @@
   }
   .empty p { font-size: 14px; color: var(--text-muted); }
 
-  /* Storico */
   .history-section {
     margin-top: 36px;
     border-top: 1px dashed var(--border);
@@ -718,7 +720,6 @@
     padding: 10px;
   }
 
-  /* Bulk bar */
   .bulk-bar {
     position: fixed;
     bottom: 0;
@@ -762,7 +763,6 @@
   .bulk-btn.exit:hover { background: var(--coral); color: white; }
   body.select-mode .fab { display: none; }
 
-  /* Pick list (bulk) */
   .pick-list { display: flex; flex-direction: column; gap: 8px; }
   .pick-item {
     display: flex;
@@ -1554,6 +1554,7 @@
     .list-container { padding: 14px 12px 40px; }
     .item-card { padding: 12px; }
     .search-input { padding: 10px 36px 10px 14px; font-size: 13px; }
+    .item-checks { margin-left: 0; width: 100%; }
   }
 </style>
 </head>
@@ -1588,7 +1589,6 @@
 
   <button class="fab" id="fabBtn" onclick="window.toggleSheet()">+</button>
 
-  <!-- Barra azioni bulk -->
   <div class="bulk-bar" id="bulkBar">
     <span class="bulk-count" id="bulkCount">0 selezionati</span>
     <button class="bulk-btn" onclick="window.openBulk('store')">🏪 Negozio</button>
@@ -1725,7 +1725,6 @@
     </div>
   </div>
 
-  <!-- Overlay bulk (negozio / evento) -->
   <div class="modal-overlay" id="bulkOverlay" onclick="window.closeBulk(event)">
     <div class="bottom-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
@@ -1756,7 +1755,7 @@
   ];
   const DEFAULT_OPERATORS = { A: 'Martina', B: 'Salvo' };
   const HISTORY_MAX = 10;
-  const EMOJI_QUICK = ['🎃','','🎉','🥳','🎂','🍕','🍿','⚽','🎁','👻','❤️','🌞','🎆','🍬','🏖️','🎬'];
+  const EMOJI_QUICK = ['🎃','','🎉','','🎂','🍕','🍿','⚽','🎁','','❤️','','🎆','🍬','🏖️','🎬'];
 
   let items = [];
   let currentOperator = 'A';
@@ -1788,6 +1787,19 @@
   let longPressTargetId = null;
   let longPressTriggered = false;
   const LONG_PRESS_DURATION = 600;
+
+  // ========== UTILS COLORI ==========
+  function hexToRgba(hex, a) {
+    try {
+      let h = (hex || '#64748b').replace('#', '');
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      const n = parseInt(h, 16);
+      const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+      return `rgba(${r},${g},${b},${a})`;
+    } catch (e) {
+      return `rgba(100,116,139,${a})`;
+    }
+  }
 
   // ========== STORAGE LOCALE ==========
   function loadLocalSettings() {
@@ -2018,7 +2030,7 @@
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.input-wrapper')) autocompleteDropdown.classList.remove('show');
-    if (quickAddOpenStore && !e.target.closest('.quick-add-row')) {
+    if (quickAddOpenStore && !e.target.closest('.quick-add-row') && !e.target.closest('.store-add-btn')) {
       quickAddOpenStore = null;
       quickAddValue = '';
       render();
@@ -2095,7 +2107,6 @@
     if (!confirm('Eliminare questo evento? I prodotti perderanno il tag.')) return;
     const evs = getEvents().filter(e => e.id !== id);
     if (activeEventFilter === id) activeEventFilter = null;
-    // Pulisci i prodotti taggati
     const ids = items.filter(i => i.eventId === id).map(i => i.id).filter(x => !x.startsWith('temp_'));
     items.forEach(i => { if (i.eventId === id) i.eventId = null; });
     if (ids.length) {
@@ -2151,7 +2162,7 @@
     return `<div class="filter-row">${chips}</div>`;
   }
 
-  // ========== SELEZIONE MULTIPLA / BULK ==========
+  // ========== SELEZIONE MULTIPLA ==========
   window.toggleSelectMode = function() {
     if (selectMode) window.exitSelectMode();
     else {
@@ -2301,7 +2312,8 @@
         price: e.onOffer ? (e.price !== undefined && e.price !== null ? e.price : null) : null,
         expiry_date: e.onOffer ? (e.expiryDate || null) : null,
         event_id: e.eventId || null,
-        done: false
+        done: false,
+        not_available: false
       };
       await safeInsert(payload);
       items.push({
@@ -2314,7 +2326,8 @@
         price: payload.price,
         expiryDate: payload.expiry_date,
         eventId: payload.event_id,
-        done: false
+        done: false,
+        notAvailable: false
       });
       lastItemsCount = items.length;
       render();
@@ -2365,7 +2378,7 @@
     let body = '';
     if (historyOpen) {
       if (count === 0) {
-        body = `<div class="history-body"><div class="history-empty">Nessun prodotto nello storico.<br>I prodotti completati appariranno qui (max 10).</div></div>`;
+        body = `<div class="history-body"><div class="history-empty">Nessun prodotto nello storico.<br>I prodotti comprati appariranno qui (max 10).</div></div>`;
       } else {
         body = `<div class="history-body">` + history.map((e, idx) => {
           const st = getStore(e.store || 'generico');
@@ -2404,9 +2417,9 @@
 
   // ========== QUICK ADD ==========
   window.showQuickAdd = function(storeId) {
-    quickAddOpenStore = storeId;
+    quickAddOpenStore = (quickAddOpenStore === storeId) ? null : storeId;
     quickAddValue = '';
-    if (collapsedStores.has(storeId)) {
+    if (quickAddOpenStore && collapsedStores.has(storeId)) {
       collapsedStores.delete(storeId);
       saveLocalSettings();
     }
@@ -2446,7 +2459,8 @@
         price: null,
         expiry_date: null,
         event_id: activeEventFilter || null,
-        done: false
+        done: false,
+        not_available: false
       };
       await safeInsert(payload);
       items.push({
@@ -2459,7 +2473,8 @@
         price: null,
         expiryDate: null,
         eventId: payload.event_id,
-        done: false
+        done: false,
+        notAvailable: false
       });
       lastItemsCount = items.length;
       quickAddValue = '';
@@ -2471,44 +2486,32 @@
     }
   };
 
-  function quickAddRow(storeId, store) {
-    const isOpen = quickAddOpenStore === storeId;
-    return `
-      <div class="quick-add-row">
-        <button class="quick-add-btn" style="${isOpen ? 'display:none' : ''}" onclick="window.showQuickAdd('${storeId}')">+ Aggiungi a ${escapeHtml(store.name)}</button>
-        <div class="quick-add-input-wrap" style="${isOpen ? '' : 'display:none'}">
-          <input type="text" class="quick-add-input" id="qa-input-${storeId}" placeholder="Nome prodotto..." autocomplete="off"
-            oninput="window.quickAddInput(this.value)"
-            onkeydown="window.quickAddKey(event,'${storeId}')">
-          <button class="quick-add-confirm" onclick="window.confirmQuickAdd('${storeId}')">✓</button>
-          <button class="quick-add-cancel" onclick="window.hideQuickAdd()">×</button>
-        </div>
-      </div>
-    `;
-  }
-
   // ========== HELPER DB SICURI ==========
   async function safeInsert(payload) {
-    let { error } = await supabase.from('lista').insert(payload);
-    if (error && Object.prototype.hasOwnProperty.call(payload, 'event_id')) {
-      const p2 = Object.assign({}, payload);
-      delete p2.event_id;
-      const r2 = await supabase.from('lista').insert(p2);
-      error = r2.error;
+    const optionalKeys = ['not_available', 'event_id'];
+    let p = payload;
+    for (;;) {
+      const { error } = await supabase.from('lista').insert(p);
+      if (!error) return;
+      const key = optionalKeys.find(k => k in p);
+      if (!key) throw error;
+      p = Object.assign({}, p);
+      delete p[key];
     }
-    if (error) throw error;
   }
 
   async function safeUpdate(payload, ids) {
     if (!ids.length) return;
-    let { error } = await supabase.from('lista').update(payload).in('id', ids);
-    if (error && Object.prototype.hasOwnProperty.call(payload, 'event_id')) {
-      const p2 = Object.assign({}, payload);
-      delete p2.event_id;
-      const r2 = await supabase.from('lista').update(p2).in('id', ids);
-      error = r2.error;
+    const optionalKeys = ['not_available', 'event_id'];
+    let p = payload;
+    for (;;) {
+      const { error } = await supabase.from('lista').update(p).in('id', ids);
+      if (!error) return;
+      const key = optionalKeys.find(k => k in p);
+      if (!key) throw error;
+      p = Object.assign({}, p);
+      delete p[key];
     }
-    if (error) throw error;
   }
 
   // ========== CARICAMENTO DATI ==========
@@ -2531,7 +2534,8 @@
         price: row.price,
         expiryDate: row.expiry_date || null,
         eventId: row.event_id || null,
-        done: row.done === true
+        done: row.done === true,
+        notAvailable: row.not_available === true
       }));
       
       const newCount = newItems.length;
@@ -2588,7 +2592,7 @@
     Object.keys(byStore).forEach(id => { if (!storeOrder.includes(id)) storeOrder.push(id); });
 
     if (items.length === 0) {
-      html += `<div class="empty"><div class="empty-icon">🛒</div><h3>Lista vuota</h3><p>Tocca il + o usa "+ Aggiungi a ..." nelle liste</p></div>`;
+      html += `<div class="empty"><div class="empty-icon">🛒</div><h3>Lista vuota</h3><p>Tocca il + per aggiungere il primo prodotto</p></div>`;
     } else if (base.length === 0) {
       html += `<div class="empty"><div class="empty-icon">🎉</div><h3>Nessun prodotto per questo evento</h3><p>Aggiungi prodotti o cambia filtro</p></div>`;
     } else if (storeOrder.length === 0) {
@@ -2599,26 +2603,38 @@
         const storeItems = byStore[storeId];
         const pendingCount = storeItems.filter(i => !i.done).length;
         const isCollapsed = collapsedStores.has(storeId);
+        const headTint = hexToRgba(store.color, isDark ? 0.10 : 0.06);
         
         html += `
           <div class="store-section">
-            <div class="store-header ${isCollapsed ? 'collapsed' : ''}" onclick="window.toggleStore('${storeId}')">
+            <div class="store-header ${isCollapsed ? 'collapsed' : ''}" style="background:${headTint}" onclick="window.toggleStore('${storeId}')">
               <div class="store-logo" style="background:${store.color}">${store.name.substring(0,2).toUpperCase()}</div>
               <div class="store-info">
-                <div class="store-name">${store.name}</div>
+                <div class="store-name">${escapeHtml(store.name)}</div>
                 <div class="store-count">${pendingCount} da prendere · ${storeItems.length} totali</div>
               </div>
-              <div class="store-badge">${pendingCount}</div>
-              <div class="collapse-icon ${isCollapsed ? 'rotated' : ''}">▼</div>
+              <button class="store-add-btn" style="border-color:${hexToRgba(store.color, 0.5)};color:${store.color}" onclick="event.stopPropagation(); window.showQuickAdd('${storeId}')" title="Aggiungi a ${escapeHtml(store.name)}">+</button>
+              <span class="collapse-icon ${isCollapsed ? 'rotated' : ''}">▼</span>
             </div>
-            <div class="store-items ${isCollapsed ? 'collapsed' : ''}" style="max-height: ${isCollapsed ? '0' : storeItems.length * 200 + 'px'}">
         `;
         
-        storeItems.forEach(item => { html += renderItem(item); });
+        if (quickAddOpenStore === storeId) {
+          html += `
+            <div class="quick-add-row">
+              <div class="quick-add-input-wrap">
+                <input type="text" class="quick-add-input" id="qa-input-${storeId}" placeholder="Nome prodotto..." autocomplete="off"
+                  oninput="window.quickAddInput(this.value)"
+                  onkeydown="window.quickAddKey(event,'${storeId}')">
+                <button class="quick-add-confirm" onclick="window.confirmQuickAdd('${storeId}')">✓</button>
+                <button class="quick-add-cancel" onclick="window.hideQuickAdd()">×</button>
+              </div>
+            </div>
+          `;
+        }
         
-        html += `</div>`;
-        html += quickAddRow(storeId, store);
-        html += `</div>`;
+        html += `<div class="store-items ${isCollapsed ? 'collapsed' : ''}" style="max-height: ${isCollapsed ? '0' : storeItems.length * 220 + 'px'}">`;
+        storeItems.forEach(item => { html += renderItem(item, store); });
+        html += `</div></div>`;
       });
     }
 
@@ -2637,64 +2653,79 @@
     }
   }
 
-  function renderItem(item) {
+  function renderItem(item, store) {
     const opKey = item.operator === 'B' ? 'B' : 'A';
     const opName = getOpName(opKey);
     const opInitial = opName.charAt(0).toUpperCase();
     const isOffer = item.onOffer === true;
     const isExpired = isOffer && item.expiryDate && new Date(item.expiryDate) < new Date(new Date().toDateString());
     const ev = item.eventId ? getEvent(item.eventId) : null;
-    const doneCls = item.done ? ' done' : '';
-    const offerCls = isOffer ? ' offer' : '';
-    const expiredCls = isExpired ? ' expired' : '';
+    const color = store.color;
+    const tint = hexToRgba(color, isDark ? 0.18 : 0.14);
+    const bord = hexToRgba(color, 0.35);
     
     let expiryHtml = '';
     if (isOffer && item.expiryDate) {
       const d = new Date(item.expiryDate);
-      const formatted = d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' });
-      const cls = isExpired ? 'expiry-badge' : 'expiry-badge valid';
-      const label = isExpired ? '⚠️ Scaduta' : `📅 ${formatted}`;
-      expiryHtml = `<span class="${cls}">${label}</span>`;
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yyyy = d.getFullYear();
+      expiryHtml = `<span class="expiry-text ${isExpired ? 'exp' : ''}"><span class="exp-dot"></span>Scade il ${dd}.${mm}.${yyyy}</span>`;
     }
-    const eventHtml = ev ? `<span class="event-chip" title="${escapeHtml(ev.name)}">${ev.emoji}</span>` : '';
+    const eventHtml = ev ? `<span class="event-badge" style="background:${color}" title="${escapeHtml(ev.name)}">${ev.emoji ? ev.emoji : escapeHtml(ev.name)}</span>` : '';
+    const priceHtml = (isOffer && item.price !== null && item.price !== undefined) ? `<span class="price-badge" style="background:${color}">€${formatPrice(item.price)}</span>` : '';
     
-    // Modalità selezione: card cliccabile interamente
     if (selectMode) {
       const sel = selectedIds.has(item.id);
       return `
-        <div class="item-card selectable${sel ? ' selected' : ''}${doneCls}${offerCls}" onclick="window.toggleSelect('${item.id}')">
+        <div class="item-card selectable${sel ? ' selected' : ''}" style="background:${tint};border-color:${sel ? 'var(--primary)' : bord}" onclick="window.toggleSelect('${item.id}')">
           <div class="select-circle ${sel ? 'on' : ''}">${sel ? '✓' : ''}</div>
-          <div class="item-content">
-            <div class="item-name">${escapeHtml(item.name)}</div>
-            <div class="item-meta">
-              ${item.qty ? `<span class="item-qty">${escapeHtml(item.qty)}</span>` : ''}
+          <div class="item-main">
+            <div class="item-row1">
+              <div class="item-name">${escapeHtml(item.name)}</div>
               ${eventHtml}
-              ${isOffer && item.price !== null && item.price !== undefined ? `<span class="item-price">${formatPrice(item.price)} €</span>` : ''}
-              <div class="operator-badge op-${opKey.toLowerCase()}">${opInitial}</div>
+            </div>
+            <div class="item-row2">
+              <div class="item-meta">
+                ${item.qty ? `<span class="item-qty">${escapeHtml(item.qty)}</span>` : ''}
+                <div class="operator-badge op-${opKey.toLowerCase()}">${opInitial}</div>
+                ${priceHtml}
+              </div>
             </div>
           </div>
         </div>
       `;
     }
     
-    const cardClass = 'item-card' + doneCls + offerCls + expiredCls;
-    const checkboxClass = 'item-checkbox' + (item.done ? ' checked' : '');
+    const stateCls = (item.done ? ' done' : '') + (item.notAvailable ? ' unavail' : '');
     
     return `
-      <div class="${cardClass}" data-item-id="${item.id}">
-        <div class="${checkboxClass}" onclick="window.toggleItem('${item.id}')"></div>
-        <div class="item-content">
-          <div class="item-name" onclick="window.startEditName(this, '${item.id}')">${escapeHtml(item.name)}</div>
-          <div class="item-meta">
-            ${item.qty ? `<span class="item-qty" onclick="window.startEditQty(this, '${item.id}')">${escapeHtml(item.qty)}</span>` : ''}
+      <div class="item-card${stateCls}" style="background:${tint};border-color:${bord}" data-item-id="${item.id}">
+        <div class="item-main">
+          <div class="item-row1">
+            <div class="item-name" onclick="window.startEditName(this, '${item.id}')">${escapeHtml(item.name)}</div>
             ${eventHtml}
-            ${isOffer && item.price !== null && item.price !== undefined ? `<span class="item-price">${formatPrice(item.price)} €</span>` : ''}
-            ${isOffer ? `<span class="offer-badge">Offerta</span>` : ''}
-            ${expiryHtml}
-            <div class="operator-badge op-${opKey.toLowerCase()}" title="${opName}">${opInitial}</div>
+            <button class="delete-btn" onclick="window.deleteItem('${item.id}')">×</button>
+          </div>
+          <div class="item-row2">
+            <div class="item-meta">
+              ${item.qty ? `<span class="item-qty" onclick="window.startEditQty(this, '${item.id}')">${escapeHtml(item.qty)}</span>` : ''}
+              <div class="operator-badge op-${opKey.toLowerCase()}" title="${opName}">${opInitial}</div>
+              ${priceHtml}
+              ${expiryHtml}
+            </div>
+            <div class="item-checks">
+              <label class="check-pill c-done ${item.done ? 'checked' : ''}">
+                <input type="checkbox" ${item.done ? 'checked' : ''} onchange="window.toggleDone('${item.id}', this.checked)">
+                Comprato
+              </label>
+              <label class="check-pill c-unavail ${item.notAvailable ? 'checked' : ''}">
+                <input type="checkbox" ${item.notAvailable ? 'checked' : ''} onchange="window.toggleUnavail('${item.id}', this.checked)">
+                Non disponibile
+              </label>
+            </div>
           </div>
         </div>
-        <button class="delete-btn" onclick="window.deleteItem('${item.id}')">×</button>
       </div>
     `;
   }
@@ -2719,6 +2750,36 @@
     return isNaN(num) ? null : num;
   }
 
+  // ========== STATI COMPRATO / NON DISPONIBILE ==========
+  window.toggleDone = async function(id, val) {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    item.done = !!val;
+    if (item.done) {
+      item.notAvailable = false;
+      addToHistory(item);
+    }
+    render();
+    try {
+      if (!id.startsWith('temp_')) {
+        await safeUpdate({ done: item.done, not_available: item.notAvailable }, [id]);
+      }
+    } catch (err) { console.error(err); }
+  };
+
+  window.toggleUnavail = async function(id, val) {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    item.notAvailable = !!val;
+    if (item.notAvailable) item.done = false;
+    render();
+    try {
+      if (!id.startsWith('temp_')) {
+        await safeUpdate({ done: item.done, not_available: item.notAvailable }, [id]);
+      }
+    } catch (err) { console.error(err); }
+  };
+
   // ========== LONG PRESS ==========
   function attachLongPressHandlers() {
     if (selectMode) return;
@@ -2729,7 +2790,7 @@
       const startPress = (e) => {
         const target = e.target;
         if (target.closest('.delete-btn') || 
-            target.closest('.item-checkbox') || 
+            target.closest('.item-checks') || 
             target.classList.contains('item-name') || 
             target.classList.contains('item-qty')) {
           return;
@@ -3030,7 +3091,8 @@
         price: offerCheckbox.checked ? pendingPrice : null,
         expiry_date: (offerCheckbox.checked && expiryInput.value) ? expiryInput.value : null,
         event_id: eventSelect.value || null,
-        done: false
+        done: false,
+        not_available: false
       };
       await safeInsert(payload);
       
@@ -3046,7 +3108,8 @@
         ...payload,
         onOffer: payload.onoffer,
         expiryDate: payload.expiry_date,
-        eventId: payload.event_id
+        eventId: payload.event_id,
+        notAvailable: false
       });
       lastItemsCount = items.length;
       render();
@@ -3058,20 +3121,6 @@
       alert('Errore: ' + err.message);
     }
   }
-
-  window.toggleItem = async function(id) {
-    try {
-      const item = items.find(i => i.id === id);
-      if (item) {
-        item.done = !item.done;
-        if (item.done) addToHistory(item);
-        render();
-        if (!id.startsWith('temp_')) {
-          await supabase.from('lista').update({ done: item.done }).eq('id', id);
-        }
-      }
-    } catch (err) { console.error(err); }
-  };
 
   window.deleteItem = async function(id) {
     if (confirm('Eliminare questo prodotto?')) {
@@ -3091,10 +3140,10 @@
   window.magicWand = async function() {
     const doneItems = items.filter(i => i.done);
     if (doneItems.length === 0) {
-      alert('✨ Nessun prodotto completato da eliminare!');
+      alert('✨ Nessun prodotto comprato da eliminare!');
       return;
     }
-    if (!confirm(`✨ La bacchetta magica eliminerà ${doneItems.length} prodott${doneItems.length === 1 ? 'o' : 'i'} completat${doneItems.length === 1 ? 'o' : 'i'}. Procedere?`)) return;
+    if (!confirm(`✨ La bacchetta magica eliminerà ${doneItems.length} prodott${doneItems.length === 1 ? 'o' : 'i'} comprat${doneItems.length === 1 ? 'o' : 'i'}. Procedere?`)) return;
     try {
       doneItems.forEach(i => addToHistory(i));
       const ids = doneItems.map(i => i.id).filter(x => !x.startsWith('temp_'));
@@ -3176,6 +3225,7 @@
     else document.body.classList.remove('dark');
     updateDarkToggle();
     saveLocalSettings();
+    render();
   };
 
   window.saveSettings = async function() {
@@ -3285,7 +3335,7 @@
         const price = item.onOffer && item.price ? `${formatPrice(item.price)} €` : '-';
         const offer = item.onOffer ? 'Sì' : '';
         const expiry = item.expiryDate ? new Date(item.expiryDate).toLocaleDateString('it-IT') : '';
-        const status = item.done ? '✓' : '';
+        const status = item.done ? '✓' : (item.notAvailable ? '✗' : '');
         const ev = item.eventId ? getEvent(item.eventId) : null;
         const nameWithEvent = ev ? `${ev.emoji} ${item.name}` : item.name;
         return [nameWithEvent, item.qty || '-', opName, price, offer, expiry, status];
