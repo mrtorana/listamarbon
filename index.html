@@ -37,6 +37,7 @@
     --gold: #fbbf24;
     --done-color: #10b981;
     --fridge: #38bdf8;
+    --fridge-error: #f59e0b;
   }
   
   body.dark {
@@ -248,6 +249,11 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    /* FIX: testo non selezionabile */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
   .filter-chip.active {
     border-color: var(--primary);
@@ -256,7 +262,6 @@
     box-shadow: 0 4px 10px rgba(99,102,241,0.3);
   }
   .filter-chip.muted { cursor: default; opacity: 0.6; }
-  /* Chip evento nascosto: bordo tratteggiato + opacità + occhio chiuso */
   .filter-chip.chip-hidden {
     border-style: dashed;
     opacity: 0.55;
@@ -274,7 +279,12 @@
     border-radius: 14px;
     padding: 10px 12px;
   }
+  .fridge-section.fridge-error {
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(245,158,11,0.45);
+  }
   body.dark .fridge-section { background: rgba(56,189,248,0.08); }
+  body.dark .fridge-section.fridge-error { background: rgba(245,158,11,0.1); }
   .fridge-header {
     display: flex;
     align-items: center;
@@ -292,6 +302,7 @@
     align-items: center;
     gap: 6px;
   }
+  .fridge-section.fridge-error .fridge-title { color: var(--fridge-error); }
   .fridge-count {
     font-size: 9px;
     background: rgba(56,189,248,0.15);
@@ -300,12 +311,17 @@
     border-radius: 7px;
     font-weight: 800;
   }
+  .fridge-section.fridge-error .fridge-count {
+    background: rgba(245,158,11,0.15);
+    color: var(--fridge-error);
+  }
   .fridge-chevron {
     margin-left: auto;
     font-size: 11px;
     color: var(--fridge);
     transition: transform 0.3s;
   }
+  .fridge-section.fridge-error .fridge-chevron { color: var(--fridge-error); }
   .fridge-chevron.open { transform: rotate(180deg); }
   .fridge-body {
     margin-top: 8px;
@@ -373,6 +389,14 @@
     text-align: center;
     margin-top: 7px;
     font-weight: 600;
+  }
+  .fridge-error-msg {
+    font-size: 11px;
+    color: var(--fridge-error);
+    text-align: center;
+    padding: 8px;
+    font-weight: 600;
+    line-height: 1.4;
   }
 
   .store-section {
@@ -2011,13 +2035,13 @@
   let fridgeItems = [];
   let fridgeOpen = true;
   let fridgeTimeout = null;
+  let fridgeAvailable = null; // null = non testato, true = ok, false = non disponibile
 
   let longPressTimer = null;
   let longPressTargetId = null;
   let longPressTriggered = false;
   const LONG_PRESS_DURATION = 550;
 
-  // Long-press sui chip filtro
   let chipPressTimer = null;
   let chipPressId = null;
   let chipSuppress = false;
@@ -2398,7 +2422,6 @@
     render();
   };
 
-  // ===== NASCONDI EVENTO (long-press sul chip) =====
   function toggleHiddenEvent(id) {
     const ev = getEvent(id);
     if (!ev) return;
@@ -2430,7 +2453,6 @@
       listEl.addEventListener(evName, () => { clearTimeout(chipPressTimer); });
     });
     listEl.addEventListener('scroll', () => { clearTimeout(chipPressTimer); }, { passive: true });
-    // Blocca il click normale subito dopo un long-press
     listEl.addEventListener('click', (e) => {
       if (chipSuppress) {
         chipSuppress = false;
@@ -2460,28 +2482,36 @@
         .select('*')
         .gte('bought_at', cutoff)
         .order('bought_at', { ascending: false });
-      if (error) throw error;
-      fridgeItems = (data || []).map(r => ({
-        id: r.id,
-        itemId: r.item_id || null,
-        name: r.name,
-        qty: r.qty || '',
-        store: r.store || 'generico',
-        operator: r.operator || 'A',
-        boughtAt: r.bought_at
-      }));
+      if (error) {
+        console.error('❌ FRIDGE ERROR:', error.message, error);
+        fridgeAvailable = false;
+        fridgeItems = [];
+      } else {
+        fridgeAvailable = true;
+        fridgeItems = (data || []).map(r => ({
+          id: r.id,
+          itemId: r.item_id || null,
+          name: r.name,
+          qty: r.qty || '',
+          store: r.store || 'generico',
+          operator: r.operator || 'A',
+          boughtAt: r.bought_at
+        }));
+        // Pulizia automatica dei vecchi
+        supabase.from('fridge').delete().lt('bought_at', cutoff).then(() => {});
+      }
       render();
-      // Pulizia automatica dei vecchi
-      supabase.from('fridge').delete().lt('bought_at', cutoff).then(() => {});
     } catch (err) {
-      console.warn('Fridge non disponibile:', err.message);
+      console.error('❌ FRIDGE ECCEZIONE:', err.message, err);
+      fridgeAvailable = false;
       fridgeItems = [];
+      render();
     }
   }
 
   async function addFridgeEntry(item) {
     try {
-      await supabase.from('fridge').insert({
+      const { error } = await supabase.from('fridge').insert({
         item_id: item.id,
         name: item.name,
         qty: item.qty || '',
@@ -2489,8 +2519,20 @@
         operator: item.operator || 'A',
         event_id: item.eventId || null
       });
-      loadFridge();
-    } catch (err) { console.warn('Fridge insert:', err.message); }
+      if (error) {
+        console.error('❌ FRIDGE INSERT ERROR:', error.message, error);
+        fridgeAvailable = false;
+        showIndicator('⚠️ Frigo non configurato');
+      } else {
+        fridgeAvailable = true;
+        console.log('✅ Prodotto aggiunto al frigo:', item.name);
+      }
+    } catch (err) { 
+      console.error('❌ FRIDGE INSERT ECCEZIONE:', err.message, err);
+      fridgeAvailable = false;
+    }
+    // Ricarica sempre il frigo dopo un tentativo di insert
+    await loadFridge();
   }
 
   async function removeFridgeByItem(itemId) {
@@ -2527,8 +2569,32 @@
     .subscribe();
 
   function renderFridge() {
+    // Se il frigo non è disponibile, mostra messaggio di errore
+    if (fridgeAvailable === false) {
+      return `
+        <div class="fridge-section fridge-error">
+          <div class="fridge-header" onclick="window.toggleFridge()">
+            <span class="fridge-title"><i class="bi bi-exclamation-triangle-fill"></i> Frigo non configurato</span>
+            <span class="fridge-chevron ${fridgeOpen ? 'open' : ''}"><i class="bi bi-chevron-down"></i></span>
+          </div>
+          ${fridgeOpen ? `
+            <div class="fridge-body">
+              <div class="fridge-error-msg">
+                <i class="bi bi-info-circle-fill"></i> La tabella <b>fridge</b> non esiste o non è accessibile.<br><br>
+                Apri Supabase → SQL Editor ed esegui:<br>
+                <code style="font-size:9px;background:rgba(0,0,0,0.1);padding:2px 4px;border-radius:3px">CREATE TABLE fridge (...)</code><br><br>
+                Poi ricarica l'app.
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
     const now = Date.now();
     const valid = fridgeItems.filter(f => now - new Date(f.boughtAt).getTime() < FRIDGE_DAYS * 86400000);
+    
+    // Se non ci sono prodotti validi e il frigo è disponibile, non mostrare nulla
     if (valid.length === 0) return '';
     
     let body = '';
@@ -2962,10 +3028,8 @@
     let base = items;
     if (activeEventFilter && !getEvents().some(e => e.id === activeEventFilter)) activeEventFilter = null;
     if (activeEventFilter) {
-      // Filtro evento attivo: mostra TUTTI i prodotti dell'evento, anche nascosti
       base = base.filter(i => i.eventId === activeEventFilter);
     } else if (hiddenEvents.length) {
-      // Vista "Tutti": nascondi i prodotti degli eventi nascosti
       base = base.filter(i => !i.eventId || !hiddenEvents.includes(i.eventId));
     }
 
