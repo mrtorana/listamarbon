@@ -36,6 +36,7 @@
     --header-shadow: rgba(99,102,241,0.25);
     --gold: #fbbf24;
     --done-color: #10b981;
+    --fridge: #38bdf8;
   }
   
   body.dark {
@@ -255,6 +256,124 @@
     box-shadow: 0 4px 10px rgba(99,102,241,0.3);
   }
   .filter-chip.muted { cursor: default; opacity: 0.6; }
+  /* Chip evento nascosto: bordo tratteggiato + opacità + occhio chiuso */
+  .filter-chip.chip-hidden {
+    border-style: dashed;
+    opacity: 0.55;
+  }
+  .filter-chip.chip-hidden.active {
+    opacity: 0.9;
+  }
+  .filter-chip .bi-eye-slash { font-size: 10px; }
+
+  /* ===== SEZIONE IN FRIGO ===== */
+  .fridge-section {
+    margin-bottom: 16px;
+    background: rgba(56,189,248,0.07);
+    border: 1.5px dashed rgba(56,189,248,0.45);
+    border-radius: 14px;
+    padding: 10px 12px;
+  }
+  body.dark .fridge-section { background: rgba(56,189,248,0.08); }
+  .fridge-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 2px 2px;
+  }
+  .fridge-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--fridge);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .fridge-count {
+    font-size: 9px;
+    background: rgba(56,189,248,0.15);
+    color: var(--fridge);
+    padding: 2px 7px;
+    border-radius: 7px;
+    font-weight: 800;
+  }
+  .fridge-chevron {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--fridge);
+    transition: transform 0.3s;
+  }
+  .fridge-chevron.open { transform: rotate(180deg); }
+  .fridge-body {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .fridge-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .fridge-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .fridge-info { flex: 1; min-width: 0; }
+  .fridge-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fridge-meta {
+    font-size: 9px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 1px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .fridge-days {
+    color: var(--fridge);
+    font-weight: 800;
+  }
+  .fridge-del {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 7px;
+    background: var(--card-alt);
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .fridge-del:hover { background: var(--coral); color: white; }
+  .fridge-note {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 7px;
+    font-weight: 600;
+  }
 
   .store-section {
     margin-bottom: 18px;
@@ -281,7 +400,6 @@
   .store-header:hover { box-shadow: var(--shadow-lg); }
   .store-header.collapsed { margin-bottom: 0; }
   
-  /* ===== LOGO NEGOZIO (iniziali / icona / immagine) ===== */
   .store-logo {
     position: relative;
     width: 36px; height: 36px;
@@ -1300,7 +1418,6 @@
   }
   .settings-row .emoji-mini:focus { outline: none; border-color: var(--primary); }
   
-  /* Bottone anteprima icona negozio */
   .store-icon-btn {
     width: 38px;
     height: 38px;
@@ -1320,7 +1437,6 @@
     transform: scale(1.05);
   }
   
-  /* Pannello scelta icona */
   .icon-picker-panel {
     background: var(--card-alt);
     border: 2px dashed var(--border);
@@ -1828,18 +1944,19 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_PHA1Fj2T3CC_gcAln4uiCg_EUJEw6ts';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Loghi PNG caricati su GitHub nella stessa cartella di index.html
   const AVAILABLE_LOGOS = [
     'eurospin.png', 'lidl.png', 'despar.png', 'md.png', 'conad.png',
     'ard.png', 'acqua.png', 'todis.png', 'sisa.png', 'crai.png'
   ];
 
-  // Icone generiche Bootstrap Icons
   const BI_ICONS = [
     'bi-shop', 'bi-cart3', 'bi-basket', 'bi-bag', 'bi-droplet-fill',
     'bi-cup-straw', 'bi-egg-fill', 'bi-flower1', 'bi-house-fill',
     'bi-lightning-charge-fill', 'bi-snow2', 'bi-fire', 'bi-tree-fill',
-    'bi-star-fill', 'bi-heart-fill', 'bi-gift-fill', 'bi-truck', 'bi-store'
+    'bi-star-fill', 'bi-heart-fill', 'bi-gift-fill', 'bi-truck', 'bi-store',
+    'bi-balloon-fill', 'bi-capsule', 'bi-clipboard-heart', 'bi-cup-hot-fill',
+    'bi-hammer', 'bi-suitcase-lg', 'bi-bicycle', 'bi-cake', 'bi-feather',
+    'bi-key', 'bi-lamp', 'bi-tree', 'bi-signpost', 'bi-fork-knife', 'bi-leaf'
   ];
 
   const DEFAULT_STORES = [
@@ -1856,13 +1973,13 @@
     { id: 'despar', name: 'Despar', color: '#00923f', icon: { type: 'img', src: 'despar.png' } },
   ];
 
-  // Mappa per migrare automaticamente i negozi salvati senza icona
   const DEFAULT_ICON_MAP = {};
   DEFAULT_STORES.forEach(s => { if (s.icon) DEFAULT_ICON_MAP[s.id] = s.icon; });
 
   const DEFAULT_OPERATORS = { A: 'Martina', B: 'Salvo' };
   const HISTORY_MAX = 10;
-  const EMOJI_QUICK = ['🎃','🎄','🎉','🥳','🎂','🍕','🍿','⚽','🎁','❤️','🌸','️','⭐','🔥','🍾','🎈','🎭','🐰','🌞','🍬','🏖️','🎬','','🌺','','🍷','','🎵','','🍻'];
+  const FRIDGE_DAYS = 7;
+  const EMOJI_QUICK = ['🎃','','🎉','','🎂','','🍿','','🎁','❤️','🌸','☀️','⭐','🔥','🍾','🎈','🎭','🐰','🌞','🍬','🏖️','','🎅','🌺','💐','🍷','','🎵','','🍻'];
 
   let items = [];
   let currentOperator = 'A';
@@ -1886,17 +2003,25 @@
   let quickAddOpenStore = null;
   let quickAddValue = '';
   let activeEventFilter = null;
+  let hiddenEvents = [];
   let selectMode = false;
   let selectedIds = new Set();
   let bulkAction = 'store';
   let iconPickerStoreId = null;
+  let fridgeItems = [];
+  let fridgeOpen = true;
+  let fridgeTimeout = null;
 
   let longPressTimer = null;
   let longPressTargetId = null;
   let longPressTriggered = false;
   const LONG_PRESS_DURATION = 550;
 
-  // Migra i negozi aggiungendo le icone di default mancanti
+  // Long-press sui chip filtro
+  let chipPressTimer = null;
+  let chipPressId = null;
+  let chipSuppress = false;
+
   function migrateStores(stores) {
     if (!Array.isArray(stores)) return stores;
     return stores.map(s => {
@@ -1916,6 +2041,7 @@
         collapsedStores = new Set(p.collapsed || []);
         favorites = p.favorites || [];
         currentOperator = (p.currentOp === 'B') ? 'B' : 'A';
+        hiddenEvents = Array.isArray(p.hiddenEvents) ? p.hiddenEvents : [];
       }
     } catch(e) { console.error(e); }
     try {
@@ -1925,6 +2051,7 @@
         history = Array.isArray(parsed) ? parsed.slice(0, HISTORY_MAX) : [];
       }
       historyOpen = localStorage.getItem('marbon_history_open') === '1';
+      fridgeOpen = localStorage.getItem('marbon_fridge_open') !== '0';
     } catch(e) { history = []; }
     if (isDark) document.body.classList.add('dark');
     updateDarkToggle();
@@ -1935,7 +2062,8 @@
       dark: isDark,
       collapsed: Array.from(collapsedStores),
       favorites: favorites,
-      currentOp: currentOperator
+      currentOp: currentOperator,
+      hiddenEvents: hiddenEvents
     }));
   }
 
@@ -2028,7 +2156,6 @@
   function getEvent(id) { return getEvents().find(e => e.id === id) || null; }
   function getOpName(key) { return getOperators()[key] || key; }
 
-  // Renderizza il logo del negozio: immagine PNG, icona Bootstrap o iniziali
   function storeLogoHTML(store, sizeClass) {
     const initials = (store.name || '?').substring(0, 2).toUpperCase();
     const icon = store.icon;
@@ -2224,6 +2351,8 @@
     if (!confirm('Eliminare questo evento? I prodotti perderanno il tag.')) return;
     const evs = getEvents().filter(e => e.id !== id);
     if (activeEventFilter === id) activeEventFilter = null;
+    hiddenEvents = hiddenEvents.filter(x => x !== id);
+    saveLocalSettings();
     const ids = items.filter(i => i.eventId === id).map(i => i.id).filter(x => !x.startsWith('temp_'));
     items.forEach(i => { if (i.eventId === id) i.eventId = null; });
     if (ids.length) {
@@ -2269,14 +2398,175 @@
     render();
   };
 
+  // ===== NASCONDI EVENTO (long-press sul chip) =====
+  function toggleHiddenEvent(id) {
+    const ev = getEvent(id);
+    if (!ev) return;
+    if (hiddenEvents.includes(id)) {
+      hiddenEvents = hiddenEvents.filter(x => x !== id);
+      showIndicator(ev.emoji + ' Di nuovo visibile in "Tutti"');
+    } else {
+      hiddenEvents.push(id);
+      showIndicator(ev.emoji + ' Nascosto dalla vista "Tutti"');
+    }
+    saveLocalSettings();
+    render();
+  }
+
+  function attachChipLongPress() {
+    listEl.addEventListener('pointerdown', (e) => {
+      const chip = e.target.closest('.filter-chip[data-ev]');
+      if (!chip || !chip.dataset.ev) return;
+      chipPressId = chip.dataset.ev;
+      chipSuppress = false;
+      clearTimeout(chipPressTimer);
+      chipPressTimer = setTimeout(() => {
+        chipSuppress = true;
+        if (navigator.vibrate) navigator.vibrate(40);
+        toggleHiddenEvent(chipPressId);
+      }, 500);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(evName => {
+      listEl.addEventListener(evName, () => { clearTimeout(chipPressTimer); });
+    });
+    listEl.addEventListener('scroll', () => { clearTimeout(chipPressTimer); }, { passive: true });
+    // Blocca il click normale subito dopo un long-press
+    listEl.addEventListener('click', (e) => {
+      if (chipSuppress) {
+        chipSuppress = false;
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    }, true);
+  }
+
   function renderFilterRow() {
     const evs = getEvents();
     let chips = `<button class="filter-chip ${!activeEventFilter ? 'active' : ''}" onclick="window.setEventFilter(null)"><i class="bi bi-list-ul"></i> Tutti</button>`;
     evs.forEach(ev => {
-      chips += `<button class="filter-chip ${activeEventFilter === ev.id ? 'active' : ''}" onclick="window.setEventFilter('${ev.id}')">${ev.emoji} ${escapeHtml(ev.name)}</button>`;
+      const hid = hiddenEvents.includes(ev.id);
+      chips += `<button class="filter-chip ${activeEventFilter === ev.id ? 'active' : ''} ${hid ? 'chip-hidden' : ''}" data-ev="${ev.id}" onclick="window.setEventFilter('${ev.id}')" title="Tieni premuto per nascondere/mostrare in Tutti">${hid ? '<i class="bi bi-eye-slash"></i>' : ''}${ev.emoji} ${escapeHtml(ev.name)}</button>`;
     });
     if (!evs.length) chips += `<span class="filter-chip muted"><i class="bi bi-stars"></i> Crea eventi nelle impostazioni</span>`;
     return `<div class="filter-row">${chips}</div>`;
+  }
+
+  // ===== IN FRIGO =====
+  async function loadFridge() {
+    try {
+      const cutoff = new Date(Date.now() - FRIDGE_DAYS * 86400000).toISOString();
+      const { data, error } = await supabase
+        .from('fridge')
+        .select('*')
+        .gte('bought_at', cutoff)
+        .order('bought_at', { ascending: false });
+      if (error) throw error;
+      fridgeItems = (data || []).map(r => ({
+        id: r.id,
+        itemId: r.item_id || null,
+        name: r.name,
+        qty: r.qty || '',
+        store: r.store || 'generico',
+        operator: r.operator || 'A',
+        boughtAt: r.bought_at
+      }));
+      render();
+      // Pulizia automatica dei vecchi
+      supabase.from('fridge').delete().lt('bought_at', cutoff).then(() => {});
+    } catch (err) {
+      console.warn('Fridge non disponibile:', err.message);
+      fridgeItems = [];
+    }
+  }
+
+  async function addFridgeEntry(item) {
+    try {
+      await supabase.from('fridge').insert({
+        item_id: item.id,
+        name: item.name,
+        qty: item.qty || '',
+        store: item.store || 'generico',
+        operator: item.operator || 'A',
+        event_id: item.eventId || null
+      });
+      loadFridge();
+    } catch (err) { console.warn('Fridge insert:', err.message); }
+  }
+
+  async function removeFridgeByItem(itemId) {
+    try {
+      await supabase.from('fridge').delete().eq('item_id', itemId);
+      fridgeItems = fridgeItems.filter(f => f.itemId !== itemId);
+      render();
+    } catch (err) { console.warn(err); }
+  }
+
+  window.removeFromFridge = async function(id) {
+    try {
+      await supabase.from('fridge').delete().eq('id', id);
+      fridgeItems = fridgeItems.filter(f => f.id !== id);
+      render();
+    } catch (err) { console.warn(err); }
+  };
+
+  window.toggleFridge = function() {
+    fridgeOpen = !fridgeOpen;
+    localStorage.setItem('marbon_fridge_open', fridgeOpen ? '1' : '0');
+    render();
+  };
+
+  supabase
+    .channel('fridge-changes')
+    .on('postgres_changes',
+      { event: '*', schema: 'public', table: 'fridge' },
+      () => {
+        clearTimeout(fridgeTimeout);
+        fridgeTimeout = setTimeout(() => loadFridge(), 500);
+      }
+    )
+    .subscribe();
+
+  function renderFridge() {
+    const now = Date.now();
+    const valid = fridgeItems.filter(f => now - new Date(f.boughtAt).getTime() < FRIDGE_DAYS * 86400000);
+    if (valid.length === 0) return '';
+    
+    let body = '';
+    if (fridgeOpen) {
+      body = `<div class="fridge-body">` + valid.map(f => {
+        const st = getStore(f.store);
+        const d = new Date(f.boughtAt);
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const daysLeft = Math.max(0, FRIDGE_DAYS - Math.floor((now - d.getTime()) / 86400000));
+        return `
+          <div class="fridge-item">
+            <span class="fridge-dot" style="background:${st.color}"></span>
+            <div class="fridge-info">
+              <div class="fridge-name">${escapeHtml(f.name)}</div>
+              <div class="fridge-meta">
+                <span>${escapeHtml(st.name)}</span>
+                <span>· Acquistato il ${dd}.${mm}</span>
+                <span class="fridge-days">· ${daysLeft}g</span>
+              </div>
+            </div>
+            <button class="fridge-del" onclick="window.removeFromFridge('${f.id}')" title="Togli dal frigo"><i class="bi bi-x-lg"></i></button>
+          </div>
+        `;
+      }).join('') + `</div>
+      <div class="fridge-note"><i class="bi bi-snow2"></i> I prodotti restano 7 giorni poi spariscono da soli</div>`;
+    }
+    
+    return `
+      <div class="fridge-section">
+        <div class="fridge-header" onclick="window.toggleFridge()">
+          <span class="fridge-title"><i class="bi bi-snow2"></i> In frigo</span>
+          <span class="fridge-count">${valid.length}</span>
+          <span class="fridge-chevron ${fridgeOpen ? 'open' : ''}"><i class="bi bi-chevron-down"></i></span>
+        </div>
+        ${body}
+      </div>
+    `;
   }
 
   window.toggleSelectMode = function() {
@@ -2667,10 +2957,17 @@
 
   function render() {
     let html = renderFilterRow();
+    html += renderFridge();
 
     let base = items;
     if (activeEventFilter && !getEvents().some(e => e.id === activeEventFilter)) activeEventFilter = null;
-    if (activeEventFilter) base = base.filter(i => i.eventId === activeEventFilter);
+    if (activeEventFilter) {
+      // Filtro evento attivo: mostra TUTTI i prodotti dell'evento, anche nascosti
+      base = base.filter(i => i.eventId === activeEventFilter);
+    } else if (hiddenEvents.length) {
+      // Vista "Tutti": nascondi i prodotti degli eventi nascosti
+      base = base.filter(i => !i.eventId || !hiddenEvents.includes(i.eventId));
+    }
 
     let filteredItems = base;
     if (searchQuery.length > 0) {
@@ -2691,8 +2988,10 @@
 
     if (items.length === 0) {
       html += `<div class="empty"><div class="empty-icon"><i class="bi bi-cart3"></i></div><h3>Lista vuota</h3><p>Tocca il + per aggiungere il primo prodotto</p></div>`;
-    } else if (base.length === 0) {
+    } else if (base.length === 0 && activeEventFilter) {
       html += `<div class="empty"><div class="empty-icon"><i class="bi bi-stars"></i></div><h3>Nessun prodotto per questo evento</h3><p>Aggiungi prodotti o cambia filtro</p></div>`;
+    } else if (base.length === 0 && hiddenEvents.length) {
+      html += `<div class="empty"><div class="empty-icon"><i class="bi bi-eye-slash"></i></div><h3>Tutto nascosto</h3><p>Hai nascosto questi eventi: tieni premuto il chip per mostrarli</p></div>`;
     } else if (storeOrder.length === 0) {
       html += `<div class="empty"><div class="empty-icon"><i class="bi bi-search"></i></div><h3>Nessun risultato</h3><p>Nessun prodotto trovato per "${escapeHtml(searchQuery)}"</p></div>`;
     } else {
@@ -2839,7 +3138,12 @@
     if (!item) return;
     
     item.done = !item.done;
-    if (item.done) addToHistory(item);
+    if (item.done) {
+      addToHistory(item);
+      addFridgeEntry(item);
+    } else {
+      removeFridgeByItem(id);
+    }
     render();
     try {
       if (!id.startsWith('temp_')) {
@@ -3168,7 +3472,6 @@
     }
   };
 
-  // ========== SETTINGS ==========
   window.openSettings = function() {
     const ops = getOperators();
     document.getElementById('settingsOpA').value = ops.A;
@@ -3314,7 +3617,6 @@
     render();
   };
 
-  // ========== RIORDINA ==========
   window.openReorder = function() {
     renderReorderList();
     document.getElementById('reorderOverlay').classList.add('show');
@@ -3360,7 +3662,6 @@
     await saveSharedSettings();
   };
 
-  // ========== PDF ==========
   window.exportPDF = function() {
     if (items.length === 0) {
       alert('La lista è vuota!');
@@ -3450,9 +3751,11 @@
   itemInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.handleSheetAction(); });
   qtyInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.handleSheetAction(); });
 
+  attachChipLongPress();
   loadLocalSettings();
   loadSharedSettings();
   loadItems();
+  loadFridge();
 </script>
 </body>
 </html>
