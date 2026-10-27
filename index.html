@@ -63,14 +63,9 @@
     transition: background 0.3s, color 0.3s;
   }
   
-  /* Notch iPhone: solo riempie il colore, nessun cambio di layout */
   @supports (padding-top: env(safe-area-inset-top)) {
-    body.ios {
-      --safe-top: env(safe-area-inset-top);
-    }
-    body.ios .header {
-      padding-top: calc(18px + var(--safe-top));
-    }
+    body.ios { --safe-top: env(safe-area-inset-top); }
+    body.ios .header { padding-top: calc(18px + var(--safe-top)); }
   }
   
   .container { 
@@ -101,7 +96,6 @@
     font-weight: 800;
     color: var(--header-text);
     letter-spacing: -0.5px;
-    cursor: pointer;
   }
   .header-actions {
     display: flex;
@@ -132,18 +126,15 @@
     color: var(--primary);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
-  .icon-btn.bucket {
+  .icon-btn.magic {
     background: linear-gradient(135deg, #fbbf24, #f59e0b);
     box-shadow: 0 4px 12px rgba(245,158,11,0.4);
   }
-  .icon-btn.bucket:hover {
-    transform: scale(1.08) rotate(-8deg);
+  .icon-btn.magic:hover {
+    transform: scale(1.08) rotate(15deg);
   }
 
-  .search-container {
-    position: relative;
-    margin-top: 10px;
-  }
+  .search-container { position: relative; margin-top: 10px; }
   .search-input {
     width: 100%;
     padding: 11px 38px 11px 14px;
@@ -216,11 +207,8 @@
     border-color: rgba(255,255,255,0.95);
     box-shadow: 0 4px 10px rgba(0,0,0,0.12);
   }
-  .qop-btn .qop-emoji {
-    font-size: 13px;
-  }
+  .qop-btn .qop-emoji { font-size: 13px; }
 
-  /* Tasto Freezer */
   .fridge-btn {
     position: relative;
     flex: 0 0 44px;
@@ -304,10 +292,7 @@
     box-shadow: 0 4px 10px rgba(99,102,241,0.3);
   }
   .filter-chip.muted { cursor: default; opacity: 0.6; }
-  .filter-chip.chip-hidden {
-    border-style: dashed;
-    opacity: 0.55;
-  }
+  .filter-chip.chip-hidden { border-style: dashed; opacity: 0.55; }
   .filter-chip.chip-hidden.active { opacity: 0.9; }
   .filter-chip .bi-eye-slash { font-size: 10px; }
 
@@ -378,6 +363,7 @@
     color: var(--text-muted);
     font-weight: 600;
   }
+  /* Tasto "+" per aggiungere rapidamente nella sezione - SPOSTATO A SINISTRA */
   .store-add-btn {
     width: 32px;
     height: 32px;
@@ -392,6 +378,7 @@
     justify-content: center;
     transition: all 0.2s;
     flex-shrink: 0;
+    margin-right: 8px; /* Spazio dalla freccia collapse */
   }
   .store-add-btn:hover {
     transform: scale(1.08);
@@ -559,11 +546,7 @@
   }
   
   .item-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
-  .item-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .item-row { display: flex; align-items: center; gap: 8px; }
   .item-name {
     font-size: 14px;
     font-weight: 700;
@@ -655,7 +638,6 @@
   }
   .empty p { font-size: 13px; color: var(--text-muted); }
 
-  /* Contenuto Popup Frigo */
   .fridge-body {
     display: flex;
     flex-direction: column;
@@ -907,11 +889,11 @@
   .pick-item .pick-emoji { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
   .pick-item .pick-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); }
 
-  /* FAB spostato a sinistra per non sovrapporsi alle frecce collapse */
+  /* FAB "+" in basso a destra - POSIZIONE ORIGINALE */
   .fab {
     position: fixed;
     bottom: 20px;
-    right: 60px;
+    right: 20px;
     width: 52px;
     height: 52px;
     border-radius: 16px;
@@ -983,7 +965,6 @@
     gap: 8px;
   }
 
-  /* Nuovo selettore operatori multipli con colore+emoji */
   .operator-selector {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1006,18 +987,9 @@
     align-items: center;
     gap: 4px;
   }
-  .operator-btn .op-emoji {
-    font-size: 20px;
-    line-height: 1;
-  }
-  .operator-btn .op-name {
-    font-size: 11px;
-    opacity: 0.85;
-  }
-  .operator-btn.active {
-    color: white;
-    border-color: transparent;
-  }
+  .operator-btn .op-emoji { font-size: 20px; line-height: 1; }
+  .operator-btn .op-name { font-size: 11px; opacity: 0.85; }
+  .operator-btn.active { color: white; border-color: transparent; }
 
   .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
   .input-wrapper { flex: 1; min-width: 0; position: relative; }
@@ -1446,19 +1418,6 @@
     background: var(--card);
     flex-shrink: 0;
   }
-  .settings-row .emoji-input {
-    width: 42px;
-    padding: 7px 4px;
-    border: 2px solid var(--border);
-    border-radius: 9px;
-    font-family: inherit;
-    font-size: 15px;
-    background: var(--card-alt);
-    color: var(--text);
-    text-align: center;
-    flex-shrink: 0;
-  }
-  .settings-row .emoji-input:focus { outline: none; border-color: var(--primary); }
   .settings-row .delete-small {
     background: var(--card-alt);
     border: none;
@@ -1488,6 +1447,19 @@
     flex-shrink: 0;
   }
   .settings-row .emoji-mini:focus { outline: none; border-color: var(--primary); }
+  .settings-row .emoji-input {
+    width: 42px;
+    padding: 7px 4px;
+    border: 2px solid var(--border);
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 15px;
+    background: var(--card-alt);
+    color: var(--text);
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .settings-row .emoji-input:focus { outline: none; border-color: var(--primary); }
   
   .add-operator-row {
     margin-top: 8px;
@@ -1736,26 +1708,6 @@
   }
   .btn-export:hover { transform: translateY(-1px); }
 
-  /* Live indicator - ora nelle impostazioni */
-  .live-settings {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 6px 10px;
-    margin-top: 12px;
-    font-size: 10px;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-  .live-settings .dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 6px #10b981;
-  }
-
   .save-indicator {
     position: fixed;
     top: 80px;
@@ -1876,7 +1828,7 @@
     .header { padding: 14px 12px 18px; border-radius: 0 0 22px 22px; }
     .header h1 { font-size: 20px; }
     .icon-btn { width: 34px; height: 34px; font-size: 15px; }
-    .fab { bottom: 16px; right: 56px; width: 50px; height: 50px; }
+    .fab { bottom: 16px; right: 16px; width: 50px; height: 50px; }
     .list-container { padding: 12px 10px 36px; }
     .search-input { padding: 10px 34px 10px 12px; font-size: 13px; }
     .ipp-grid { grid-template-columns: repeat(5, 1fr); }
@@ -1887,12 +1839,12 @@
   <div class="container">
     <div class="header">
       <div class="header-top">
-        <h1 id="listTitle">Lista Spesa</h1>
+        <h1>Lista Spesa</h1>
         <div class="header-actions">
           <button class="icon-btn" id="selectModeBtn" onclick="window.toggleSelectMode()" title="Selezione multipla"><i class="bi bi-check2-square"></i></button>
           <button class="icon-btn" onclick="window.exportWhatsApp()" title="Copia lista per WhatsApp"><i class="bi bi-copy"></i></button>
           <button class="icon-btn" onclick="window.openReorder()" title="Riordina liste"><i class="bi bi-arrow-down-up"></i></button>
-          <button class="icon-btn bucket" onclick="window.magicWand()" title="Pulisci comprati"><i class="bi bi-bucket-fill"></i></button>
+          <button class="icon-btn magic" onclick="window.magicWand()" title="Pulisci comprati"><i class="bi bi-stars"></i></button>
           <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni"><i class="bi bi-gear-fill"></i></button>
         </div>
       </div>
@@ -1973,7 +1925,6 @@
     </div>
   </div>
 
-  <!-- Popup Frigo -->
   <div class="modal-overlay" id="fridgeOverlay" onclick="window.closeFridgeSheet(event)">
     <div class="bottom-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
@@ -1999,13 +1950,6 @@
       <div class="sheet-title"><i class="bi bi-gear-fill"></i> Impostazioni</div>
 
       <div class="settings-section">
-        <div class="settings-title"><i class="bi bi-tag-fill"></i> Nome Lista</div>
-        <div class="settings-row">
-          <input type="text" id="settingsListTitle" placeholder="Lista Spesa" maxlength="30">
-        </div>
-      </div>
-
-      <div class="settings-section">
         <div class="settings-title"><i class="bi bi-people-fill"></i> Operatori (max 4)</div>
         <div id="operatorsList"></div>
         <div class="add-operator-row">
@@ -2016,6 +1960,7 @@
       <div class="settings-section">
         <div class="settings-title"><i class="bi bi-stars"></i> Eventi Speciali</div>
         <div id="eventsList"></div>
+        <div class="emoji-quick" id="emojiQuick"></div>
         <div class="add-store-row">
           <input type="text" id="newEventEmoji" placeholder="Emoji" maxlength="4" style="flex:0 0 60px;text-align:center;">
           <input type="text" id="newEventName" placeholder="Nome evento" maxlength="30">
@@ -2050,12 +1995,6 @@
         <button class="btn-close-settings" onclick="window.closeSettings()">Chiudi</button>
         <button class="btn-save-settings" onclick="window.saveSettings()"><i class="bi bi-check2-circle"></i> Salva</button>
       </div>
-
-      <!-- Live nascosto in basso -->
-      <div class="live-settings" id="liveSettings">
-        <span class="dot"></span>
-        <span id="liveText">Live</span>
-      </div>
     </div>
   </div>
 
@@ -2083,7 +2022,6 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_PHA1Fj2T3CC_gcAln4uiCg_EUJEw6ts';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Rilevamento iOS per safe-area
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (isIOS) document.body.classList.add('ios');
 
@@ -2092,7 +2030,6 @@
     'ard.png', 'acqua.png', 'todis.png', 'sisa.png', 'crai.png'
   ];
 
-  // Icone Bootstrap 1.11.3 VERIFICATE (rimosse quelle non esistenti)
   const BI_ICONS = [
     'bi-shop', 'bi-cart3', 'bi-basket', 'bi-bag', 'bi-droplet-fill',
     'bi-flower1', 'bi-house-fill', 'bi-snow2', 'bi-fire', 'bi-tree-fill',
@@ -2121,14 +2058,20 @@
   const DEFAULT_ICON_MAP = {};
   DEFAULT_STORES.forEach(s => { if (s.icon) DEFAULT_ICON_MAP[s.id] = s.icon; });
 
-  // Default operatori: array (nuova struttura)
-  const DEFAULT_OPERATORS = [
-    { id: 'A', name: 'Martina', emoji: '❤️', color: '#ec4899' },
-    { id: 'B', name: 'Salvo', emoji: '💙', color: '#3b82f6' }
-  ];
+  // Nuova struttura operatori: {members: [...], events: [...]}
+  const DEFAULT_OPERATORS = {
+    members: [
+      { id: 'A', name: 'Martina', emoji: '❤️', color: '#ec4899' },
+      { id: 'B', name: 'Salvo', emoji: '💙', color: '#3b82f6' }
+    ],
+    events: []
+  };
 
   const HISTORY_MAX = 10;
   const FRIDGE_DAYS = 7;
+  
+  // Emoji suggerite per eventi speciali - ripristinate come prima
+  const EMOJI_QUICK = ['🎃','🎄','🎉','🥳','🎂','🍕','🍿','⚽','🎁','❤️','🌸','☀️','⭐','🔥','🍾','🎈','🎭','🐰','🌞','🍬','🏖️','🎬','🎅','🌺','💐','🍷','🥂','🎵','🎶','🍻'];
 
   let items = [];
   let currentOperator = 'A';
@@ -2137,9 +2080,8 @@
   let sheetOpen = false;
   let collapsedStores = new Set();
   let customStores = null;
-  let customOperators = null;
+  let customOperators = null;  // {members: [...], events: [...]}
   let customFridge = null;
-  let listTitle = 'Lista Spesa';
   let isDark = false;
   let settingsLoaded = false;
   let realtimeTimeout = null;
@@ -2180,32 +2122,56 @@
     });
   }
 
-  // MIGRAZIONE operatori da vecchio formato {A:'Martina', B:'Salvo'} a nuovo array
+  // Migrazione operatori che PRESERVA gli eventi da tutti i formati precedenti
   function migrateOperators(ops) {
-    if (!ops) return DEFAULT_OPERATORS.slice();
-    if (Array.isArray(ops)) {
-      // Garantisci che ogni operatore abbia emoji, color, name
-      return ops.map(op => ({
-        id: op.id || 'A',
-        name: op.name || op.id || 'Operatore',
-        emoji: op.emoji || '⭐',
-        color: op.color || '#6366f1'
-      }));
-    }
-    // Vecchio formato {A:'Martina', B:'Salvo', events: [...]}
-    const migrated = [];
-    const ids = Object.keys(ops).filter(k => k.length === 1 && k.match(/[A-Z]/));
     const defaultColors = ['#ec4899', '#3b82f6', '#10b981', '#f59e0b'];
     const defaultEmojis = ['❤️', '💙', '💚', '🧡'];
-    ids.forEach((id, i) => {
-      migrated.push({
-        id,
-        name: ops[id] || id,
-        emoji: defaultEmojis[i] || '⭐',
-        color: defaultColors[i] || '#6366f1'
+    
+    // Formato nuovo corretto: {members: [...], events: [...]}
+    if (ops && !Array.isArray(ops) && Array.isArray(ops.members)) {
+      return {
+        members: ops.members.map(op => ({
+          id: op.id || 'A',
+          name: op.name || op.id || 'Op',
+          emoji: op.emoji || '⭐',
+          color: op.color || '#6366f1'
+        })),
+        events: Array.isArray(ops.events) ? ops.events : []
+      };
+    }
+    
+    // Vecchio formato: {A:'Martina', B:'Salvo', events:[...]}
+    if (ops && !Array.isArray(ops)) {
+      const members = [];
+      const ids = Object.keys(ops).filter(k => k.length === 1 && /[A-Z]/.test(k));
+      ids.forEach((id, i) => {
+        members.push({
+          id,
+          name: ops[id] || id,
+          emoji: defaultEmojis[i] || '⭐',
+          color: defaultColors[i] || '#6366f1'
+        });
       });
-    });
-    return migrated.length > 0 ? migrated : DEFAULT_OPERATORS.slice();
+      return {
+        members: members.length ? members : DEFAULT_OPERATORS.members.slice(),
+        events: Array.isArray(ops.events) ? ops.events : []
+      };
+    }
+    
+    // Formato array (errore precedente) - cerca di recuperare events se presenti come proprietà
+    if (Array.isArray(ops)) {
+      return {
+        members: ops.map(op => ({
+          id: op.id || 'A',
+          name: op.name || op.id || 'Op',
+          emoji: op.emoji || '⭐',
+          color: op.color || '#6366f1'
+        })),
+        events: Array.isArray(ops.events) ? ops.events : []
+      };
+    }
+    
+    return { members: DEFAULT_OPERATORS.members.slice(), events: [] };
   }
 
   function loadLocalSettings() {
@@ -2256,33 +2222,28 @@
       
       if (error) {
         customStores = DEFAULT_STORES;
-        customOperators = DEFAULT_OPERATORS.slice();
+        customOperators = { members: DEFAULT_OPERATORS.members.slice(), events: [] };
         customFridge = [];
-        listTitle = 'Lista Spesa';
       } else {
         customStores = migrateStores(data.stores || DEFAULT_STORES);
         customOperators = migrateOperators(data.operators);
         customFridge = Array.isArray(data.fridge) ? data.fridge : [];
-        listTitle = data.list_title || 'Lista Spesa';
       }
       
       settingsLoaded = true;
       syncOperatorUI();
       initStoreSelect();
       initEventSelect();
-      updateListTitle();
       render();
     } catch (err) {
       console.error('Errore:', err);
       customStores = DEFAULT_STORES;
-      customOperators = DEFAULT_OPERATORS.slice();
+      customOperators = { members: DEFAULT_OPERATORS.members.slice(), events: [] };
       customFridge = [];
-      listTitle = 'Lista Spesa';
       settingsLoaded = true;
       syncOperatorUI();
       initStoreSelect();
       initEventSelect();
-      updateListTitle();
       render();
     }
   }
@@ -2296,7 +2257,6 @@
           operators: customOperators,
           stores: customStores,
           fridge: customFridge,
-          list_title: listTitle,
           updated_at: new Date().toISOString()
         });
       if (error) throw error;
@@ -2325,11 +2285,9 @@
           customStores = migrateStores(payload.new.stores || DEFAULT_STORES);
           customOperators = migrateOperators(payload.new.operators);
           customFridge = Array.isArray(payload.new.fridge) ? payload.new.fridge : [];
-          listTitle = payload.new.list_title || 'Lista Spesa';
           syncOperatorUI();
           initStoreSelect();
           initEventSelect();
-          updateListTitle();
           if (document.getElementById('settingsOverlay').classList.contains('show')) {
             renderStoresList();
             renderOperatorsList();
@@ -2341,29 +2299,23 @@
     .subscribe();
 
   function getStores() { return customStores || DEFAULT_STORES; }
-  function getOperators() { return customOperators || DEFAULT_OPERATORS; }
+  function getOperators() { 
+    const ops = customOperators || DEFAULT_OPERATORS;
+    return ops.members || [];
+  }
   function getEvents() {
-    const ops = getOperators();
-    // events può stare su customOperators (array) o come campo separato
-    if (customOperators && Array.isArray(customOperators.events)) return customOperators.events;
-    return [];
+    const ops = customOperators || DEFAULT_OPERATORS;
+    return Array.isArray(ops.events) ? ops.events : [];
   }
   function getStore(id) { return getStores().find(s => s.id === id) || getStores()[0]; }
   function getEvent(id) { return getEvents().find(e => e.id === id) || null; }
   function getOperator(id) {
     const ops = getOperators();
-    if (Array.isArray(ops)) return ops.find(o => o.id === id) || ops[0];
-    return { id: 'A', name: 'A', emoji: '⭐', color: '#6366f1' };
+    return ops.find(o => o.id === id) || ops[0] || { id: 'A', name: 'A', emoji: '⭐', color: '#6366f1' };
   }
   function getOpName(key) {
     const op = getOperator(key);
     return op ? op.name : key;
-  }
-
-  function updateListTitle() {
-    const h1 = document.getElementById('listTitle');
-    if (h1) h1.textContent = listTitle || 'Lista Spesa';
-    document.title = (listTitle || 'Lista Spesa') + ' - Marbon';
   }
 
   // ===== FRIGO =====
@@ -2384,7 +2336,6 @@
           operators: customOperators,
           stores: customStores,
           fridge: cleaned,
-          list_title: listTitle,
           updated_at: new Date().toISOString()
         });
       if (error) throw error;
@@ -2496,19 +2447,16 @@
 
   function syncOperatorUI() {
     const ops = getOperators();
-    // Quick operators nell'header
     const qopContainer = document.getElementById('quickOperators');
     if (qopContainer) {
       let html = '';
-      if (Array.isArray(ops)) {
-        ops.forEach(op => {
-          const active = currentOperator === op.id;
-          html += `<button class="qop-btn ${active ? 'active' : ''}" data-op="${op.id}" onclick="window.setOperator('${op.id}')" style="${active ? 'color:' + op.color : ''}">
-            <span class="qop-emoji">${escapeHtml(op.emoji)}</span>
-            <span>${escapeHtml(op.name)}</span>
-          </button>`;
-        });
-      }
+      ops.forEach(op => {
+        const active = currentOperator === op.id;
+        html += `<button class="qop-btn ${active ? 'active' : ''}" data-op="${op.id}" onclick="window.setOperator('${op.id}')" style="${active ? 'color:' + op.color : ''}">
+          <span class="qop-emoji">${escapeHtml(op.emoji)}</span>
+          <span>${escapeHtml(op.name)}</span>
+        </button>`;
+      });
       html += `<button class="fridge-btn" id="fridgeBtn" onclick="window.openFridgeSheet()" title="In frigo">
         <i class="bi bi-snow2"></i>
         <span class="fridge-btn-count" id="fridgeBtnCount"></span>
@@ -2517,19 +2465,16 @@
       updateFridgeBadge();
     }
     
-    // Operator selector nel bottom sheet
     const opSelector = document.getElementById('operatorSelector');
     if (opSelector) {
       let html = '';
-      if (Array.isArray(ops)) {
-        ops.forEach(op => {
-          const active = currentOperator === op.id;
-          html += `<button class="operator-btn ${active ? 'active' : ''}" data-op="${op.id}" onclick="window.setOperator('${op.id}')" style="${active ? 'background:' + op.color + ';border-color:' + op.color : ''}">
-            <span class="op-emoji">${escapeHtml(op.emoji)}</span>
-            <span class="op-name">${escapeHtml(op.name)}</span>
-          </button>`;
-        });
-      }
+      ops.forEach(op => {
+        const active = currentOperator === op.id;
+        html += `<button class="operator-btn ${active ? 'active' : ''}" data-op="${op.id}" onclick="window.setOperator('${op.id}')" style="${active ? 'background:' + op.color + ';border-color:' + op.color : ''}">
+          <span class="op-emoji">${escapeHtml(op.emoji)}</span>
+          <span class="op-name">${escapeHtml(op.name)}</span>
+        </button>`;
+      });
       opSelector.innerHTML = html;
     }
   }
@@ -2548,7 +2493,6 @@
   }
 
   const listEl = document.getElementById('list');
-  const statusEl = document.getElementById('status');
   const itemInput = document.getElementById('itemInput');
   const qtyInput = document.getElementById('qtyInput');
   const storeSelect = document.getElementById('storeSelect');
@@ -2558,7 +2502,6 @@
   const expiryWrapper = document.getElementById('expiryWrapper');
   const expiryInput = document.getElementById('expiryInput');
   const sheetOverlay = document.getElementById('sheetOverlay');
-  const fabBtn = document.getElementById('fabBtn');
   const priceModal = document.getElementById('priceModal');
   const priceInput = document.getElementById('priceInput');
   const searchInput = document.getElementById('searchInput');
@@ -2690,9 +2633,6 @@
   };
 
   async function saveEvents(newEvents) {
-    const ops = getOperators();
-    // Salvo events come campo separato in customOperators (retrocompatibilità)
-    customOperators = Array.isArray(ops) ? ops.slice() : ops;
     customOperators.events = newEvents;
     await saveSharedSettings();
     initEventSelect();
@@ -2742,7 +2682,9 @@
 
   function renderEventsList() {
     const container = document.getElementById('eventsList');
+    const quick = document.getElementById('emojiQuick');
     const evs = getEvents();
+    quick.innerHTML = EMOJI_QUICK.map(e => `<button type="button" onclick="window.setQuickEmoji('${e}')">${e}</button>`).join('');
     if (evs.length === 0) {
       container.innerHTML = '<div class="history-empty">Nessun evento. Creane uno qui sotto.</div>';
       return;
@@ -2756,11 +2698,14 @@
     `).join('');
   }
 
+  window.setQuickEmoji = function(emoji) {
+    document.getElementById('newEventEmoji').value = emoji;
+  };
+
   // ===== OPERATORI =====
   function renderOperatorsList() {
     const container = document.getElementById('operatorsList');
     const ops = getOperators();
-    if (!Array.isArray(ops)) return;
     container.innerHTML = ops.map(op => `
       <div class="settings-row">
         <input type="text" class="emoji-input" value="${escapeHtml(op.emoji)}" maxlength="4" onchange="window.updateOperatorEmoji('${op.id}', this.value)" title="Emoji">
@@ -2774,21 +2719,21 @@
   }
 
   window.updateOperatorName = function(id, name) {
-    const ops = getOperators();
+    const ops = customOperators.members;
     const op = ops.find(o => o.id === id);
     if (op) op.name = name.trim() || op.name;
     syncOperatorUI();
   };
 
   window.updateOperatorColor = function(id, color) {
-    const ops = getOperators();
+    const ops = customOperators.members;
     const op = ops.find(o => o.id === id);
     if (op) op.color = color;
     syncOperatorUI();
   };
 
   window.updateOperatorEmoji = function(id, emoji) {
-    const ops = getOperators();
+    const ops = customOperators.members;
     const op = ops.find(o => o.id === id);
     if (op && emoji.trim()) op.emoji = emoji.trim();
     syncOperatorUI();
@@ -2796,16 +2741,16 @@
 
   window.deleteOperator = function(id) {
     if (!confirm('Eliminare questo operatore? I suoi prodotti verranno riassegnati.')) return;
-    const ops = getOperators().filter(o => o.id !== id);
+    const ops = customOperators.members.filter(o => o.id !== id);
     if (currentOperator === id) currentOperator = ops[0]?.id || 'A';
-    customOperators = ops;
+    customOperators.members = ops;
     saveLocalSettings();
     syncOperatorUI();
     renderOperatorsList();
   };
 
   window.addOperator = function() {
-    const ops = getOperators();
+    const ops = customOperators.members;
     if (ops.length >= 4) { alert('Massimo 4 operatori'); return; }
     const usedIds = new Set(ops.map(o => o.id));
     const allIds = ['A','B','C','D','E','F','G','H'];
@@ -2819,7 +2764,7 @@
       emoji: defaultEmojis[idx] || '⭐',
       color: defaultColors[idx] || '#6366f1'
     };
-    customOperators = [...ops, newOp];
+    customOperators.members = [...ops, newOp];
     syncOperatorUI();
     renderOperatorsList();
   };
@@ -2935,7 +2880,7 @@
     } else if (type === 'operator') {
       title.innerHTML = '<i class="bi bi-people-fill"></i> Assegna operatore';
       const ops = getOperators();
-      list.innerHTML = (Array.isArray(ops) ? ops : []).map(op => `
+      list.innerHTML = ops.map(op => `
         <div class="pick-item" onclick="window.applyBulkOperator('${op.id}')">
           <div class="pick-emoji">${escapeHtml(op.emoji)}</div>
           <div class="pick-name">${escapeHtml(op.name)}</div>
@@ -3272,14 +3217,10 @@
       if (hasChanges) {
         items = newItems;
         lastItemsCount = newCount;
-        const liveText = document.getElementById('liveText');
-        if (liveText) liveText.textContent = 'Live';
         render();
       }
     } catch (err) {
       console.error('Errore:', err);
-      const liveText = document.getElementById('liveText');
-      if (liveText) liveText.textContent = 'Errore';
     }
   }
 
@@ -3392,8 +3333,7 @@
   }
 
   function renderItem(item, store) {
-    const op = getOperator(item.operator === 'B' ? 'B' : item.operator || 'A');
-    const opId = op ? op.id : 'A';
+    const op = getOperator(item.operator || 'A');
     const opEmoji = op ? op.emoji : '⭐';
     const opColor = op ? op.color : '#6366f1';
     const opName = op ? op.name : 'A';
@@ -3544,7 +3484,7 @@
     qtyInput.value = item.qty || '';
     storeSelect.value = item.store || 'generico';
     eventSelect.value = item.eventId || '';
-    window.setOperator(item.operator === 'B' ? 'B' : item.operator || 'A');
+    window.setOperator(item.operator || 'A');
     
     offerCheckbox.checked = item.onOffer === true;
     if (item.onOffer) {
@@ -3800,13 +3740,14 @@
     }
   }
 
+  // Magic wand con STELLINA (come prima)
   window.magicWand = async function() {
     const doneItems = items.filter(i => i.done);
     if (doneItems.length === 0) {
       alert('Nessun prodotto comprato da eliminare!');
       return;
     }
-    if (!confirm(`Il secchio eliminerà ${doneItems.length} prodott${doneItems.length === 1 ? 'o' : 'i'} comprat${doneItems.length === 1 ? 'o' : 'i'}. Procedere?`)) return;
+    if (!confirm(`La bacchetta magica eliminerà ${doneItems.length} prodott${doneItems.length === 1 ? 'o' : 'i'} comprat${doneItems.length === 1 ? 'o' : 'i'}. Procedere?`)) return;
     try {
       doneItems.forEach(i => addToHistory(i));
       const ids = doneItems.map(i => i.id).filter(x => !x.startsWith('temp_'));
@@ -3823,7 +3764,6 @@
     }
   };
 
-  // ===== EXPORT WHATSAPP =====
   window.exportWhatsApp = async function() {
     if (items.length === 0) {
       alert('La lista è vuota!');
@@ -3842,13 +3782,12 @@
     const storeOrder = getStores().map(s => s.id).filter(id => byStore[id]);
     Object.keys(byStore).forEach(id => { if (!storeOrder.includes(id)) storeOrder.push(id); });
     
-    const title = listTitle || 'Lista Spesa';
-    let lines = [`🛒 *${title}*`, ''];
+    let lines = ['🛒 *Lista Spesa*', ''];
     
     storeOrder.forEach(storeId => {
       const store = getStore(storeId);
       const storeItems = byStore[storeId];
-      lines.push(`🏪 *${store.name}*`);
+      lines.push(`*${store.name}*`);
       storeItems.forEach(item => {
         const ev = item.eventId ? getEvent(item.eventId) : null;
         const evStr = ev ? ` ${ev.emoji}` : '';
@@ -3877,13 +3816,11 @@
       showIndicator('📋 Lista copiata! Incolla su WhatsApp');
     } catch (err) {
       console.error(err);
-      alert('Impossibile copiare. Prova da HTTPS o browser diverso.');
+      alert('Impossibile copiare.');
     }
   };
 
   window.openSettings = function() {
-    const ops = getOperators();
-    document.getElementById('settingsListTitle').value = listTitle;
     iconPickerStoreId = null;
     renderOperatorsList();
     renderStoresList();
@@ -4014,12 +3951,10 @@
   };
 
   window.saveSettings = async function() {
-    listTitle = document.getElementById('settingsListTitle').value.trim() || 'Lista Spesa';
     await saveSharedSettings();
     syncOperatorUI();
     initStoreSelect();
     initEventSelect();
-    updateListTitle();
     iconPickerStoreId = null;
     document.getElementById('settingsOverlay').classList.remove('show');
     render();
@@ -4078,14 +4013,13 @@
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const today = new Date().toLocaleDateString('it-IT');
-    const title = listTitle || 'Lista Spesa';
     
     doc.setFillColor(99, 102, 241);
     doc.rect(0, 0, 210, 30, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont(undefined, 'bold');
-    doc.text(title, 14, 14);
+    doc.text('Lista Spesa', 14, 14);
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
     doc.text(`Generata il ${today}`, 14, 22);
