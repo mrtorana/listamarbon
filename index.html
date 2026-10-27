@@ -37,7 +37,6 @@
     --gold: #fbbf24;
     --done-color: #10b981;
     --fridge: #38bdf8;
-    --fridge-error: #f59e0b;
   }
   
   body.dark {
@@ -249,7 +248,6 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    /* FIX: testo non selezionabile */
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -279,12 +277,7 @@
     border-radius: 14px;
     padding: 10px 12px;
   }
-  .fridge-section.fridge-error {
-    background: rgba(245,158,11,0.08);
-    border-color: rgba(245,158,11,0.45);
-  }
   body.dark .fridge-section { background: rgba(56,189,248,0.08); }
-  body.dark .fridge-section.fridge-error { background: rgba(245,158,11,0.1); }
   .fridge-header {
     display: flex;
     align-items: center;
@@ -302,7 +295,6 @@
     align-items: center;
     gap: 6px;
   }
-  .fridge-section.fridge-error .fridge-title { color: var(--fridge-error); }
   .fridge-count {
     font-size: 9px;
     background: rgba(56,189,248,0.15);
@@ -311,17 +303,12 @@
     border-radius: 7px;
     font-weight: 800;
   }
-  .fridge-section.fridge-error .fridge-count {
-    background: rgba(245,158,11,0.15);
-    color: var(--fridge-error);
-  }
   .fridge-chevron {
     margin-left: auto;
     font-size: 11px;
     color: var(--fridge);
     transition: transform 0.3s;
   }
-  .fridge-section.fridge-error .fridge-chevron { color: var(--fridge-error); }
   .fridge-chevron.open { transform: rotate(180deg); }
   .fridge-body {
     margin-top: 8px;
@@ -389,14 +376,6 @@
     text-align: center;
     margin-top: 7px;
     font-weight: 600;
-  }
-  .fridge-error-msg {
-    font-size: 11px;
-    color: var(--fridge-error);
-    text-align: center;
-    padding: 8px;
-    font-weight: 600;
-    line-height: 1.4;
   }
 
   .store-section {
@@ -2003,7 +1982,7 @@
   const DEFAULT_OPERATORS = { A: 'Martina', B: 'Salvo' };
   const HISTORY_MAX = 10;
   const FRIDGE_DAYS = 7;
-  const EMOJI_QUICK = ['🎃','','🎉','','🎂','','🍿','','🎁','❤️','🌸','☀️','⭐','🔥','🍾','🎈','🎭','🐰','🌞','🍬','🏖️','','🎅','🌺','💐','🍷','','🎵','','🍻'];
+  const EMOJI_QUICK = ['🎃','','🎉','','🎂','','','','🎁','❤️','🌸','☀️','⭐','🔥','🍾','','🎭','','🌞','','🏖️','','🎅','🌺','💐','🍷','','🎵','',''];
 
   let items = [];
   let currentOperator = 'A';
@@ -2013,6 +1992,7 @@
   let collapsedStores = new Set();
   let customStores = null;
   let customOperators = null;
+  let customFridge = null;   // <-- FRIGO ora vive qui (settings.fridge)
   let isDark = false;
   let settingsLoaded = false;
   let realtimeTimeout = null;
@@ -2032,10 +2012,7 @@
   let selectedIds = new Set();
   let bulkAction = 'store';
   let iconPickerStoreId = null;
-  let fridgeItems = [];
   let fridgeOpen = true;
-  let fridgeTimeout = null;
-  let fridgeAvailable = null; // null = non testato, true = ok, false = non disponibile
 
   let longPressTimer = null;
   let longPressTargetId = null;
@@ -2106,9 +2083,11 @@
       if (error) {
         customStores = DEFAULT_STORES;
         customOperators = DEFAULT_OPERATORS;
+        customFridge = [];
       } else {
         customStores = migrateStores(data.stores || DEFAULT_STORES);
         customOperators = data.operators || DEFAULT_OPERATORS;
+        customFridge = Array.isArray(data.fridge) ? data.fridge : [];
       }
       
       settingsLoaded = true;
@@ -2120,6 +2099,7 @@
       console.error('Errore:', err);
       customStores = DEFAULT_STORES;
       customOperators = DEFAULT_OPERATORS;
+      customFridge = [];
       settingsLoaded = true;
       syncOperatorUI();
       initStoreSelect();
@@ -2136,6 +2116,7 @@
           id: 'global',
           operators: customOperators,
           stores: customStores,
+          fridge: customFridge,
           updated_at: new Date().toISOString()
         });
       if (error) throw error;
@@ -2163,6 +2144,7 @@
         if (payload.new) {
           customStores = migrateStores(payload.new.stores || DEFAULT_STORES);
           customOperators = payload.new.operators || DEFAULT_OPERATORS;
+          customFridge = Array.isArray(payload.new.fridge) ? payload.new.fridge : [];
           syncOperatorUI();
           initStoreSelect();
           initEventSelect();
@@ -2179,6 +2161,105 @@
   function getStore(id) { return getStores().find(s => s.id === id) || getStores()[0]; }
   function getEvent(id) { return getEvents().find(e => e.id === id) || null; }
   function getOpName(key) { return getOperators()[key] || key; }
+
+  // ===== FRIGO (salvato dentro settings.fridge) =====
+  function getFridge() {
+    const cutoff = Date.now() - FRIDGE_DAYS * 86400000;
+    return (customFridge || []).filter(f => f && f.boughtAt && new Date(f.boughtAt).getTime() > cutoff);
+  }
+
+  async function saveFridge(newFridge) {
+    try {
+      const cutoff = Date.now() - FRIDGE_DAYS * 86400000;
+      const cleaned = (newFridge || []).filter(f => f && f.boughtAt && new Date(f.boughtAt).getTime() > cutoff);
+      customFridge = cleaned;
+      const { error } = await supabase
+        .from('settings')
+        .upsert({
+          id: 'global',
+          operators: getOperators(),
+          stores: getStores(),
+          fridge: cleaned,
+          updated_at: new Date().toISOString()
+        });
+      if (error) throw error;
+      render();
+    } catch (err) {
+      console.error('❌ FRIDGE SAVE ERROR:', err.message);
+    }
+  }
+
+  function addFridgeEntry(item) {
+    const entry = {
+      id: 'fr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      itemId: item.id,
+      name: item.name,
+      qty: item.qty || '',
+      store: item.store || 'generico',
+      operator: item.operator || 'A',
+      boughtAt: new Date().toISOString()
+    };
+    const arr = getFridge().filter(f => f.itemId !== item.id);
+    arr.unshift(entry);
+    saveFridge(arr);
+  }
+
+  function removeFridgeByItem(itemId) {
+    saveFridge(getFridge().filter(f => f.itemId !== itemId));
+  }
+
+  window.removeFromFridge = function(id) {
+    saveFridge(getFridge().filter(f => f.id !== id));
+  };
+
+  window.toggleFridge = function() {
+    fridgeOpen = !fridgeOpen;
+    localStorage.setItem('marbon_fridge_open', fridgeOpen ? '1' : '0');
+    render();
+  };
+
+  function renderFridge() {
+    const valid = getFridge();
+    if (valid.length === 0) return '';
+    
+    const now = Date.now();
+    let body = '';
+    if (fridgeOpen) {
+      body = `<div class="fridge-body">` + valid.map(f => {
+        const st = getStore(f.store);
+        const d = new Date(f.boughtAt);
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const daysLeft = Math.max(0, FRIDGE_DAYS - Math.floor((now - d.getTime()) / 86400000));
+        return `
+          <div class="fridge-item">
+            <span class="fridge-dot" style="background:${st.color}"></span>
+            <div class="fridge-info">
+              <div class="fridge-name">${escapeHtml(f.name)}</div>
+              <div class="fridge-meta">
+                <span>${escapeHtml(st.name)}</span>
+                <span>· Acquistato il ${dd}.${mm}</span>
+                <span class="fridge-days">· ${daysLeft}g</span>
+              </div>
+            </div>
+            <button class="fridge-del" onclick="window.removeFromFridge('${f.id}')" title="Togli dal frigo"><i class="bi bi-x-lg"></i></button>
+          </div>
+        `;
+      }).join('') + `</div>
+      <div class="fridge-note"><i class="bi bi-snow2"></i> I prodotti restano 7 giorni poi spariscono da soli</div>`;
+    }
+    
+    return `
+      <div class="fridge-section">
+        <div class="fridge-header" onclick="window.toggleFridge()">
+          <span class="fridge-title"><i class="bi bi-snow2"></i> In frigo</span>
+          <span class="fridge-count">${valid.length}</span>
+          <span class="fridge-chevron ${fridgeOpen ? 'open' : ''}"><i class="bi bi-chevron-down"></i></span>
+        </div>
+        ${body}
+      </div>
+    `;
+  }
 
   function storeLogoHTML(store, sizeClass) {
     const initials = (store.name || '?').substring(0, 2).toUpperCase();
@@ -2471,168 +2552,6 @@
     });
     if (!evs.length) chips += `<span class="filter-chip muted"><i class="bi bi-stars"></i> Crea eventi nelle impostazioni</span>`;
     return `<div class="filter-row">${chips}</div>`;
-  }
-
-  // ===== IN FRIGO =====
-  async function loadFridge() {
-    try {
-      const cutoff = new Date(Date.now() - FRIDGE_DAYS * 86400000).toISOString();
-      const { data, error } = await supabase
-        .from('fridge')
-        .select('*')
-        .gte('bought_at', cutoff)
-        .order('bought_at', { ascending: false });
-      if (error) {
-        console.error('❌ FRIDGE ERROR:', error.message, error);
-        fridgeAvailable = false;
-        fridgeItems = [];
-      } else {
-        fridgeAvailable = true;
-        fridgeItems = (data || []).map(r => ({
-          id: r.id,
-          itemId: r.item_id || null,
-          name: r.name,
-          qty: r.qty || '',
-          store: r.store || 'generico',
-          operator: r.operator || 'A',
-          boughtAt: r.bought_at
-        }));
-        // Pulizia automatica dei vecchi
-        supabase.from('fridge').delete().lt('bought_at', cutoff).then(() => {});
-      }
-      render();
-    } catch (err) {
-      console.error('❌ FRIDGE ECCEZIONE:', err.message, err);
-      fridgeAvailable = false;
-      fridgeItems = [];
-      render();
-    }
-  }
-
-  async function addFridgeEntry(item) {
-    try {
-      const { error } = await supabase.from('fridge').insert({
-        item_id: item.id,
-        name: item.name,
-        qty: item.qty || '',
-        store: item.store || 'generico',
-        operator: item.operator || 'A',
-        event_id: item.eventId || null
-      });
-      if (error) {
-        console.error('❌ FRIDGE INSERT ERROR:', error.message, error);
-        fridgeAvailable = false;
-        showIndicator('⚠️ Frigo non configurato');
-      } else {
-        fridgeAvailable = true;
-        console.log('✅ Prodotto aggiunto al frigo:', item.name);
-      }
-    } catch (err) { 
-      console.error('❌ FRIDGE INSERT ECCEZIONE:', err.message, err);
-      fridgeAvailable = false;
-    }
-    // Ricarica sempre il frigo dopo un tentativo di insert
-    await loadFridge();
-  }
-
-  async function removeFridgeByItem(itemId) {
-    try {
-      await supabase.from('fridge').delete().eq('item_id', itemId);
-      fridgeItems = fridgeItems.filter(f => f.itemId !== itemId);
-      render();
-    } catch (err) { console.warn(err); }
-  }
-
-  window.removeFromFridge = async function(id) {
-    try {
-      await supabase.from('fridge').delete().eq('id', id);
-      fridgeItems = fridgeItems.filter(f => f.id !== id);
-      render();
-    } catch (err) { console.warn(err); }
-  };
-
-  window.toggleFridge = function() {
-    fridgeOpen = !fridgeOpen;
-    localStorage.setItem('marbon_fridge_open', fridgeOpen ? '1' : '0');
-    render();
-  };
-
-  supabase
-    .channel('fridge-changes')
-    .on('postgres_changes',
-      { event: '*', schema: 'public', table: 'fridge' },
-      () => {
-        clearTimeout(fridgeTimeout);
-        fridgeTimeout = setTimeout(() => loadFridge(), 500);
-      }
-    )
-    .subscribe();
-
-  function renderFridge() {
-    // Se il frigo non è disponibile, mostra messaggio di errore
-    if (fridgeAvailable === false) {
-      return `
-        <div class="fridge-section fridge-error">
-          <div class="fridge-header" onclick="window.toggleFridge()">
-            <span class="fridge-title"><i class="bi bi-exclamation-triangle-fill"></i> Frigo non configurato</span>
-            <span class="fridge-chevron ${fridgeOpen ? 'open' : ''}"><i class="bi bi-chevron-down"></i></span>
-          </div>
-          ${fridgeOpen ? `
-            <div class="fridge-body">
-              <div class="fridge-error-msg">
-                <i class="bi bi-info-circle-fill"></i> La tabella <b>fridge</b> non esiste o non è accessibile.<br><br>
-                Apri Supabase → SQL Editor ed esegui:<br>
-                <code style="font-size:9px;background:rgba(0,0,0,0.1);padding:2px 4px;border-radius:3px">CREATE TABLE fridge (...)</code><br><br>
-                Poi ricarica l'app.
-              </div>
-            </div>
-          ` : ''}
-        </div>
-      `;
-    }
-
-    const now = Date.now();
-    const valid = fridgeItems.filter(f => now - new Date(f.boughtAt).getTime() < FRIDGE_DAYS * 86400000);
-    
-    // Se non ci sono prodotti validi e il frigo è disponibile, non mostrare nulla
-    if (valid.length === 0) return '';
-    
-    let body = '';
-    if (fridgeOpen) {
-      body = `<div class="fridge-body">` + valid.map(f => {
-        const st = getStore(f.store);
-        const d = new Date(f.boughtAt);
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const daysLeft = Math.max(0, FRIDGE_DAYS - Math.floor((now - d.getTime()) / 86400000));
-        return `
-          <div class="fridge-item">
-            <span class="fridge-dot" style="background:${st.color}"></span>
-            <div class="fridge-info">
-              <div class="fridge-name">${escapeHtml(f.name)}</div>
-              <div class="fridge-meta">
-                <span>${escapeHtml(st.name)}</span>
-                <span>· Acquistato il ${dd}.${mm}</span>
-                <span class="fridge-days">· ${daysLeft}g</span>
-              </div>
-            </div>
-            <button class="fridge-del" onclick="window.removeFromFridge('${f.id}')" title="Togli dal frigo"><i class="bi bi-x-lg"></i></button>
-          </div>
-        `;
-      }).join('') + `</div>
-      <div class="fridge-note"><i class="bi bi-snow2"></i> I prodotti restano 7 giorni poi spariscono da soli</div>`;
-    }
-    
-    return `
-      <div class="fridge-section">
-        <div class="fridge-header" onclick="window.toggleFridge()">
-          <span class="fridge-title"><i class="bi bi-snow2"></i> In frigo</span>
-          <span class="fridge-count">${valid.length}</span>
-          <span class="fridge-chevron ${fridgeOpen ? 'open' : ''}"><i class="bi bi-chevron-down"></i></span>
-        </div>
-        ${body}
-      </div>
-    `;
   }
 
   window.toggleSelectMode = function() {
@@ -3819,7 +3738,6 @@
   loadLocalSettings();
   loadSharedSettings();
   loadItems();
-  loadFridge();
 </script>
 </body>
 </html>
