@@ -220,6 +220,52 @@
   .qop-btn.active[data-op="A"] { color: var(--martina); }
   .qop-btn.active[data-op="B"] { color: var(--salvo); }
 
+  /* ===== TASTO FREEZER ===== */
+  .fridge-btn {
+    position: relative;
+    flex: 0 0 44px;
+    width: 44px;
+    padding: 8px 0;
+    border-radius: 11px;
+    border: 2px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.95);
+    font-size: 17px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .fridge-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.06);
+  }
+  .fridge-btn:active { transform: scale(0.94); }
+  .fridge-btn.has-items {
+    background: rgba(56,189,248,0.25);
+    border-color: rgba(56,189,248,0.6);
+  }
+  .fridge-btn-count {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: var(--fridge);
+    color: white;
+    font-size: 9px;
+    font-weight: 800;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    font-family: inherit;
+  }
+  .fridge-btn-count.show { display: flex; }
+
   .list-container {
     flex: 1;
     padding: 14px 14px 40px;
@@ -268,115 +314,6 @@
     opacity: 0.9;
   }
   .filter-chip .bi-eye-slash { font-size: 10px; }
-
-  /* ===== SEZIONE IN FRIGO ===== */
-  .fridge-section {
-    margin-bottom: 16px;
-    background: rgba(56,189,248,0.07);
-    border: 1.5px dashed rgba(56,189,248,0.45);
-    border-radius: 14px;
-    padding: 10px 12px;
-  }
-  body.dark .fridge-section { background: rgba(56,189,248,0.08); }
-  .fridge-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 2px 2px;
-  }
-  .fridge-title {
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--fridge);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .fridge-count {
-    font-size: 9px;
-    background: rgba(56,189,248,0.15);
-    color: var(--fridge);
-    padding: 2px 7px;
-    border-radius: 7px;
-    font-weight: 800;
-  }
-  .fridge-chevron {
-    margin-left: auto;
-    font-size: 11px;
-    color: var(--fridge);
-    transition: transform 0.3s;
-  }
-  .fridge-chevron.open { transform: rotate(180deg); }
-  .fridge-body {
-    margin-top: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .fridge-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-  }
-  .fridge-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .fridge-info { flex: 1; min-width: 0; }
-  .fridge-name {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .fridge-meta {
-    font-size: 9px;
-    color: var(--text-muted);
-    font-weight: 600;
-    margin-top: 1px;
-    display: flex;
-    gap: 5px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .fridge-days {
-    color: var(--fridge);
-    font-weight: 800;
-  }
-  .fridge-del {
-    width: 26px;
-    height: 26px;
-    border: none;
-    border-radius: 7px;
-    background: var(--card-alt);
-    color: var(--text-muted);
-    font-size: 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-    flex-shrink: 0;
-  }
-  .fridge-del:hover { background: var(--coral); color: white; }
-  .fridge-note {
-    font-size: 9px;
-    color: var(--text-muted);
-    text-align: center;
-    margin-top: 7px;
-    font-weight: 600;
-  }
 
   .store-section {
     margin-bottom: 18px;
@@ -723,6 +660,88 @@
     color: var(--text);
   }
   .empty p { font-size: 13px; color: var(--text-muted); }
+
+  /* ===== CONTENUTO POPUP FRIGO ===== */
+  .fridge-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .fridge-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    background: var(--card-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .fridge-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .fridge-info { flex: 1; min-width: 0; }
+  .fridge-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fridge-meta {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 1px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .fridge-days {
+    color: var(--fridge);
+    font-weight: 800;
+  }
+  .fridge-del {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .fridge-del:hover { background: var(--coral); color: white; }
+  .fridge-note {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  .fridge-empty {
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  .fridge-empty i {
+    font-size: 34px;
+    color: var(--fridge);
+    display: block;
+    margin-bottom: 10px;
+  }
 
   .history-section {
     margin-top: 30px;
@@ -1789,6 +1808,10 @@
       <div class="quick-operator">
         <button class="qop-btn" id="qopA" data-op="A" onclick="window.setOperator('A')"><i class="bi bi-heart-fill"></i> Martina</button>
         <button class="qop-btn" id="qopB" data-op="B" onclick="window.setOperator('B')"><i class="bi bi-heart-fill"></i> Salvo</button>
+        <button class="fridge-btn" id="fridgeBtn" onclick="window.openFridgeSheet()" title="In frigo">
+          <i class="bi bi-snow2"></i>
+          <span class="fridge-btn-count" id="fridgeBtnCount"></span>
+        </button>
       </div>
     </div>
 
@@ -1851,6 +1874,15 @@
 
       <button class="add-btn" id="actionBtn" onclick="window.handleSheetAction()"><i class="bi bi-plus-circle-fill"></i> Aggiungi alla lista</button>
       <button class="delete-edit-btn" id="deleteEditBtn" onclick="window.deleteFromEdit()" style="display:none;"><i class="bi bi-trash-fill"></i> Elimina prodotto</button>
+    </div>
+  </div>
+
+  <!-- ===== POPUP FRIGO ===== -->
+  <div class="modal-overlay" id="fridgeOverlay" onclick="window.closeFridgeSheet(event)">
+    <div class="bottom-sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title"><i class="bi bi-snow2" style="color:var(--fridge)"></i> In frigo</div>
+      <div id="fridgeSheetBody"></div>
     </div>
   </div>
 
@@ -1982,7 +2014,7 @@
   const DEFAULT_OPERATORS = { A: 'Martina', B: 'Salvo' };
   const HISTORY_MAX = 10;
   const FRIDGE_DAYS = 7;
-  const EMOJI_QUICK = ['🎃','','🎉','','🎂','','','','🎁','❤️','🌸','☀️','⭐','🔥','🍾','','🎭','','🌞','','🏖️','','🎅','🌺','💐','🍷','','🎵','',''];
+  const EMOJI_QUICK = ['🎃','','🎉','','🎂','','','','🎁','❤️','🌸','☀️','⭐','🔥','🍾','','','','🌞','','️','','🎅','🌺','💐','🍷','','','',''];
 
   let items = [];
   let currentOperator = 'A';
@@ -1992,7 +2024,7 @@
   let collapsedStores = new Set();
   let customStores = null;
   let customOperators = null;
-  let customFridge = null;   // <-- FRIGO ora vive qui (settings.fridge)
+  let customFridge = null;
   let isDark = false;
   let settingsLoaded = false;
   let realtimeTimeout = null;
@@ -2012,7 +2044,7 @@
   let selectedIds = new Set();
   let bulkAction = 'store';
   let iconPickerStoreId = null;
-  let fridgeOpen = true;
+  let fridgeSheetOpen = false;
 
   let longPressTimer = null;
   let longPressTargetId = null;
@@ -2052,7 +2084,6 @@
         history = Array.isArray(parsed) ? parsed.slice(0, HISTORY_MAX) : [];
       }
       historyOpen = localStorage.getItem('marbon_history_open') === '1';
-      fridgeOpen = localStorage.getItem('marbon_fridge_open') !== '0';
     } catch(e) { history = []; }
     if (isDark) document.body.classList.add('dark');
     updateDarkToggle();
@@ -2162,7 +2193,7 @@
   function getEvent(id) { return getEvents().find(e => e.id === id) || null; }
   function getOpName(key) { return getOperators()[key] || key; }
 
-  // ===== FRIGO (salvato dentro settings.fridge) =====
+  // ===== FRIGO (dati in settings.fridge) =====
   function getFridge() {
     const cutoff = Date.now() - FRIDGE_DAYS * 86400000;
     return (customFridge || []).filter(f => f && f.boughtAt && new Date(f.boughtAt).getTime() > cutoff);
@@ -2212,53 +2243,70 @@
     saveFridge(getFridge().filter(f => f.id !== id));
   };
 
-  window.toggleFridge = function() {
-    fridgeOpen = !fridgeOpen;
-    localStorage.setItem('marbon_fridge_open', fridgeOpen ? '1' : '0');
-    render();
+  // ===== POPUP FRIGO =====
+  window.openFridgeSheet = function() {
+    fridgeSheetOpen = true;
+    renderFridgeSheet();
+    document.getElementById('fridgeOverlay').classList.add('show');
+    document.body.style.overflow = 'hidden';
   };
 
-  function renderFridge() {
+  window.closeFridgeSheet = function(e) {
+    if (e && e.target !== document.getElementById('fridgeOverlay')) return;
+    fridgeSheetOpen = false;
+    document.getElementById('fridgeOverlay').classList.remove('show');
+    document.body.style.overflow = '';
+  };
+
+  function renderFridgeSheet() {
+    const body = document.getElementById('fridgeSheetBody');
+    if (!body) return;
     const valid = getFridge();
-    if (valid.length === 0) return '';
-    
     const now = Date.now();
-    let body = '';
-    if (fridgeOpen) {
-      body = `<div class="fridge-body">` + valid.map(f => {
-        const st = getStore(f.store);
-        const d = new Date(f.boughtAt);
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const daysLeft = Math.max(0, FRIDGE_DAYS - Math.floor((now - d.getTime()) / 86400000));
-        return `
-          <div class="fridge-item">
-            <span class="fridge-dot" style="background:${st.color}"></span>
-            <div class="fridge-info">
-              <div class="fridge-name">${escapeHtml(f.name)}</div>
-              <div class="fridge-meta">
-                <span>${escapeHtml(st.name)}</span>
-                <span>· Acquistato il ${dd}.${mm}</span>
-                <span class="fridge-days">· ${daysLeft}g</span>
-              </div>
-            </div>
-            <button class="fridge-del" onclick="window.removeFromFridge('${f.id}')" title="Togli dal frigo"><i class="bi bi-x-lg"></i></button>
-          </div>
-        `;
-      }).join('') + `</div>
-      <div class="fridge-note"><i class="bi bi-snow2"></i> I prodotti restano 7 giorni poi spariscono da soli</div>`;
+    
+    if (valid.length === 0) {
+      body.innerHTML = `
+        <div class="fridge-empty">
+          <i class="bi bi-snow2"></i>
+          Il frigo è vuoto.<br>
+          <span style="font-weight:500;font-size:11px;color:var(--text-muted)">I prodotti che spunti come comprati<br>restano qui per 7 giorni.</span>
+        </div>
+      `;
+      return;
     }
     
-    return `
-      <div class="fridge-section">
-        <div class="fridge-header" onclick="window.toggleFridge()">
-          <span class="fridge-title"><i class="bi bi-snow2"></i> In frigo</span>
-          <span class="fridge-count">${valid.length}</span>
-          <span class="fridge-chevron ${fridgeOpen ? 'open' : ''}"><i class="bi bi-chevron-down"></i></span>
+    body.innerHTML = `<div class="fridge-body">` + valid.map(f => {
+      const st = getStore(f.store);
+      const d = new Date(f.boughtAt);
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const daysLeft = Math.max(0, FRIDGE_DAYS - Math.floor((now - d.getTime()) / 86400000));
+      return `
+        <div class="fridge-item">
+          <span class="fridge-dot" style="background:${st.color}"></span>
+          <div class="fridge-info">
+            <div class="fridge-name">${escapeHtml(f.name)}</div>
+            <div class="fridge-meta">
+              <span>${escapeHtml(st.name)}</span>
+              <span>· Acquistato il ${dd}.${mm}</span>
+              <span class="fridge-days">· ${daysLeft}g</span>
+            </div>
+          </div>
+          <button class="fridge-del" onclick="window.removeFromFridge('${f.id}')" title="Togli dal frigo"><i class="bi bi-x-lg"></i></button>
         </div>
-        ${body}
-      </div>
-    `;
+      `;
+    }).join('') + `</div>
+    <div class="fridge-note"><i class="bi bi-snow2"></i> I prodotti restano 7 giorni poi spariscono da soli</div>`;
+  }
+
+  function updateFridgeBadge() {
+    const btn = document.getElementById('fridgeBtn');
+    const badge = document.getElementById('fridgeBtnCount');
+    if (!btn || !badge) return;
+    const c = getFridge().length;
+    badge.textContent = c;
+    badge.classList.toggle('show', c > 0);
+    btn.classList.toggle('has-items', c > 0);
   }
 
   function storeLogoHTML(store, sizeClass) {
@@ -2942,7 +2990,6 @@
 
   function render() {
     let html = renderFilterRow();
-    html += renderFridge();
 
     let base = items;
     if (activeEventFilter && !getEvents().some(e => e.id === activeEventFilter)) activeEventFilter = null;
@@ -3024,6 +3071,8 @@
       attachLongPressHandlers();
     }
     renderBulkBar();
+    updateFridgeBadge();
+    if (fridgeSheetOpen) renderFridgeSheet();
     
     if (quickAddOpenStore) {
       const inp = document.getElementById('qa-input-' + quickAddOpenStore);
