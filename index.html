@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Lista Spesa - Marbon</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -29,14 +29,13 @@
     --border: #e2e8f0;
     --shadow: 0 2px 4px -1px rgba(0,0,0,0.04);
     --shadow-lg: 0 8px 20px -4px rgba(0,0,0,0.08);
-    --martina: #ec4899;
-    --salvo: #3b82f6;
     --header-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
     --header-text: white;
     --header-shadow: rgba(99,102,241,0.25);
     --gold: #fbbf24;
     --done-color: #10b981;
     --fridge: #38bdf8;
+    --safe-top: 0px;
   }
   
   body.dark {
@@ -62,6 +61,16 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
     transition: background 0.3s, color 0.3s;
+  }
+  
+  /* Notch iPhone: solo riempie il colore, nessun cambio di layout */
+  @supports (padding-top: env(safe-area-inset-top)) {
+    body.ios {
+      --safe-top: env(safe-area-inset-top);
+    }
+    body.ios .header {
+      padding-top: calc(18px + var(--safe-top));
+    }
   }
   
   .container { 
@@ -92,6 +101,7 @@
     font-weight: 800;
     color: var(--header-text);
     letter-spacing: -0.5px;
+    cursor: pointer;
   }
   .header-actions {
     display: flex;
@@ -122,28 +132,12 @@
     color: var(--primary);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   }
-  .icon-btn.magic {
+  .icon-btn.bucket {
     background: linear-gradient(135deg, #fbbf24, #f59e0b);
     box-shadow: 0 4px 12px rgba(245,158,11,0.4);
   }
-  .icon-btn.magic:hover {
-    transform: scale(1.08) rotate(15deg);
-  }
-  .status {
-    font-size: 10px;
-    color: var(--header-text);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: 600;
-    padding: 5px 9px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 14px;
-  }
-  .status .dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: #10b981;
-    box-shadow: 0 0 6px #10b981;
+  .icon-btn.bucket:hover {
+    transform: scale(1.08) rotate(-8deg);
   }
 
   .search-container {
@@ -194,14 +188,18 @@
     display: flex;
     gap: 6px;
     margin-top: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+  .quick-operator::-webkit-scrollbar { display: none; }
   .qop-btn {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 80px;
     padding: 8px 10px;
     border-radius: 11px;
     border: 2px solid rgba(255,255,255,0.25);
     background: rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.95);
     font-family: inherit;
     font-size: 12px;
     font-weight: 700;
@@ -211,16 +209,18 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
+    white-space: nowrap;
   }
   .qop-btn.active {
     background: rgba(255,255,255,0.95);
     border-color: rgba(255,255,255,0.95);
     box-shadow: 0 4px 10px rgba(0,0,0,0.12);
   }
-  .qop-btn.active[data-op="A"] { color: var(--martina); }
-  .qop-btn.active[data-op="B"] { color: var(--salvo); }
+  .qop-btn .qop-emoji {
+    font-size: 13px;
+  }
 
-  /* ===== TASTO FREEZER ===== */
+  /* Tasto Freezer */
   .fridge-btn {
     position: relative;
     flex: 0 0 44px;
@@ -296,8 +296,6 @@
     gap: 4px;
     user-select: none;
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
   }
   .filter-chip.active {
     border-color: var(--primary);
@@ -310,9 +308,7 @@
     border-style: dashed;
     opacity: 0.55;
   }
-  .filter-chip.chip-hidden.active {
-    opacity: 0.9;
-  }
+  .filter-chip.chip-hidden.active { opacity: 0.9; }
   .filter-chip .bi-eye-slash { font-size: 10px; }
 
   .store-section {
@@ -607,20 +603,18 @@
   }
   body.dark .item-qty { background: rgba(255,255,255,0.06); }
   .operator-badge {
-    min-width: 20px;
-    height: 20px;
+    min-width: 22px;
+    height: 22px;
     padding: 0 5px;
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 800;
     color: white;
     flex-shrink: 0;
   }
-  .operator-badge.op-a { background: var(--martina); }
-  .operator-badge.op-b { background: var(--salvo); }
   .price-badge {
     font-size: 11px;
     font-weight: 800;
@@ -661,7 +655,7 @@
   }
   .empty p { font-size: 13px; color: var(--text-muted); }
 
-  /* ===== CONTENUTO POPUP FRIGO ===== */
+  /* Contenuto Popup Frigo */
   .fridge-body {
     display: flex;
     flex-direction: column;
@@ -913,10 +907,11 @@
   .pick-item .pick-emoji { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
   .pick-item .pick-name { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); }
 
+  /* FAB spostato a sinistra per non sovrapporsi alle frecce collapse */
   .fab {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    right: 60px;
     width: 52px;
     height: 52px;
     border-radius: 16px;
@@ -988,33 +983,40 @@
     gap: 8px;
   }
 
+  /* Nuovo selettore operatori multipli con colore+emoji */
   .operator-selector {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     margin-bottom: 14px;
   }
   .operator-btn {
-    padding: 12px;
+    padding: 10px;
     border: 2px solid var(--border);
     border-radius: 12px;
     background: var(--card);
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s;
     color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
   }
-  .operator-btn.active[data-op="A"] {
-    border-color: var(--martina);
-    background: rgba(236,72,153,0.1);
-    color: var(--martina);
+  .operator-btn .op-emoji {
+    font-size: 20px;
+    line-height: 1;
   }
-  .operator-btn.active[data-op="B"] {
-    border-color: var(--salvo);
-    background: rgba(59,130,246,0.1);
-    color: var(--salvo);
+  .operator-btn .op-name {
+    font-size: 11px;
+    opacity: 0.85;
+  }
+  .operator-btn.active {
+    color: white;
+    border-color: transparent;
   }
 
   .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -1068,6 +1070,14 @@
   .autocomplete-item:hover { background: var(--card-alt); }
   .autocomplete-item .star-icon { color: var(--gold); font-size: 15px; }
   .autocomplete-item .item-name-text { flex: 1; font-weight: 600; color: var(--text); font-size: 13px; }
+  .autocomplete-item .item-price {
+    font-size: 10px;
+    color: var(--mint);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
   .autocomplete-item .item-store {
     font-size: 10px;
     color: var(--text-muted);
@@ -1184,8 +1194,33 @@
     font-size: 12px;
     font-weight: 600;
     color: var(--text-secondary);
+    flex: 1;
   }
   .favorite-star.active .text { color: var(--gold); }
+  .fav-price-input {
+    width: 70px;
+    padding: 4px 7px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 12px;
+    background: var(--card);
+    color: var(--text);
+    font-weight: 700;
+    text-align: right;
+  }
+  .fav-price-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  .fav-price-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
 
   .date-input-wrapper {
     display: none;
@@ -1386,7 +1421,7 @@
     align-items: center;
     gap: 5px;
   }
-  .settings-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .settings-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
   .settings-row label { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); }
   .settings-row input[type="text"] {
     flex: 1;
@@ -1398,6 +1433,7 @@
     background: var(--card-alt);
     color: var(--text);
     font-weight: 500;
+    min-width: 0;
   }
   .settings-row input[type="text"]:focus { outline: none; border-color: var(--primary); }
   .settings-row .color-input {
@@ -1410,6 +1446,19 @@
     background: var(--card);
     flex-shrink: 0;
   }
+  .settings-row .emoji-input {
+    width: 42px;
+    padding: 7px 4px;
+    border: 2px solid var(--border);
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 15px;
+    background: var(--card-alt);
+    color: var(--text);
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .settings-row .emoji-input:focus { outline: none; border-color: var(--primary); }
   .settings-row .delete-small {
     background: var(--card-alt);
     border: none;
@@ -1440,6 +1489,35 @@
   }
   .settings-row .emoji-mini:focus { outline: none; border-color: var(--primary); }
   
+  .add-operator-row {
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+  }
+  .add-operator-row button {
+    flex: 1;
+    padding: 9px 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s;
+  }
+  .add-operator-row button:hover { transform: translateY(-1px); }
+  .add-operator-row button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
   .store-icon-btn {
     width: 38px;
     height: 38px;
@@ -1658,6 +1736,26 @@
   }
   .btn-export:hover { transform: translateY(-1px); }
 
+  /* Live indicator - ora nelle impostazioni */
+  .live-settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 10px;
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .live-settings .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+  }
+
   .save-indicator {
     position: fixed;
     top: 80px;
@@ -1778,7 +1876,7 @@
     .header { padding: 14px 12px 18px; border-radius: 0 0 22px 22px; }
     .header h1 { font-size: 20px; }
     .icon-btn { width: 34px; height: 34px; font-size: 15px; }
-    .fab { bottom: 16px; right: 16px; width: 50px; height: 50px; }
+    .fab { bottom: 16px; right: 56px; width: 50px; height: 50px; }
     .list-container { padding: 12px 10px 36px; }
     .search-input { padding: 10px 34px 10px 12px; font-size: 13px; }
     .ipp-grid { grid-template-columns: repeat(5, 1fr); }
@@ -1789,13 +1887,13 @@
   <div class="container">
     <div class="header">
       <div class="header-top">
-        <h1>Lista Spesa</h1>
+        <h1 id="listTitle">Lista Spesa</h1>
         <div class="header-actions">
           <button class="icon-btn" id="selectModeBtn" onclick="window.toggleSelectMode()" title="Selezione multipla"><i class="bi bi-check2-square"></i></button>
+          <button class="icon-btn" onclick="window.exportWhatsApp()" title="Copia lista per WhatsApp"><i class="bi bi-copy"></i></button>
           <button class="icon-btn" onclick="window.openReorder()" title="Riordina liste"><i class="bi bi-arrow-down-up"></i></button>
-          <button class="icon-btn magic" onclick="window.magicWand()" title="Pulisci"><i class="bi bi-stars"></i></button>
+          <button class="icon-btn bucket" onclick="window.magicWand()" title="Pulisci comprati"><i class="bi bi-bucket-fill"></i></button>
           <button class="icon-btn" onclick="window.openSettings()" title="Impostazioni"><i class="bi bi-gear-fill"></i></button>
-          <div class="status" id="status"><span class="dot"></span>Live</div>
         </div>
       </div>
       
@@ -1805,14 +1903,7 @@
         <span class="search-icon"><i class="bi bi-search"></i></span>
       </div>
 
-      <div class="quick-operator">
-        <button class="qop-btn" id="qopA" data-op="A" onclick="window.setOperator('A')"><i class="bi bi-heart-fill"></i> Martina</button>
-        <button class="qop-btn" id="qopB" data-op="B" onclick="window.setOperator('B')"><i class="bi bi-heart-fill"></i> Salvo</button>
-        <button class="fridge-btn" id="fridgeBtn" onclick="window.openFridgeSheet()" title="In frigo">
-          <i class="bi bi-snow2"></i>
-          <span class="fridge-btn-count" id="fridgeBtnCount"></span>
-        </button>
-      </div>
+      <div class="quick-operator" id="quickOperators"></div>
     </div>
 
     <div class="list-container" id="list"></div>
@@ -1823,6 +1914,7 @@
   <div class="bulk-bar" id="bulkBar">
     <span class="bulk-count" id="bulkCount">0 selezionati</span>
     <button class="bulk-btn" onclick="window.openBulk('store')"><i class="bi bi-shop"></i> Negozio</button>
+    <button class="bulk-btn" onclick="window.openBulk('operator')"><i class="bi bi-people-fill"></i> Operatore</button>
     <button class="bulk-btn" onclick="window.openBulk('event')"><i class="bi bi-stars"></i> Evento</button>
     <button class="bulk-btn exit" onclick="window.exitSelectMode()"><i class="bi bi-x-lg"></i> Esci</button>
   </div>
@@ -1832,10 +1924,7 @@
       <div class="sheet-handle"></div>
       <div class="sheet-title" id="sheetTitle">Nuovo prodotto</div>
 
-      <div class="operator-selector">
-        <button class="operator-btn active" data-op="A" id="opBtnA" onclick="window.setOperator('A')">Operatore A</button>
-        <button class="operator-btn" data-op="B" id="opBtnB" onclick="window.setOperator('B')">Operatore B</button>
-      </div>
+      <div class="operator-selector" id="operatorSelector"></div>
 
       <div class="input-row">
         <div class="input-wrapper">
@@ -1871,13 +1960,20 @@
         <span class="star">☆</span>
         <span class="text">Salva come preferito</span>
       </div>
+      <div id="favPriceRow" style="display:none; margin-top:-8px; margin-bottom:12px; padding:8px 10px; background:rgba(251,191,36,0.08); border-radius:9px;">
+        <label class="fav-price-label"><i class="bi bi-activity"></i> Prezzo medio</label>
+        <div style="display:flex; gap:5px; align-items:center; margin-top:4px;">
+          <span style="color:var(--text-muted);font-weight:800;font-size:14px;">€</span>
+          <input type="text" class="fav-price-input" id="favPriceInput" placeholder="0,00" inputmode="decimal">
+        </div>
+      </div>
 
       <button class="add-btn" id="actionBtn" onclick="window.handleSheetAction()"><i class="bi bi-plus-circle-fill"></i> Aggiungi alla lista</button>
       <button class="delete-edit-btn" id="deleteEditBtn" onclick="window.deleteFromEdit()" style="display:none;"><i class="bi bi-trash-fill"></i> Elimina prodotto</button>
     </div>
   </div>
 
-  <!-- ===== POPUP FRIGO ===== -->
+  <!-- Popup Frigo -->
   <div class="modal-overlay" id="fridgeOverlay" onclick="window.closeFridgeSheet(event)">
     <div class="bottom-sheet" onclick="event.stopPropagation()">
       <div class="sheet-handle"></div>
@@ -1903,23 +1999,25 @@
       <div class="sheet-title"><i class="bi bi-gear-fill"></i> Impostazioni</div>
 
       <div class="settings-section">
-        <div class="settings-title"><i class="bi bi-people-fill"></i> Nomi Operatori</div>
+        <div class="settings-title"><i class="bi bi-tag-fill"></i> Nome Lista</div>
         <div class="settings-row">
-          <label>Operatore A (rosa)</label>
-          <input type="text" id="settingsOpA" maxlength="20">
+          <input type="text" id="settingsListTitle" placeholder="Lista Spesa" maxlength="30">
         </div>
-        <div class="settings-row">
-          <label>Operatore B (blu)</label>
-          <input type="text" id="settingsOpB" maxlength="20">
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title"><i class="bi bi-people-fill"></i> Operatori (max 4)</div>
+        <div id="operatorsList"></div>
+        <div class="add-operator-row">
+          <button id="addOperatorBtn" onclick="window.addOperator()"><i class="bi bi-plus-circle"></i> Aggiungi operatore</button>
         </div>
       </div>
 
       <div class="settings-section">
         <div class="settings-title"><i class="bi bi-stars"></i> Eventi Speciali</div>
         <div id="eventsList"></div>
-        <div class="emoji-quick" id="emojiQuick"></div>
         <div class="add-store-row">
-          <input type="text" id="newEventEmoji" placeholder="" maxlength="4" style="flex:0 0 50px;text-align:center;">
+          <input type="text" id="newEventEmoji" placeholder="Emoji" maxlength="4" style="flex:0 0 60px;text-align:center;">
           <input type="text" id="newEventName" placeholder="Nome evento" maxlength="30">
           <button onclick="window.addEvent()"><i class="bi bi-plus-lg"></i></button>
         </div>
@@ -1952,6 +2050,12 @@
         <button class="btn-close-settings" onclick="window.closeSettings()">Chiudi</button>
         <button class="btn-save-settings" onclick="window.saveSettings()"><i class="bi bi-check2-circle"></i> Salva</button>
       </div>
+
+      <!-- Live nascosto in basso -->
+      <div class="live-settings" id="liveSettings">
+        <span class="dot"></span>
+        <span id="liveText">Live</span>
+      </div>
     </div>
   </div>
 
@@ -1979,19 +2083,25 @@
   const SUPABASE_ANON_KEY = 'sb_publishable_PHA1Fj2T3CC_gcAln4uiCg_EUJEw6ts';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // Rilevamento iOS per safe-area
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS) document.body.classList.add('ios');
+
   const AVAILABLE_LOGOS = [
     'eurospin.png', 'lidl.png', 'despar.png', 'md.png', 'conad.png',
     'ard.png', 'acqua.png', 'todis.png', 'sisa.png', 'crai.png'
   ];
 
+  // Icone Bootstrap 1.11.3 VERIFICATE (rimosse quelle non esistenti)
   const BI_ICONS = [
     'bi-shop', 'bi-cart3', 'bi-basket', 'bi-bag', 'bi-droplet-fill',
-    'bi-cup-straw', 'bi-egg-fill', 'bi-flower1', 'bi-house-fill',
-    'bi-lightning-charge-fill', 'bi-snow2', 'bi-fire', 'bi-tree-fill',
+    'bi-flower1', 'bi-house-fill', 'bi-snow2', 'bi-fire', 'bi-tree-fill',
     'bi-star-fill', 'bi-heart-fill', 'bi-gift-fill', 'bi-truck', 'bi-store',
-    'bi-balloon-fill', 'bi-capsule', 'bi-clipboard-heart', 'bi-cup-hot-fill',
-    'bi-hammer', 'bi-suitcase-lg', 'bi-bicycle', 'bi-cake', 'bi-feather',
-    'bi-key', 'bi-lamp', 'bi-tree', 'bi-signpost', 'bi-fork-knife', 'bi-leaf'
+    'bi-balloon-fill', 'bi-capsule', 'bi-cup-hot-fill', 'bi-hammer',
+    'bi-suitcase-lg', 'bi-bicycle', 'bi-cake', 'bi-feather',
+    'bi-key', 'bi-lamp', 'bi-tree', 'bi-signpost', 'bi-leaf',
+    'bi-egg-fried', 'bi-lightning-fill', 'bi-cup-hot', 'bi-scissors',
+    'bi-wrench', 'bi-gem', 'bi-clock-fill'
   ];
 
   const DEFAULT_STORES = [
@@ -2011,10 +2121,14 @@
   const DEFAULT_ICON_MAP = {};
   DEFAULT_STORES.forEach(s => { if (s.icon) DEFAULT_ICON_MAP[s.id] = s.icon; });
 
-  const DEFAULT_OPERATORS = { A: 'Martina', B: 'Salvo' };
+  // Default operatori: array (nuova struttura)
+  const DEFAULT_OPERATORS = [
+    { id: 'A', name: 'Martina', emoji: '❤️', color: '#ec4899' },
+    { id: 'B', name: 'Salvo', emoji: '💙', color: '#3b82f6' }
+  ];
+
   const HISTORY_MAX = 10;
   const FRIDGE_DAYS = 7;
-  const EMOJI_QUICK = ['🎃','','🎉','','🎂','','','','🎁','❤️','🌸','☀️','⭐','🔥','🍾','','','','🌞','','️','','🎅','🌺','💐','🍷','','','',''];
 
   let items = [];
   let currentOperator = 'A';
@@ -2025,6 +2139,7 @@
   let customStores = null;
   let customOperators = null;
   let customFridge = null;
+  let listTitle = 'Lista Spesa';
   let isDark = false;
   let settingsLoaded = false;
   let realtimeTimeout = null;
@@ -2065,6 +2180,34 @@
     });
   }
 
+  // MIGRAZIONE operatori da vecchio formato {A:'Martina', B:'Salvo'} a nuovo array
+  function migrateOperators(ops) {
+    if (!ops) return DEFAULT_OPERATORS.slice();
+    if (Array.isArray(ops)) {
+      // Garantisci che ogni operatore abbia emoji, color, name
+      return ops.map(op => ({
+        id: op.id || 'A',
+        name: op.name || op.id || 'Operatore',
+        emoji: op.emoji || '⭐',
+        color: op.color || '#6366f1'
+      }));
+    }
+    // Vecchio formato {A:'Martina', B:'Salvo', events: [...]}
+    const migrated = [];
+    const ids = Object.keys(ops).filter(k => k.length === 1 && k.match(/[A-Z]/));
+    const defaultColors = ['#ec4899', '#3b82f6', '#10b981', '#f59e0b'];
+    const defaultEmojis = ['❤️', '💙', '💚', '🧡'];
+    ids.forEach((id, i) => {
+      migrated.push({
+        id,
+        name: ops[id] || id,
+        emoji: defaultEmojis[i] || '⭐',
+        color: defaultColors[i] || '#6366f1'
+      });
+    });
+    return migrated.length > 0 ? migrated : DEFAULT_OPERATORS.slice();
+  }
+
   function loadLocalSettings() {
     try {
       const s = localStorage.getItem('marbon_local');
@@ -2073,7 +2216,7 @@
         isDark = p.dark || false;
         collapsedStores = new Set(p.collapsed || []);
         favorites = p.favorites || [];
-        currentOperator = (p.currentOp === 'B') ? 'B' : 'A';
+        currentOperator = p.currentOp || 'A';
         hiddenEvents = Array.isArray(p.hiddenEvents) ? p.hiddenEvents : [];
       }
     } catch(e) { console.error(e); }
@@ -2113,28 +2256,33 @@
       
       if (error) {
         customStores = DEFAULT_STORES;
-        customOperators = DEFAULT_OPERATORS;
+        customOperators = DEFAULT_OPERATORS.slice();
         customFridge = [];
+        listTitle = 'Lista Spesa';
       } else {
         customStores = migrateStores(data.stores || DEFAULT_STORES);
-        customOperators = data.operators || DEFAULT_OPERATORS;
+        customOperators = migrateOperators(data.operators);
         customFridge = Array.isArray(data.fridge) ? data.fridge : [];
+        listTitle = data.list_title || 'Lista Spesa';
       }
       
       settingsLoaded = true;
       syncOperatorUI();
       initStoreSelect();
       initEventSelect();
+      updateListTitle();
       render();
     } catch (err) {
       console.error('Errore:', err);
       customStores = DEFAULT_STORES;
-      customOperators = DEFAULT_OPERATORS;
+      customOperators = DEFAULT_OPERATORS.slice();
       customFridge = [];
+      listTitle = 'Lista Spesa';
       settingsLoaded = true;
       syncOperatorUI();
       initStoreSelect();
       initEventSelect();
+      updateListTitle();
       render();
     }
   }
@@ -2148,6 +2296,7 @@
           operators: customOperators,
           stores: customStores,
           fridge: customFridge,
+          list_title: listTitle,
           updated_at: new Date().toISOString()
         });
       if (error) throw error;
@@ -2174,12 +2323,17 @@
       (payload) => {
         if (payload.new) {
           customStores = migrateStores(payload.new.stores || DEFAULT_STORES);
-          customOperators = payload.new.operators || DEFAULT_OPERATORS;
+          customOperators = migrateOperators(payload.new.operators);
           customFridge = Array.isArray(payload.new.fridge) ? payload.new.fridge : [];
+          listTitle = payload.new.list_title || 'Lista Spesa';
           syncOperatorUI();
           initStoreSelect();
           initEventSelect();
-          if (document.getElementById('settingsOverlay').classList.contains('show')) renderStoresList();
+          updateListTitle();
+          if (document.getElementById('settingsOverlay').classList.contains('show')) {
+            renderStoresList();
+            renderOperatorsList();
+          }
           render();
         }
       }
@@ -2188,12 +2342,31 @@
 
   function getStores() { return customStores || DEFAULT_STORES; }
   function getOperators() { return customOperators || DEFAULT_OPERATORS; }
-  function getEvents() { return (getOperators() && getOperators().events) || []; }
+  function getEvents() {
+    const ops = getOperators();
+    // events può stare su customOperators (array) o come campo separato
+    if (customOperators && Array.isArray(customOperators.events)) return customOperators.events;
+    return [];
+  }
   function getStore(id) { return getStores().find(s => s.id === id) || getStores()[0]; }
   function getEvent(id) { return getEvents().find(e => e.id === id) || null; }
-  function getOpName(key) { return getOperators()[key] || key; }
+  function getOperator(id) {
+    const ops = getOperators();
+    if (Array.isArray(ops)) return ops.find(o => o.id === id) || ops[0];
+    return { id: 'A', name: 'A', emoji: '⭐', color: '#6366f1' };
+  }
+  function getOpName(key) {
+    const op = getOperator(key);
+    return op ? op.name : key;
+  }
 
-  // ===== FRIGO (dati in settings.fridge) =====
+  function updateListTitle() {
+    const h1 = document.getElementById('listTitle');
+    if (h1) h1.textContent = listTitle || 'Lista Spesa';
+    document.title = (listTitle || 'Lista Spesa') + ' - Marbon';
+  }
+
+  // ===== FRIGO =====
   function getFridge() {
     const cutoff = Date.now() - FRIDGE_DAYS * 86400000;
     return (customFridge || []).filter(f => f && f.boughtAt && new Date(f.boughtAt).getTime() > cutoff);
@@ -2208,9 +2381,10 @@
         .from('settings')
         .upsert({
           id: 'global',
-          operators: getOperators(),
-          stores: getStores(),
+          operators: customOperators,
+          stores: customStores,
           fridge: cleaned,
+          list_title: listTitle,
           updated_at: new Date().toISOString()
         });
       if (error) throw error;
@@ -2243,7 +2417,6 @@
     saveFridge(getFridge().filter(f => f.id !== id));
   };
 
-  // ===== POPUP FRIGO =====
   window.openFridgeSheet = function() {
     fridgeSheetOpen = true;
     renderFridgeSheet();
@@ -2323,25 +2496,55 @@
 
   function syncOperatorUI() {
     const ops = getOperators();
-    const qopA = document.getElementById('qopA');
-    const qopB = document.getElementById('qopB');
-    const opBtnA = document.getElementById('opBtnA');
-    const opBtnB = document.getElementById('opBtnB');
-    if (qopA) { qopA.innerHTML = `<i class="bi bi-heart-fill"></i> ${ops.A}`; qopA.classList.toggle('active', currentOperator === 'A'); }
-    if (qopB) { qopB.innerHTML = `<i class="bi bi-heart-fill"></i> ${ops.B}`; qopB.classList.toggle('active', currentOperator === 'B'); }
-    if (opBtnA) { opBtnA.textContent = ops.A; opBtnA.classList.toggle('active', currentOperator === 'A'); }
-    if (opBtnB) { opBtnB.textContent = ops.B; opBtnB.classList.toggle('active', currentOperator === 'B'); }
+    // Quick operators nell'header
+    const qopContainer = document.getElementById('quickOperators');
+    if (qopContainer) {
+      let html = '';
+      if (Array.isArray(ops)) {
+        ops.forEach(op => {
+          const active = currentOperator === op.id;
+          html += `<button class="qop-btn ${active ? 'active' : ''}" data-op="${op.id}" onclick="window.setOperator('${op.id}')" style="${active ? 'color:' + op.color : ''}">
+            <span class="qop-emoji">${escapeHtml(op.emoji)}</span>
+            <span>${escapeHtml(op.name)}</span>
+          </button>`;
+        });
+      }
+      html += `<button class="fridge-btn" id="fridgeBtn" onclick="window.openFridgeSheet()" title="In frigo">
+        <i class="bi bi-snow2"></i>
+        <span class="fridge-btn-count" id="fridgeBtnCount"></span>
+      </button>`;
+      qopContainer.innerHTML = html;
+      updateFridgeBadge();
+    }
+    
+    // Operator selector nel bottom sheet
+    const opSelector = document.getElementById('operatorSelector');
+    if (opSelector) {
+      let html = '';
+      if (Array.isArray(ops)) {
+        ops.forEach(op => {
+          const active = currentOperator === op.id;
+          html += `<button class="operator-btn ${active ? 'active' : ''}" data-op="${op.id}" onclick="window.setOperator('${op.id}')" style="${active ? 'background:' + op.color + ';border-color:' + op.color : ''}">
+            <span class="op-emoji">${escapeHtml(op.emoji)}</span>
+            <span class="op-name">${escapeHtml(op.name)}</span>
+          </button>`;
+        });
+      }
+      opSelector.innerHTML = html;
+    }
   }
 
   window.setOperator = function(op) {
-    currentOperator = (op === 'B') ? 'B' : 'A';
+    currentOperator = op;
     saveLocalSettings();
     syncOperatorUI();
   };
 
   function updateDarkToggle() {
     const t = document.getElementById('darkToggle');
-    if (isDark) t.classList.add('active'); else t.classList.remove('active');
+    if (t) {
+      if (isDark) t.classList.add('active'); else t.classList.remove('active');
+    }
   }
 
   const listEl = document.getElementById('list');
@@ -2365,6 +2568,8 @@
   const sheetTitle = document.getElementById('sheetTitle');
   const actionBtn = document.getElementById('actionBtn');
   const deleteEditBtn = document.getElementById('deleteEditBtn');
+  const favPriceRow = document.getElementById('favPriceRow');
+  const favPriceInput = document.getElementById('favPriceInput');
 
   function initStoreSelect() {
     storeSelect.innerHTML = '';
@@ -2379,7 +2584,7 @@
   function initEventSelect() {
     const evs = getEvents();
     eventSelect.innerHTML = '<option value="">Nessun evento</option>' + evs.map(e =>
-      `<option value="${e.id}">${e.emoji} ${escapeHtml(e.name)}</option>`
+      `<option value="${e.id}">${escapeHtml(e.emoji)} ${escapeHtml(e.name)}</option>`
     ).join('');
   }
 
@@ -2444,13 +2649,17 @@
     }
     autocompleteDropdown.innerHTML = `
       <div class="autocomplete-hint"><i class="bi bi-star-fill" style="color:var(--gold)"></i> Preferiti</div>
-      ${matches.map(fav => `
-        <div class="autocomplete-item" onclick="window.selectAutocomplete('${escapeHtml(fav.name)}', '${escapeHtml(fav.store || 'generico')}')">
-          <span class="star-icon"><i class="bi bi-star-fill"></i></span>
-          <span class="item-name-text">${escapeHtml(fav.name)}</span>
-          <span class="item-store">${escapeHtml(getStore(fav.store).name)}</span>
-        </div>
-      `).join('')}
+      ${matches.map(fav => {
+        const priceHtml = fav.avgPrice ? `<span class="item-price"><i class="bi bi-activity"></i> €${formatPrice(fav.avgPrice)}</span>` : '';
+        return `
+          <div class="autocomplete-item" onclick="window.selectAutocomplete('${escapeHtml(fav.name)}', '${escapeHtml(fav.store || 'generico')}')">
+            <span class="star-icon"><i class="bi bi-star-fill"></i></span>
+            <span class="item-name-text">${escapeHtml(fav.name)}</span>
+            ${priceHtml}
+            <span class="item-store">${escapeHtml(getStore(fav.store).name)}</span>
+          </div>
+        `;
+      }).join('')}
     `;
     autocompleteDropdown.classList.add('show');
   }
@@ -2468,25 +2677,28 @@
       favoriteStar.classList.add('active');
       favoriteStar.querySelector('.star').textContent = '★';
       favoriteStar.querySelector('.text').textContent = 'Rimosso dai preferiti';
+      favPriceRow.style.display = 'block';
+      favPriceInput.value = '';
+      setTimeout(() => favPriceInput.focus(), 100);
     } else {
       favoriteStar.classList.remove('active');
       favoriteStar.querySelector('.star').textContent = '☆';
       favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
+      favPriceRow.style.display = 'none';
+      favPriceInput.value = '';
     }
   };
 
   async function saveEvents(newEvents) {
     const ops = getOperators();
-    customOperators = { A: ops.A, B: ops.B, events: newEvents };
+    // Salvo events come campo separato in customOperators (retrocompatibilità)
+    customOperators = Array.isArray(ops) ? ops.slice() : ops;
+    customOperators.events = newEvents;
     await saveSharedSettings();
     initEventSelect();
     renderEventsList();
     render();
   }
-
-  window.setQuickEmoji = function(emoji) {
-    document.getElementById('newEventEmoji').value = emoji;
-  };
 
   window.addEvent = async function() {
     const emoji = document.getElementById('newEventEmoji').value.trim();
@@ -2531,20 +2743,86 @@
   function renderEventsList() {
     const container = document.getElementById('eventsList');
     const evs = getEvents();
-    const quick = document.getElementById('emojiQuick');
-    quick.innerHTML = EMOJI_QUICK.map(e => `<button type="button" onclick="window.setQuickEmoji('${e}')">${e}</button>`).join('');
     if (evs.length === 0) {
       container.innerHTML = '<div class="history-empty">Nessun evento. Creane uno qui sotto.</div>';
       return;
     }
     container.innerHTML = evs.map(e => `
       <div class="settings-row">
-        <input type="text" class="emoji-mini" value="${e.emoji}" maxlength="4" onchange="window.updateEventEmoji('${e.id}', this.value)">
+        <input type="text" class="emoji-mini" value="${escapeHtml(e.emoji)}" maxlength="4" onchange="window.updateEventEmoji('${e.id}', this.value)">
         <input type="text" value="${escapeHtml(e.name)}" maxlength="30" onchange="window.updateEventName('${e.id}', this.value)">
         <button class="delete-small" onclick="window.deleteEvent('${e.id}')"><i class="bi bi-trash-fill"></i></button>
       </div>
     `).join('');
   }
+
+  // ===== OPERATORI =====
+  function renderOperatorsList() {
+    const container = document.getElementById('operatorsList');
+    const ops = getOperators();
+    if (!Array.isArray(ops)) return;
+    container.innerHTML = ops.map(op => `
+      <div class="settings-row">
+        <input type="text" class="emoji-input" value="${escapeHtml(op.emoji)}" maxlength="4" onchange="window.updateOperatorEmoji('${op.id}', this.value)" title="Emoji">
+        <input type="color" class="color-input" value="${op.color}" onchange="window.updateOperatorColor('${op.id}', this.value)">
+        <input type="text" value="${escapeHtml(op.name)}" onchange="window.updateOperatorName('${op.id}', this.value)" maxlength="20">
+        ${ops.length > 1 ? `<button class="delete-small" onclick="window.deleteOperator('${op.id}')"><i class="bi bi-trash-fill"></i></button>` : ''}
+      </div>
+    `).join('');
+    const addBtn = document.getElementById('addOperatorBtn');
+    if (addBtn) addBtn.disabled = ops.length >= 4;
+  }
+
+  window.updateOperatorName = function(id, name) {
+    const ops = getOperators();
+    const op = ops.find(o => o.id === id);
+    if (op) op.name = name.trim() || op.name;
+    syncOperatorUI();
+  };
+
+  window.updateOperatorColor = function(id, color) {
+    const ops = getOperators();
+    const op = ops.find(o => o.id === id);
+    if (op) op.color = color;
+    syncOperatorUI();
+  };
+
+  window.updateOperatorEmoji = function(id, emoji) {
+    const ops = getOperators();
+    const op = ops.find(o => o.id === id);
+    if (op && emoji.trim()) op.emoji = emoji.trim();
+    syncOperatorUI();
+  };
+
+  window.deleteOperator = function(id) {
+    if (!confirm('Eliminare questo operatore? I suoi prodotti verranno riassegnati.')) return;
+    const ops = getOperators().filter(o => o.id !== id);
+    if (currentOperator === id) currentOperator = ops[0]?.id || 'A';
+    customOperators = ops;
+    saveLocalSettings();
+    syncOperatorUI();
+    renderOperatorsList();
+  };
+
+  window.addOperator = function() {
+    const ops = getOperators();
+    if (ops.length >= 4) { alert('Massimo 4 operatori'); return; }
+    const usedIds = new Set(ops.map(o => o.id));
+    const allIds = ['A','B','C','D','E','F','G','H'];
+    const newId = allIds.find(x => !usedIds.has(x)) || 'X';
+    const defaultColors = ['#10b981', '#f59e0b', '#8b5cf6', '#14b8a6', '#f97316'];
+    const defaultEmojis = ['💚', '🧡', '💜', '🩵', '🖤'];
+    const idx = ops.length;
+    const newOp = {
+      id: newId,
+      name: 'Operatore ' + newId,
+      emoji: defaultEmojis[idx] || '⭐',
+      color: defaultColors[idx] || '#6366f1'
+    };
+    customOperators = [...ops, newOp];
+    syncOperatorUI();
+    renderOperatorsList();
+  };
 
   window.setEventFilter = function(id) {
     activeEventFilter = id;
@@ -2596,7 +2874,7 @@
     let chips = `<button class="filter-chip ${!activeEventFilter ? 'active' : ''}" onclick="window.setEventFilter(null)"><i class="bi bi-list-ul"></i> Tutti</button>`;
     evs.forEach(ev => {
       const hid = hiddenEvents.includes(ev.id);
-      chips += `<button class="filter-chip ${activeEventFilter === ev.id ? 'active' : ''} ${hid ? 'chip-hidden' : ''}" data-ev="${ev.id}" onclick="window.setEventFilter('${ev.id}')" title="Tieni premuto per nascondere/mostrare in Tutti">${hid ? '<i class="bi bi-eye-slash"></i>' : ''}${ev.emoji} ${escapeHtml(ev.name)}</button>`;
+      chips += `<button class="filter-chip ${activeEventFilter === ev.id ? 'active' : ''} ${hid ? 'chip-hidden' : ''}" data-ev="${ev.id}" onclick="window.setEventFilter('${ev.id}')" title="Tieni premuto per nascondere/mostrare in Tutti">${hid ? '<i class="bi bi-eye-slash"></i>' : ''}${escapeHtml(ev.emoji)} ${escapeHtml(ev.name)}</button>`;
     });
     if (!evs.length) chips += `<span class="filter-chip muted"><i class="bi bi-stars"></i> Crea eventi nelle impostazioni</span>`;
     return `<div class="filter-row">${chips}</div>`;
@@ -2654,6 +2932,15 @@
           <div class="pick-name">${escapeHtml(s.name)}</div>
         </div>
       `).join('');
+    } else if (type === 'operator') {
+      title.innerHTML = '<i class="bi bi-people-fill"></i> Assegna operatore';
+      const ops = getOperators();
+      list.innerHTML = (Array.isArray(ops) ? ops : []).map(op => `
+        <div class="pick-item" onclick="window.applyBulkOperator('${op.id}')">
+          <div class="pick-emoji">${escapeHtml(op.emoji)}</div>
+          <div class="pick-name">${escapeHtml(op.name)}</div>
+        </div>
+      `).join('');
     } else {
       title.innerHTML = '<i class="bi bi-stars"></i> Assegna evento';
       list.innerHTML = `
@@ -2663,7 +2950,7 @@
         </div>
       ` + getEvents().map(e => `
         <div class="pick-item" onclick="window.applyBulkEvent('${e.id}')">
-          <div class="pick-emoji">${e.emoji}</div>
+          <div class="pick-emoji">${escapeHtml(e.emoji)}</div>
           <div class="pick-name">${escapeHtml(e.name)}</div>
         </div>
       `).join('');
@@ -2687,6 +2974,25 @@
         if (error) throw error;
       }
       showIndicator('Spostati in ' + getStore(storeId).name);
+      window.exitSelectMode();
+      setTimeout(() => loadItems(), 800);
+    } catch (err) {
+      console.error(err);
+      alert('Errore: ' + err.message);
+    }
+  };
+
+  window.applyBulkOperator = async function(opId) {
+    const ids = realSelectedIds();
+    items.forEach(i => { if (selectedIds.has(i.id)) i.operator = opId; });
+    lastItemsCount = items.length;
+    document.getElementById('bulkOverlay').classList.remove('show');
+    try {
+      if (ids.length) {
+        const { error } = await supabase.from('lista').update({ operator: opId }).in('id', ids);
+        if (error) throw error;
+      }
+      showIndicator('Operatore: ' + getOpName(opId));
       window.exitSelectMode();
       setTimeout(() => loadItems(), 800);
     } catch (err) {
@@ -2781,7 +3087,7 @@
     qtyInput.value = e.qty || '';
     storeSelect.value = e.store || 'generico';
     eventSelect.value = e.eventId || '';
-    window.setOperator(e.operator === 'B' ? 'B' : 'A');
+    window.setOperator(e.operator || 'A');
     if (e.onOffer) {
       offerCheckbox.checked = true;
       offerWrapper.classList.add('checked');
@@ -2818,7 +3124,7 @@
           return `
             <div class="history-item">
               <div class="history-info">
-                <div class="history-name">${ev ? ev.emoji + ' ' : ''}${escapeHtml(e.name)}</div>
+                <div class="history-name">${ev ? escapeHtml(ev.emoji) + ' ' : ''}${escapeHtml(e.name)}</div>
                 <div class="history-meta">
                   <span class="history-store-dot" style="background:${st.color}"></span>
                   <span>${escapeHtml(st.name)}</span>
@@ -2966,12 +3272,14 @@
       if (hasChanges) {
         items = newItems;
         lastItemsCount = newCount;
-        statusEl.innerHTML = '<span class="dot"></span>Live';
+        const liveText = document.getElementById('liveText');
+        if (liveText) liveText.textContent = 'Live';
         render();
       }
     } catch (err) {
       console.error('Errore:', err);
-      statusEl.innerHTML = '<span class="dot" style="background:#ef4444"></span>Errore';
+      const liveText = document.getElementById('liveText');
+      if (liveText) liveText.textContent = 'Errore';
     }
   }
 
@@ -3084,9 +3392,11 @@
   }
 
   function renderItem(item, store) {
-    const opKey = item.operator === 'B' ? 'B' : 'A';
-    const opName = getOpName(opKey);
-    const opInitial = opName.charAt(0).toUpperCase();
+    const op = getOperator(item.operator === 'B' ? 'B' : item.operator || 'A');
+    const opId = op ? op.id : 'A';
+    const opEmoji = op ? op.emoji : '⭐';
+    const opColor = op ? op.color : '#6366f1';
+    const opName = op ? op.name : 'A';
     const isOffer = item.onOffer === true;
     const isExpired = isOffer && item.expiryDate && new Date(item.expiryDate) < new Date(new Date().toDateString());
     const ev = item.eventId ? getEvent(item.eventId) : null;
@@ -3099,7 +3409,7 @@
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       expiryHtml = `<span class="expiry-text ${isExpired ? 'exp' : ''}"><i class="bi bi-calendar-event-fill"></i> ${dd}.${mm}</span>`;
     }
-    const eventHtml = ev ? `<span class="event-badge" style="background:${storeColor}" title="${escapeHtml(ev.name)}">${ev.emoji ? ev.emoji : escapeHtml(ev.name)}</span>` : '';
+    const eventHtml = ev ? `<span class="event-badge" style="background:${storeColor}" title="${escapeHtml(ev.name)}">${ev.emoji ? escapeHtml(ev.emoji) : escapeHtml(ev.name)}</span>` : '';
     const priceHtml = (isOffer && item.price !== null && item.price !== undefined) ? `<span class="price-badge" style="background:${storeColor}">€${formatPrice(item.price)}</span>` : '';
     
     if (selectMode) {
@@ -3114,7 +3424,7 @@
             </div>
             <div class="item-meta">
               ${item.qty ? `<span class="item-qty">${escapeHtml(item.qty)}</span>` : ''}
-              <div class="operator-badge op-${opKey.toLowerCase()}">${opInitial}</div>
+              <div class="operator-badge" style="background:${opColor}" title="${escapeHtml(opName)}">${escapeHtml(opEmoji)}</div>
               ${priceHtml}
             </div>
           </div>
@@ -3136,7 +3446,7 @@
           </div>
           <div class="item-meta">
             ${item.qty ? `<span class="item-qty">${escapeHtml(item.qty)}</span>` : ''}
-            <div class="operator-badge op-${opKey.toLowerCase()}" title="${opName}">${opInitial}</div>
+            <div class="operator-badge" style="background:${opColor}" title="${escapeHtml(opName)}">${escapeHtml(opEmoji)}</div>
             ${priceHtml}
             ${expiryHtml}
           </div>
@@ -3234,7 +3544,7 @@
     qtyInput.value = item.qty || '';
     storeSelect.value = item.store || 'generico';
     eventSelect.value = item.eventId || '';
-    window.setOperator(item.operator === 'B' ? 'B' : 'A');
+    window.setOperator(item.operator === 'B' ? 'B' : item.operator || 'A');
     
     offerCheckbox.checked = item.onOffer === true;
     if (item.onOffer) {
@@ -3251,14 +3561,19 @@
     expiryInput.value = item.expiryDate || '';
     
     isFavorite = favorites.some(f => f.name.toLowerCase() === item.name.toLowerCase());
+    const existingFav = favorites.find(f => f.name.toLowerCase() === item.name.toLowerCase());
     if (isFavorite) {
       favoriteStar.classList.add('active');
       favoriteStar.querySelector('.star').textContent = '★';
       favoriteStar.querySelector('.text').textContent = 'Rimosso dai preferiti';
+      favPriceRow.style.display = 'block';
+      favPriceInput.value = existingFav?.avgPrice ? formatPrice(existingFav.avgPrice) : '';
     } else {
       favoriteStar.classList.remove('active');
       favoriteStar.querySelector('.star').textContent = '☆';
       favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
+      favPriceRow.style.display = 'none';
+      favPriceInput.value = '';
     }
     
     sheetTitle.innerHTML = '<i class="bi bi-pencil-fill"></i> Modifica prodotto';
@@ -3301,9 +3616,10 @@
       await safeUpdate(payload, [editingItemId]);
       
       if (isFavorite) {
+        const avgPrice = parsePrice(favPriceInput.value);
         const idx = favorites.findIndex(f => f.name.toLowerCase() === name.toLowerCase());
-        if (idx >= 0) favorites[idx] = { name, store: storeSelect.value };
-        else favorites.push({ name, store: storeSelect.value });
+        if (idx >= 0) favorites[idx] = { name, store: storeSelect.value, avgPrice };
+        else favorites.push({ name, store: storeSelect.value, avgPrice });
         saveLocalSettings();
       } else {
         favorites = favorites.filter(f => f.name.toLowerCase() !== name.toLowerCase());
@@ -3368,6 +3684,8 @@
     favoriteStar.classList.remove('active');
     favoriteStar.querySelector('.star').textContent = '☆';
     favoriteStar.querySelector('.text').textContent = 'Salva come preferito';
+    favPriceRow.style.display = 'none';
+    favPriceInput.value = '';
   }
 
   window.toggleStore = function(id) {
@@ -3456,9 +3774,10 @@
       await safeInsert(payload);
       
       if (isFavorite) {
+        const avgPrice = parsePrice(favPriceInput.value);
         const idx = favorites.findIndex(f => f.name.toLowerCase() === name.toLowerCase());
-        if (idx >= 0) favorites[idx] = { name, store: storeSelect.value };
-        else favorites.push({ name, store: storeSelect.value });
+        if (idx >= 0) favorites[idx] = { name, store: storeSelect.value, avgPrice };
+        else favorites.push({ name, store: storeSelect.value, avgPrice });
         saveLocalSettings();
       }
       
@@ -3487,7 +3806,7 @@
       alert('Nessun prodotto comprato da eliminare!');
       return;
     }
-    if (!confirm(`La bacchetta magica eliminerà ${doneItems.length} prodott${doneItems.length === 1 ? 'o' : 'i'} comprat${doneItems.length === 1 ? 'o' : 'i'}. Procedere?`)) return;
+    if (!confirm(`Il secchio eliminerà ${doneItems.length} prodott${doneItems.length === 1 ? 'o' : 'i'} comprat${doneItems.length === 1 ? 'o' : 'i'}. Procedere?`)) return;
     try {
       doneItems.forEach(i => addToHistory(i));
       const ids = doneItems.map(i => i.id).filter(x => !x.startsWith('temp_'));
@@ -3504,11 +3823,69 @@
     }
   };
 
+  // ===== EXPORT WHATSAPP =====
+  window.exportWhatsApp = async function() {
+    if (items.length === 0) {
+      alert('La lista è vuota!');
+      return;
+    }
+    
+    let exportItems = items;
+    if (activeEventFilter) exportItems = items.filter(i => i.eventId === activeEventFilter);
+    
+    const byStore = {};
+    exportItems.forEach(i => {
+      const storeId = i.store || 'generico';
+      if (!byStore[storeId]) byStore[storeId] = [];
+      byStore[storeId].push(i);
+    });
+    const storeOrder = getStores().map(s => s.id).filter(id => byStore[id]);
+    Object.keys(byStore).forEach(id => { if (!storeOrder.includes(id)) storeOrder.push(id); });
+    
+    const title = listTitle || 'Lista Spesa';
+    let lines = [`🛒 *${title}*`, ''];
+    
+    storeOrder.forEach(storeId => {
+      const store = getStore(storeId);
+      const storeItems = byStore[storeId];
+      lines.push(`🏪 *${store.name}*`);
+      storeItems.forEach(item => {
+        const ev = item.eventId ? getEvent(item.eventId) : null;
+        const evStr = ev ? ` ${ev.emoji}` : '';
+        const qtyStr = item.qty ? ` (${item.qty})` : '';
+        const doneStr = item.done ? ' ✓' : '';
+        lines.push(`- ${item.name}${qtyStr}${evStr}${doneStr}`);
+      });
+      lines.push('');
+    });
+    
+    const text = lines.join('\n').trim();
+    
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      showIndicator('📋 Lista copiata! Incolla su WhatsApp');
+    } catch (err) {
+      console.error(err);
+      alert('Impossibile copiare. Prova da HTTPS o browser diverso.');
+    }
+  };
+
   window.openSettings = function() {
     const ops = getOperators();
-    document.getElementById('settingsOpA').value = ops.A;
-    document.getElementById('settingsOpB').value = ops.B;
+    document.getElementById('settingsListTitle').value = listTitle;
     iconPickerStoreId = null;
+    renderOperatorsList();
     renderStoresList();
     renderEventsList();
     updateDarkToggle();
@@ -3637,13 +4014,12 @@
   };
 
   window.saveSettings = async function() {
-    const opA = document.getElementById('settingsOpA').value.trim() || 'Operatore A';
-    const opB = document.getElementById('settingsOpB').value.trim() || 'Operatore B';
-    customOperators = { A: opA, B: opB, events: getEvents() };
+    listTitle = document.getElementById('settingsListTitle').value.trim() || 'Lista Spesa';
     await saveSharedSettings();
     syncOperatorUI();
     initStoreSelect();
     initEventSelect();
+    updateListTitle();
     iconPickerStoreId = null;
     document.getElementById('settingsOverlay').classList.remove('show');
     render();
@@ -3702,13 +4078,14 @@
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
     const today = new Date().toLocaleDateString('it-IT');
+    const title = listTitle || 'Lista Spesa';
     
     doc.setFillColor(99, 102, 241);
     doc.rect(0, 0, 210, 30, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont(undefined, 'bold');
-    doc.text('Lista Spesa - Marbon', 14, 14);
+    doc.text(title, 14, 14);
     doc.setFontSize(10);
     doc.setFont(undefined, 'normal');
     doc.text(`Generata il ${today}`, 14, 22);
@@ -3738,7 +4115,8 @@
       doc.text(`${store.name} (${storeItems.length})`, 18, yPos);
       yPos += 12;
       const tableData = storeItems.map(item => {
-        const opName = getOpName(item.operator === 'B' ? 'B' : 'A');
+        const op = getOperator(item.operator || 'A');
+        const opName = op ? `${op.emoji} ${op.name}` : item.operator;
         const price = item.onOffer && item.price ? `${formatPrice(item.price)} €` : '-';
         const offer = item.onOffer ? 'Sì' : '';
         const expiry = item.expiryDate ? new Date(item.expiryDate).toLocaleDateString('it-IT') : '';
